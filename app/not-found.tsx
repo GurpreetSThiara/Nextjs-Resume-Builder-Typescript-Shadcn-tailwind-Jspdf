@@ -19,7 +19,7 @@ export default function NotFoundPage() {
           Oops! Page Not Found
         </h2>
         <p className="text-lg text-gray-600 mb-8 max-w-lg">
-          It looks like the page you're looking for {"doesn’t"} exist. You might have followed a broken link or mistyped the URL.
+          It looks like the page you are looking for {"doesnt"} exist. You might have followed a broken link or mistyped the URL.
         </p>
 
         <Link href="/">
