@@ -105,42 +105,7 @@ export default function HomePage() {
             </div>
           </section>
           
-          {/* <section id="testimonials" className="py-20 bg-white">
-            <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-                What Users Say About Our Free <span className="text-purple-600">Resume</span> Builder
-              </h2>
-              <div className="grid md:grid-cols-3 gap-8">
-                {[
-                  {
-                    name: "Alex Johnson",
-                    role: "Software Engineer",
-                    content: "I can't believe this amazing resume builder is completely free! FreeResumeATS helped me land interviews at top tech companies."
-                  },
-                  {
-                    name: "Sarah Lee",
-                    role: "Marketing Specialist",
-                    content: "The ATS-friendly resume templates and AI suggestions made my CV stand out. I got calls from 3 companies within a week!"
-                  },
-                  {
-                    name: "Michael Brown",
-                    role: "Recent Graduate",
-                    content: "As a recent grad, I was struggling with my resume. This free resume maker made the process so easy, and it didn't cost me a dime!"
-                  }
-                ].map((testimonial, index) => (
-                  <Card key={index} className="bg-gray-50 border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <CardContent className="pt-6">
-                      <p className="text-gray-600 mb-4">{testimonial.content}</p>
-                      <div>
-                        <p className="font-semibold text-gray-800">{testimonial.name}</p>
-                        <p className="text-sm text-gray-500">{testimonial.role}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </section> */}
+  
           
           <section id="faq" className="">
           <FAQ/>
