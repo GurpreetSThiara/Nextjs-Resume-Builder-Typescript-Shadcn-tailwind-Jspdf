@@ -21,6 +21,7 @@ export default function HomePage() {
         <title>Free Resume Builder | Create ATS-Friendly Resumes | FreeResumeATS</title>
         <meta name="description" content="Create professional, ATS-friendly resumes for free with FreeResumeATS. Our AI-powered resume builder helps you craft the perfect CV to land your dream job." />
         <meta name="keywords" content="resume, resume builder, free resume, CV, curriculum vitae, free CV, resume maker, ATS-friendly resume, job application" />
+        <meta name="google-site-verification" content="B36csgvM_AAnw_8kLhlNeSVddetiFzp_0BimIM7IMVM" />
         <link rel="canonical" href="https://resume.giveaways4u.com" />
       </Head>
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -30,11 +31,11 @@ export default function HomePage() {
           <section className="relative overflow-hidden py-20 md:py-32 lg:py-48">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-600 pointer-events-none" />
             <div className="relative container mx-auto px-4 text-center">
-              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl mb-6 text-white">
-                Create Your Perfect <span className="text-yellow-400">Resume</span> for Free
+              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl  md:text-6xl mb-6 text-white">
+                Create Your Perfect <strong><span className="text-yellow-400 text-5xl  md:text-7xl font-extrabold">Resume</span></strong> for Free
               </h1>
               <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-                Craft ATS-friendly <span className="font-semibold text-yellow-400">resumes</span> that land interviews. 
+                Craft <strong><span className="font-semibold text-purple-50  text-2xl">ATS</span></strong>-friendly <strong><span className="font-semibold text-yellow-400 text-2xl">Resumes</span></strong> that land interviews. 
                 Powered by AI, 100% free, no hidden charges.
               </p>
 
@@ -81,12 +82,12 @@ export default function HomePage() {
           <section id="how-it-works" className="py-20 bg-gradient-to-br from-purple-100 to-indigo-100">
             <div className="container mx-auto px-4">
               <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-                How Our Free <span className="text-purple-600">Resume</span> Maker Works
+                How Our Free <span className="text-purple-600 text-4xl font-extrabold">Resume</span> Maker Works
               </h2>
               <div className="max-w-4xl mx-auto">
                 {[
                   { title: "Choose a Resume Template", description: "Select from our wide range of ATS-friendly resume templates." },
-                  { title: "Fill in Your CV Details", description: "Our AI assists you in adding your information effectively to your curriculum vitae." },
+                  { title: "Fill in Your CV Details", description: "Fill information  to your curriculum vitae or Resume." },
                   { title: "Download and Apply", description: "Get your polished resume or CV instantly - no payment required!" },
                 ].map((step, index) => (
                   <div key={index} className="flex items-start mb-8">

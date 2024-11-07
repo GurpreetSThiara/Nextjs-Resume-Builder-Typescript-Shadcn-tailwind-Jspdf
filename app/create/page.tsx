@@ -25,6 +25,7 @@ import {
 import { PersonalInfo } from '@/components/Forms/ResumeEditForm/PersonalInfo/PersonalInfo'
 import { Section } from '@/components/Forms/ResumeEditForm/Section/Section'
 import html2canvas from 'html2canvas'
+import Precision from '@/components/resume/Precision'
 
 // Header Component
 //  const Header = React.memo(({ theme, setTheme, font, setFont }) => (
@@ -481,7 +482,8 @@ export default function ResumePage() {
       </DropdownMenu>
   </div>
       <div className="p-4 bg-gray-100 overflow-y-auto">
-        {memoizedATS1}
+        <Precision font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]} />
+        {/* {memoizedATS1} */}
    
       </div>
    </div>
