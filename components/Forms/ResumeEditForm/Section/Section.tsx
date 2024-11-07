@@ -139,7 +139,7 @@ export const Section = React.memo<SectionProps>(({
           onChange={(e) => setNewKeyValue(e.target.value)}
           className="flex-grow mr-2"
         />
-        <Button type="button" onClick={() => {
+        <Button variant={'purple'} type="button" onClick={() => {
           addKey(section.id, newKeyValue);
           setNewKeyValue('');
         }}>

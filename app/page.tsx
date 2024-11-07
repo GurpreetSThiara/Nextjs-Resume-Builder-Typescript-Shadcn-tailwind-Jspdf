@@ -4,9 +4,10 @@ import Link from 'next/link'
 import Head from 'next/head'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent,  CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, Edit, Download, Share2,  ArrowRight, Search, Users,  Menu } from 'lucide-react'
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { FileText, Edit, Download, Share2,  ArrowRight, Search, Users,  Pencil } from 'lucide-react'
+
 import { useRouter } from 'next/navigation'
+import FAQ from '@/components/Accordians/FAQ'
 
 export default function HomePage() {
   const router = useRouter();
@@ -23,36 +24,7 @@ export default function HomePage() {
         <link rel="canonical" href="https://resume.giveaways4u.com" />
       </Head>
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <header className="sticky top-0 z-50 w-full backdrop-blur-lg bg-white/75 border-b border-gray-200">
-          <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <Link className="flex items-center justify-center" href="/">
-              <FileText className="h-8 w-8 text-purple-600" />
-              <span className="ml-2 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">FreeResumeATS</span>
-            </Link>
-            <nav className="hidden md:flex space-x-8">
-              <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="#features">Features</Link>
-              <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="#how-it-works">How It Works</Link>
-              <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="#testimonials">Testimonials</Link>
-              <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="#faq">FAQ</Link>
-            </nav>
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="md:hidden">
-                  <Menu className="h-6 w-6" />
-                  <span className="sr-only">Open menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right">
-                <nav className="flex flex-col space-y-4">
-                  <Link className="text-lg font-medium hover:text-purple-600 transition-colors" href="#features">Features</Link>
-                  <Link className="text-lg font-medium hover:text-purple-600 transition-colors" href="#how-it-works">How It Works</Link>
-                  <Link className="text-lg font-medium hover:text-purple-600 transition-colors" href="#testimonials">Testimonials</Link>
-                  <Link className="text-lg font-medium hover:text-purple-600 transition-colors" href="#faq">FAQ</Link>
-                </nav>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </header>
+     
         
         <main className="flex-1 z-50">
           <section className="relative overflow-hidden py-20 md:py-32 lg:py-48">
@@ -70,7 +42,7 @@ export default function HomePage() {
                 <Button onClick={navigate} size="lg" className="bg-white text-purple-600 hover:bg-purple-50 transition-all duration-300 transform hover:scale-105">
                   Build Your Resume Now
                 </Button>
-                <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-purple-600 transition-all duration-300 transform hover:scale-105">
+                <Button size="lg" variant="outline" className= " bg-gradient-to-br from-purple-500 to-indigo-600 text-white border-white hover:bg-white hover:from-white hover:to-gray-300 hover:text-purple-600 transition-all duration-300 transform hover:scale-105">
                   Learn More
                 </Button>
               </div>
@@ -90,7 +62,7 @@ export default function HomePage() {
                   { icon: Download, title: "Multiple CV Formats", description: "Download your resume or CV in PDF, DOCX, or TXT formats - all for free." },
                   { icon: Share2, title: "Easy Resume Sharing", description: "Share your resume directly with employers or on social media at no cost." },
                   { icon: Users, title: "Industry-Specific Templates", description: "Choose from a variety of free resume templates tailored to your industry." },
-                  // { icon: BarChart, title: "Resume Analytics", description: "Get insights on how your resume performs - completely free." },
+                  { icon: Pencil, title: "Resume Customization", description: "lot of Resume customization options to make your resume stand out." },
                 ].map((feature, index) => (
                   <Card key={index} className="bg-gray-50 border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
                     <CardHeader>
@@ -170,52 +142,8 @@ export default function HomePage() {
             </div>
           </section> */}
           
-          <section id="faq" className="py-20 bg-gradient-to-br from-purple-100 to-indigo-100">
-            <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-                Frequently Asked Questions
-              </h2>
-              <div className="max-w-3xl mx-auto">
-                {[
-                  {
-                    question: "Is FreeResumeATS really a free resume builder?",
-                    answer: "Yes, FreeResumeATS is 100% free. We don't have any hidden charges or premium features. All our resume building tools and services are available to everyone at no cost."
-                  },
-                  {
-                    question: "How does this free resume maker generate income?",
-                    answer: "We generate income through displaying ads on the platform. These ads help keep the resume maker free for everyone, and we ensure they are non-intrusive and won't disrupt your experience."
-                  },
-                  
-                  {
-                    question: "Can I really create an ATS-friendly resume for free?",
-                    answer: "Our platform is designed to create resumes and CVs that are optimized for Applicant Tracking Systems, and it's all available for free."
-                  },
-                  {
-                    question: "How often can I update my resume or CV?",
-                    answer: "You can update your resume or CV as often as you like. There are no limits on edits or downloads with our free resume builder."
-                  },
-                  {
-                    question: "Is my information secure on this free resume maker?",
-                    answer: "Yes, your information is completely secure. We do not provide cloud storage or store any of your data on our servers. All your data is stored only on your device, ensuring full privacy and security."
-                  }
-                  ,
-                  {
-                    question: "Is there customer support available for this free resume maker?",
-                    answer: "Currently, we do not have dedicated customer support. However, if you encounter any bugs or issues, feel free to contact us at yourfreeresume@gmail.com. We're working on building our support team, so dedicated assistance will be available soon."
-                  }
-                  
-                ].map((faq, index) => (
-                  <Card key={index} className="mb-6 bg-white border-none shadow-md hover:shadow-lg transition-shadow duration-300">
-                    <CardHeader>
-                      <CardTitle className="text-xl font-semibold text-gray-800">{faq.question}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-600">{faq.answer}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
+          <section id="faq" className="">
+          <FAQ/>
           </section>
           
           <section className="py-20 bg-gradient-to-br from-purple-600 to-indigo-600 text-white">

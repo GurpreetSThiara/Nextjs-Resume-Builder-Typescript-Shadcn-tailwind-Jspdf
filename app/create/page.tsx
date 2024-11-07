@@ -346,26 +346,25 @@ export default function ResumePage() {
   const saveAsHighQualityPdf = async () => {
     if (pdfRef && pdfRef.current) {
       const canvas = await html2canvas(pdfRef.current, {
-        scale: 2,  // Increase scale for high-quality output
-        useCORS: true  // Useful if images or fonts need CORS handling
+        scale: 2,
+        useCORS: true
       });
   
       const pdf = new jsPDF({
         unit: 'mm',
-        format: 'a4',  // A4 paper size, suitable for printing
-        orientation: 'portrait'  // Portrait orientation
+        format: 'a4',
+        orientation: 'portrait'
       });
   
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);  // High-quality JPEG
-      const imgWidth = pdf.internal.pageSize.getWidth() - 20;  // Width minus padding
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const imgWidth = pdf.internal.pageSize.getWidth() - 20;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
   
-      // Padding values (you can adjust these as needed)
-      const paddingTop = 10;  // Top padding
-      const paddingLeft = 10;  // Left padding
-      const paddingBottom = 10;  // Bottom padding
+      const paddingTop = 10;
+      const paddingLeft = 10;
+      const paddingBottom = 10;
   
-      // Calculate the total number of pages required
+
       const totalPages = Math.ceil((imgHeight + paddingTop + paddingBottom) / (pdf.internal.pageSize.getHeight() - paddingTop));
   
       let position = 0;
@@ -376,22 +375,22 @@ export default function ResumePage() {
         pdf.addImage(
           imgData,
           'JPEG',
-          paddingLeft,  // Left padding
-          paddingTop - position,  // Adjust vertical position for multi-page content with top padding
+          paddingLeft,
+          paddingTop - position,
           imgWidth,
           imgHeight
         );
   
-        // If there are more pages, add a new one
+       
         if (page < totalPages - 1) {
           pdf.addPage();
         }
   
-        // Update the position for the next page
+      
         position += pdf.internal.pageSize.getHeight() - paddingTop - paddingBottom;
       }
   
-      // Save the PDF
+     
       pdf.save('printableresume.pdf');
     }
   };
