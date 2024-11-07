@@ -8,6 +8,7 @@ import { Edit, Download, Share2,  ArrowRight, Search, Users,  Pencil } from 'luc
 
 import { useRouter } from 'next/navigation'
 import FAQ from '@/components/Accordians/FAQ'
+import Blog from '@/components/Blog/Blog'
 
 export default function HomePage() {
   const router = useRouter();
@@ -107,7 +108,10 @@ export default function HomePage() {
             </div>
           </section>
           
-  
+    
+    <section id="blog">
+      <Blog/>
+    </section>
           
           <section id="faq" className="">
           <FAQ/>
