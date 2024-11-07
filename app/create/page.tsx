@@ -1,258 +1,120 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
-import { Input } from "@/components/ui/input"
+import React, { useState, useRef, useCallback, useMemo } from 'react'
 
-import { Label } from "@/components/ui/label"
+//import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+//import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { jsPDF } from "jspdf"
-import { PlusCircle, MinusCircle, ArrowUp, ArrowDown, Edit2 } from 'lucide-react'
+import { PlusCircle,  ChevronDown, File, FileImage } from 'lucide-react'
+import { ResumeData } from '@/lib/types'
+import { fonts, initialResumeData, themes } from '@/lib/constants'
+import ATS1 from '@/components/resume/Ats_1'
 
-type SectionContent = {
-  [key: string]: string[]
-}
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
 
-type Section = {
-  id: string
-  title: string
-  content: SectionContent
-}
+  DropdownMenuSeparator,
 
-type ResumeData = {
-  name: string
-  email: string
-  phone: string
-  location: string
-  sections: Section[]
-}
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { PersonalInfo } from '@/components/Forms/ResumeEditForm/PersonalInfo/PersonalInfo'
+import { Section } from '@/components/Forms/ResumeEditForm/Section/Section'
+import html2canvas from 'html2canvas'
 
-type ThemeType = 'modern' | 'traditional' | 'minimal'
-type FontType = 'inter' | 'times' | 'helvetica' | 'georgia'
+// Header Component
+//  const Header = React.memo(({ theme, setTheme, font, setFont }) => (
+//   <div className="mb-6 space-y-4">
+//     <div className="flex space-x-4">
+//       <div className="w-1/2">
+//         <Label>Theme</Label>
+//         <Select value={theme} onValueChange={(value: ThemeType) => setTheme(value)}>
+//           <SelectTrigger>
+//             <SelectValue />
+//           </SelectTrigger>
+//           <SelectContent>
+//             <SelectItem value="modern">Modern</SelectItem>
+//             <SelectItem value="traditional">Traditional</SelectItem>
+//             <SelectItem value="minimal">Minimal</SelectItem>
+//           </SelectContent>
+//         </Select>
+//       </div>
+//       <div className="w-1/2">
+//         <Label>Font</Label>
+//         <Select value={font} onValueChange={(value: FontType) => setFont(value)}>
+//           <SelectTrigger>
+//             <SelectValue />
+//           </SelectTrigger>
+//           <SelectContent>
+//             <SelectItem value="inter">Inter</SelectItem>
+//             <SelectItem value="times">Times New Roman</SelectItem>
+//             <SelectItem value="helvetica">Helvetica</SelectItem>
+//             <SelectItem value="georgia">Georgia</SelectItem>
+//           </SelectContent>
+//         </Select>
+//       </div>
+//     </div>
+//   </div>
+// ))
+// Header.displayName = 'Header';
 
-interface ThemeConfig {
-  fontFamily: string
-  fontSize: {
-    name: string
-    section: string
-    content: string
-    small: string
-  }
-  spacing: {
-    section: string
-    item: string
-  }
-  colors: {
-    primary: string
-    secondary: string
-    text: string
-  }
-}
+// PersonalInfo Component
 
-const themes: Record<ThemeType, ThemeConfig> = {
-  modern: {
-    fontFamily: 'inter',
-    fontSize: {
-      name: 'text-2xl',
-      section: 'text-lg',
-      content: 'text-sm',
-      small: 'text-xs'
-    },
-    spacing: {
-      section: 'mb-4',
-      item: 'mb-2'
-    },
-    colors: {
-      primary: 'text-gray-900',
-      secondary: 'text-gray-600',
-      text: 'text-gray-700'
-    }
-  },
-  traditional: {
-    fontFamily: 'times',
-    fontSize: {
-      name: 'text-2xl',
-      section: 'text-base',
-      content: 'text-sm',
-      small: 'text-xs'
-    },
-    spacing: {
-      section: 'mb-3',
-      item: 'mb-1'
-    },
-    colors: {
-      primary: 'text-black',
-      secondary: 'text-gray-800',
-      text: 'text-gray-900'
-    }
-  },
-  minimal: {
-    fontFamily: 'helvetica',
-    fontSize: {
-      name: 'text-xl',
-      section: 'text-base',
-      content: 'text-sm',
-      small: 'text-xs'
-    },
-    spacing: {
-      section: 'mb-3',
-      item: 'mb-1'
-    },
-    colors: {
-      primary: 'text-gray-800',
-      secondary: 'text-gray-600',
-      text: 'text-gray-700'
-    }
-  }
-}
+// Section Component
 
-const fonts = {
-  inter: {
-    name: 'Inter',
-    className: 'font-sans'
-  },
-  times: {
-    name: 'Times New Roman',
-    className: 'font-serif'
-  },
-  helvetica: {
-    name: 'Helvetica',
-    className: 'font-sans'
-  },
-  georgia: {
-    name: 'Georgia',
-    className: 'font-serif'
-  }
-}
-
-const initialResumeData: ResumeData = {
-  name: "John Doe",
-  email: "john.doe@resumeworld.com",
-  phone: "+1 (123) 456-7890",
-  location: "San Francisco, CA",
-  sections: [
-    {
-      id: '1',
-      title: 'Education',
-      content: {
-        "Tech University | Master of Science in Computer Science": [
-          "May 2015",
-          "Austin, TX",
-          "Graduated with High Distinction (Top 10%)",
-          "President of the Tech Innovation Club (300+ members), Hackathon Organizer",
-          "Capstone Project: Developed a machine learning model to predict network security threats with 85% accuracy"
-        ],
-        "Tech University | Bachelor of Science in Software Engineering": [
-          "May 2013",
-          "San Francisco, CA",
-          "Cumulative GPA: 3.9/4.0; Dean's List 2011, 2012, 2013",
-          "Vice President of the Coding Club, Member of Robotics Club"
-        ]
-      }
-    },
-    {
-      id: '2',
-      title: 'Professional Experience',
-      content: {
-        "Innovatech Solutions | Senior Software Engineer": [
-          "Oct 2017 – Present",
-          "San Francisco, CA",
-          "Led a team of 8 engineers across 3 locations, collaborating on developing scalable web applications and APIs for high-traffic environments",
-          "Implemented automated testing and CI/CD pipelines, reducing deployment time by 40% and improving code reliability",
-          "Designed a data processing system that reduced report generation time by 60%, enhancing data accessibility for decision-making"
-        ],
-        "Webwise Inc. | Software Engineer": [
-          "Jun 2015 – Oct 2017",
-          "San Francisco, CA",
-          "Built and maintained RESTful APIs, optimizing performance to handle over 100,000 requests per minute",
-          "Streamlined data retrieval processes, decreasing load times by 20% across the platform, and improving user experience",
-          "Collaborated with UX/UI teams to enhance website accessibility, achieving a 25% increase in engagement metrics"
-        ],
-        "NextGen Tech | Junior Developer": [
-          "Jun 2013 – May 2015",
-          "Austin, TX",
-          "Developed front-end components using React, improving application responsiveness and user satisfaction",
-          "Automated routine processes, reducing manual effort by 30% and increasing productivity across the team",
-          "Contributed to database optimization, achieving a 15% improvement in query performance and data integrity"
-        ]
-      }
-    },
-    {
-      id: '3',
-      title: 'Other',
-      content: {
-        "Technical Skills": [
-          "JavaScript, TypeScript, Python, Java, SQL, MongoDB, AWS, Docker, Jenkins, React, Node.js, Express"
-        ],
-        "Languages": [
-          "English (Native), Spanish (Fluent)"
-        ],
-        "Certifications": [
-          "AWS Certified Solutions Architect (2019), Certified ScrumMaster (CSM), Machine Learning Specialization"
-        ]
-      }
-    }
-  ]
-};
-
-
-
+// Main Component
 export default function ResumePage() {
   const [resumeData, setResumeData] = useState<ResumeData>(initialResumeData)
-  const [theme, setTheme] = useState<ThemeType>('traditional')
-  const [font, setFont] = useState<FontType>('times')
-  const [editingTitle, setEditingTitle] = useState<string | null>(null)
-  const [newKeyValue, setNewKeyValue] = useState<{ [key: string]: string }>({})
+  // const [theme, setTheme] = useState<ThemeType>('traditional')
+  // const [font, setFont] = useState<FontType>('times')
+  const theme = 'traditional';
+  const font ='times'
   const pdfRef = useRef<HTMLDivElement>(null)
 
-  const handleInputChange = (field: keyof ResumeData, value: string) => {
+  const handleInputChange = useCallback((field: keyof ResumeData, value: string) => {
     setResumeData(prev => ({ ...prev, [field]: value }))
-  }
+  }, [])
 
-  const handleSectionTitleChange = (sectionId: string, newTitle: string) => {
-    setResumeData(prev => ({
-      ...prev,
-      sections: prev.sections.map(section =>
-        section.id === sectionId ? { ...section, title: newTitle } : section
-      )
-    }))
-    setEditingTitle(null)
-  }
 
-  const addSection = () => {
+  const addSection = useCallback(() => {
     const newId = String(Date.now())
     setResumeData(prev => ({
       ...prev,
       sections: [...prev.sections, { id: newId, title: 'New Section', content: {} }]
     }))
-  }
+  }, [])
 
-  const removeSection = (sectionId: string) => {
+  const removeSection = useCallback((sectionId: string) => {
     setResumeData(prev => ({
       ...prev,
       sections: prev.sections.filter(section => section.id !== sectionId)
     }))
-  }
+  }, [])
 
-  const moveSection = (sectionId: string, direction: 'up' | 'down') => {
-    const sectionIndex = resumeData.sections.findIndex(section => section.id === sectionId)
-    if (
-      (direction === 'up' && sectionIndex === 0) ||
-      (direction === 'down' && sectionIndex === resumeData.sections.length - 1)
-    ) {
-      return
-    }
+  const moveSection = useCallback((sectionId: string, direction: 'up' | 'down') => {
+    setResumeData(prev => {
+      const sectionIndex = prev.sections.findIndex(section => section.id === sectionId)
+      if (
+        (direction === 'up' && sectionIndex === 0) ||
+        (direction === 'down' && sectionIndex === prev.sections.length - 1)
+      ) {
+        return prev
+      }
 
-    const newIndex = direction === 'up' ? sectionIndex - 1 : sectionIndex + 1
-    const newSections = [...resumeData.sections]
-    const [removed] = newSections.splice(sectionIndex, 1)
-    newSections.splice(newIndex, 0, removed)
+      const newIndex = direction === 'up' ? sectionIndex - 1 : sectionIndex + 1
+      const newSections = [...prev.sections]
+      const [removed] = newSections.splice(sectionIndex, 1)
+      newSections.splice(newIndex, 0, removed)
 
-    setResumeData(prev => ({ ...prev, sections: newSections }))
-  }
+      return { ...prev, sections: newSections }
+    })
+  }, [])
 
-  const addKey = (sectionId: string) => {
-    const key = newKeyValue[sectionId] || ''
+  const addKey = useCallback((sectionId: string, key: string) => {
     if (!key) return
 
     setResumeData(prev => ({
@@ -263,10 +125,9 @@ export default function ResumePage() {
           : section
       )
     }))
-    setNewKeyValue(prev => ({ ...prev, [sectionId]: '' }))
-  }
+  }, [])
 
-  const removeKey = (sectionId: string, key: string) => {
+  const removeKey = useCallback((sectionId: string, key: string) => {
     setResumeData(prev => ({
       ...prev,
       sections: prev.sections.map(section =>
@@ -275,9 +136,9 @@ export default function ResumePage() {
           : section
       )
     }))
-  }
+  }, [])
 
-  const addBulletPoint = (sectionId: string, key: string) => {
+  const addBulletPoint = useCallback((sectionId: string, key: string) => {
     setResumeData(prev => ({
       ...prev,
       sections: prev.sections.map(section =>
@@ -286,9 +147,9 @@ export default function ResumePage() {
           : section
       )
     }))
-  }
+  }, [])
 
-  const removeBulletPoint = (sectionId: string, key: string, index: number) => {
+  const removeBulletPoint = useCallback((sectionId: string, key: string, index: number) => {
     setResumeData(prev => ({
       ...prev,
       sections: prev.sections.map(section =>
@@ -303,9 +164,9 @@ export default function ResumePage() {
           : section
       )
     }))
-  }
+  }, [])
 
-  const handleBulletPointChange = (sectionId: string, key: string, index: number, value: string) => {
+  const handleBulletPointChange = useCallback((sectionId: string, key: string, index: number, value: string) => {
     setResumeData(prev => ({
       ...prev,
       sections: prev.sections.map(section =>
@@ -320,318 +181,242 @@ export default function ResumePage() {
           : section
       )
     }))
-  }
+  }, [])
 
-  const generatePDF = () => {
-    if (!pdfRef.current) return
-
+  const generatePDF = useCallback(() => {
+    if (!pdfRef.current) return;
+  
     const pdf = new jsPDF({
       unit: 'pt',
       format: 'a4'
-    })
-
-    const fontFamily = themes[theme].fontFamily === 'times' ? 'times' : 'helvetica'
-    pdf.setFont(fontFamily)
-
-    const pdfWidth = pdf.internal.pageSize.getWidth()
-    const pdfHeight = pdf.internal.pageSize.getHeight()
-    const margin = 40
-    let yOffset = margin
-
+    });
+  
+    const fontFamily = themes[theme].fontFamily === 'times' ? 'times' : 'helvetica';
+    pdf.setFont(fontFamily);
+  
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const margin = 40;
+    let yOffset = margin;
+  
     const addWrappedText = (
-      text: string,
-      fontSize: number,
-      fontStyle: string = 'normal',
-      maxWidth: number = pdfWidth - 2 * margin,
-      align: 'left' | 'right' = 'left'
+      text:string,
+      fontSize:number,
+      fontStyle = 'normal',
+      maxWidth = pdfWidth - 2 * margin,
+      align = 'left'
     ) => {
-      pdf.setFontSize(fontSize)
-      pdf.setFont(fontFamily, fontStyle)
-      const lines = pdf.splitTextToSize(text, maxWidth)
+      pdf.setFontSize(fontSize);
+      pdf.setFont(fontFamily, fontStyle);
+      const lines = pdf.splitTextToSize(text, maxWidth);
       
       if (yOffset > pdfHeight - margin) {
-        pdf.addPage()
-        yOffset = margin
+        pdf.addPage();
+        yOffset = margin;
       }
-
-      if (align === 'right') {
-        const lineWidth = pdf.getTextWidth(lines[0])
-        pdf.text(lines[0], pdfWidth - margin - lineWidth, yOffset)
-      } else {
-        pdf.text(lines[0], margin, yOffset)
-      }
-      yOffset += fontSize * 1.15
-
-      // If there are additional lines, add them below
-      if (lines.length > 1) {
-        for (let i = 1; i < lines.length; i++) {
-          if (yOffset > pdfHeight - margin) {
-            pdf.addPage()
-            yOffset = margin
-          }
-          pdf.text(lines[i], margin, yOffset)
-          yOffset += fontSize * 1.15
+  
+      const xPos = align === 'center' ? (pdfWidth - pdf.getTextWidth(lines[0])) / 2 : margin;
+  
+      lines.forEach((line:string) => {
+        if (yOffset > pdfHeight - margin) {
+          pdf.addPage();
+          yOffset = margin;
         }
-      }
-    }
-
+        pdf.text(line, xPos, yOffset);
+        yOffset += fontSize * 1.15;
+      });
+    };
+  
     // Add name and contact info
-    addWrappedText(resumeData.name, 14, 'bold')
-    yOffset += 5
-
-    const contactInfo = `${resumeData.email} | ${resumeData.phone} | ${resumeData.location}`
-    addWrappedText(contactInfo, 10)
-    yOffset += 15
-
+    addWrappedText(resumeData.name, 14, 'bold', pdfWidth - 2 * margin, 'center');
+    yOffset += 5;
+  
+    const contactInfo = `${resumeData.email} | ${resumeData.phone} | ${resumeData.location}`;
+    addWrappedText(contactInfo, 10, 'normal', pdfWidth - 2 * margin, 'center');
+    yOffset += 15;
+  
     // Add sections
     resumeData.sections.forEach((section) => {
-      addWrappedText(section.title.toUpperCase(), 12, 'bold')
-      yOffset += 10
-
+      addWrappedText(section.title.toUpperCase(), 12, 'bold');
+      yOffset += 10;
+  
       Object.entries(section.content).forEach(([key, bullets]) => {
         if (key) {
-          const parts = key.split(' | ')
-          const title = parts[0]
-          const details = parts[1]
-
-          // Calculate the width available for the title
-          const maxTitleWidth = (pdfWidth - 2 * margin) * 0.6 // 60% of the width for title
-         // const maxDetailsWidth = (pdfWidth - 2 * margin) * 0.4 // 40% for details/date
-
-          pdf.setFontSize(11)
-          pdf.setFont(fontFamily, 'bold')
-
-          // Add title and details on the same line
-          const wrappedTitle = pdf.splitTextToSize(title, maxTitleWidth)
-          pdf.text(wrappedTitle[0], margin, yOffset)
-
+          const parts = key.split(' | ');
+          const title = parts[0];
+          const details = parts[1];
+  
+          const maxTitleWidth = (pdfWidth - 2 * margin) * 0.6;
+  
+          pdf.setFontSize(11);
+          pdf.setFont(fontFamily, 'bold');
+  
+          const wrappedTitle = pdf.splitTextToSize(title, maxTitleWidth);
+          pdf.text(wrappedTitle[0], margin, yOffset);
+  
           if (details) {
-            const detailsWidth = pdf.getTextWidth(details)
-            
-            pdf.text(details, pdfWidth - margin - detailsWidth, yOffset)
+            const detailsWidth = pdf.getTextWidth(details);
+            pdf.text(details, pdfWidth - margin - detailsWidth, yOffset);
           }
-
-          yOffset += 15
-
-          // If title had multiple lines, add them
+  
+          yOffset += 15;
+  
           if (wrappedTitle.length > 1) {
             for (let i = 1; i < wrappedTitle.length; i++) {
-              pdf.text(wrappedTitle[i], margin, yOffset)
-              yOffset += 12
+              pdf.text(wrappedTitle[i], margin, yOffset);
+              yOffset += 12;
             }
           }
         }
-
+  
         bullets.forEach((bullet) => {
           if (yOffset > pdfHeight - margin) {
-            pdf.addPage()
-            yOffset = margin
+            pdf.addPage();
+            yOffset = margin;
           }
-
-          pdf.setFont(fontFamily, 'normal')
-          pdf.setFontSize(10)
-          const bulletText = key ? `• ${bullet}` : bullet
-          const lines = pdf.splitTextToSize(bulletText, pdfWidth - (key ? margin * 3 : margin * 2))
+  
+          pdf.setFont(fontFamily, 'normal');
+          pdf.setFontSize(10);
+          const bulletText = key ? `• ${bullet}` : bullet;
+          const lines = pdf.splitTextToSize(bulletText, pdfWidth - (key ? margin * 3 : margin * 2));
           
-          lines.forEach((line: string) => {
-            pdf.text(line, key ? margin + 15 : margin, yOffset)
-            yOffset += 12
-          })
-        })
-        yOffset += 5
-      })
+          lines.forEach((line:string) => {
+            pdf.text(line, key ? margin + 15 : margin, yOffset);
+            yOffset += 12;
+          });
+        });
+        yOffset += 5;
+      });
+  
+      yOffset += 15;
+    });
+  
+    pdf.save('resume.pdf');
+  }, [resumeData, theme]);
 
-      yOffset += 15
-    })
+  const memoizedATS1 = useMemo(() => (
+    <ATS1 font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]} />
+  ), [font, resumeData, theme]);
 
-    pdf.save('resume.pdf')
-  }
 
+  const saveAsImagePng = async () => {
+    if (pdfRef && pdfRef.current) {
+      const canvas = await html2canvas(pdfRef.current, {
+        scale: 2,  // Increase scale for high-quality output
+        useCORS: true  // Useful if images or fonts need CORS handling
+      });
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png', 1.0);  // 1.0 for max quality
+      link.download = 'resume.png';
+      link.click();
+    }
+  };
+
+  const saveAsImageWebp = async () => {
+    if (pdfRef && pdfRef.current) {
+      const canvas = await html2canvas(pdfRef.current, {
+        scale: 2,
+        useCORS: true,
+      });
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/webp', 1.0);  // 1.0 for max quality
+      link.download = 'resume.webp';
+      link.click();
+    }
+  };
+  
+  const saveAsImageJpeg = async () => {
+    if (pdfRef && pdfRef.current) {
+      const canvas = await html2canvas(pdfRef.current, {
+        scale: 2,
+        useCORS: true,
+      });
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/jpeg', 1.0);  // 1.0 for max quality
+      link.download = 'resume.jpeg';
+      link.click();
+    }
+  };
+
+
+
+
+
+
+  const saveAsHighQualityPdf = async () => {
+    if (pdfRef && pdfRef.current) {
+      const canvas = await html2canvas(pdfRef.current, {
+        scale: 2,  // Increase scale for high-quality output
+        useCORS: true  // Useful if images or fonts need CORS handling
+      });
+  
+      const pdf = new jsPDF({
+        unit: 'mm',
+        format: 'a4',  // A4 paper size, suitable for printing
+        orientation: 'portrait'  // Portrait orientation
+      });
+  
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);  // High-quality JPEG
+      const imgWidth = pdf.internal.pageSize.getWidth() - 20;  // Width minus padding
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  
+      // Padding values (you can adjust these as needed)
+      const paddingTop = 10;  // Top padding
+      const paddingLeft = 10;  // Left padding
+      const paddingBottom = 10;  // Bottom padding
+  
+      // Calculate the total number of pages required
+      const totalPages = Math.ceil((imgHeight + paddingTop + paddingBottom) / (pdf.internal.pageSize.getHeight() - paddingTop));
+  
+      let position = 0;
+  
+      // Only add new pages when needed (only if the content height exceeds the page height)
+      for (let page = 0; page < totalPages; page++) {
+        // Add image on the current page with padding
+        pdf.addImage(
+          imgData,
+          'JPEG',
+          paddingLeft,  // Left padding
+          paddingTop - position,  // Adjust vertical position for multi-page content with top padding
+          imgWidth,
+          imgHeight
+        );
+  
+        // If there are more pages, add a new one
+        if (page < totalPages - 1) {
+          pdf.addPage();
+        }
+  
+        // Update the position for the next page
+        position += pdf.internal.pageSize.getHeight() - paddingTop - paddingBottom;
+      }
+  
+      // Save the PDF
+      pdf.save('printableresume.pdf');
+    }
+  };
+  
+  
   return (
     <div className="flex flex-col lg:flex-row min-h-screen">
       <div className="w-full lg:w-1/2 p-4 overflow-y-auto">
         <h1 className="text-2xl font-bold mb-4">Resume Builder</h1>
-        <div className="mb-6 space-y-4">
-          <div className="flex space-x-4">
-            <div className="w-1/2">
-              <Label>Theme</Label>
-              <Select value={theme} onValueChange={(value: ThemeType) => setTheme(value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="modern">Modern</SelectItem>
-                  <SelectItem value="traditional">Traditional</SelectItem>
-                  <SelectItem value="minimal">Minimal</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="w-1/2">
-              <Label>Font</Label>
-              <Select value={font} onValueChange={(value: FontType) => setFont(value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="inter">Inter</SelectItem>
-                  <SelectItem value="times">Times New Roman</SelectItem>
-                  <SelectItem value="helvetica">Helvetica</SelectItem>
-                  <SelectItem value="georgia">Georgia</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
+        {/* <Header theme={theme} setTheme={setTheme} font={font} setFont={setFont} /> */}
+        <PersonalInfo resumeData={resumeData} handleInputChange={handleInputChange} />
         <form className="space-y-4">
-          <div>
-            <Label htmlFor="name">Full Name</Label>
-            <Input 
-              id="name" 
-              value={resumeData.name} 
-              onChange={(e) => handleInputChange('name', e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input 
-              id="email" 
-              value={resumeData.email} 
-              onChange={(e) => handleInputChange('email', e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="phone">Phone</Label>
-            <Input 
-              id="phone" 
-              value={resumeData.phone} 
-              onChange={(e) => handleInputChange('phone', e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="location">Location</Label>
-            <Input 
-              id="location" 
-              value={resumeData.location} 
-              onChange={(e) => handleInputChange('location', e.target.value)}
-            />
-          </div>
-          
           {resumeData.sections.map((section) => (
-            <div key={section.id} className="border p-4 rounded-md mb-4">
-              <div className="flex items-center justify-between mb-2">
-                {editingTitle === section.id ? (
-                  <Input
-                    value={section.title}
-                    onChange={(e) => handleSectionTitleChange(section.id, e.target.value)}
-                    onBlur={() => setEditingTitle(null)}
-                    autoFocus
-                  />
-                ) : (
-                  <h2 className="text-xl font-bold">{section.title}</h2>
-                )}
-                <div className="flex space-x-2">
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="outline"
-                    onClick={() => setEditingTitle(section.id)}
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="outline"
-                    onClick={() => moveSection(section.id, 'up')}
-                  >
-                    <ArrowUp className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="outline"
-                    onClick={() => moveSection(section.id, 'down')}
-                  >
-                    <ArrowDown className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="outline"
-                    onClick={() => removeSection(section.id)}
-                  >
-                    <MinusCircle className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-              
-              {Object.entries(section.content).map(([key, bullets]) => (
-                <div key={key} className="mb-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <Input
-                      value={key}
-                      onChange={(e) => {
-                        const newContent = { ...section.content }
-                        newContent[e.target.value] = newContent[key]
-                        delete newContent[key]
-                        setResumeData(prev => ({
-                          ...prev,
-                          sections: prev.sections.map(s =>
-                            s.id === section.id ? { ...s, content: newContent } : s
-                          )
-                        }))
-                      }}
-                      className="font-semibold"
-                    />
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => removeKey(section.id, key)}
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                  {bullets.map((bullet, index) => (
-                    <div key={index} className="flex items-center mb-2">
-                      <Input
-                        value={bullet}
-                        onChange={(e) => handleBulletPointChange(section.id, key, index, e.target.value)}
-                        className="flex-grow mr-2"
-                      />
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="outline"
-                        onClick={() => removeBulletPoint(section.id, key, index)}
-                      >
-                        <MinusCircle className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => addBulletPoint(section.id, key)}
-                  >
-                    Add Bullet Point
-                  </Button>
-                </div>
-              ))}
-              
-              <div className="flex items-center mt-4">
-                <Input
-                  placeholder="New key"
-                  value={newKeyValue[section.id] || ''}
-                  onChange={(e) => setNewKeyValue({ ...newKeyValue, [section.id]: e.target.value })}
-                  className="flex-grow mr-2"
-                />
-                <Button type="button" onClick={() => addKey(section.id)}>
-                  Add Key
-                </Button>
-              </div>
-            </div>
+            <Section
+              key={section.id}
+              section={section}
+              moveSection={moveSection}
+              removeSection={removeSection}
+              addKey={addKey}
+              removeKey={removeKey}
+              addBulletPoint={addBulletPoint}
+              removeBulletPoint={removeBulletPoint}
+              handleBulletPointChange={handleBulletPointChange}
+              setResumeData={setResumeData}
+            />
           ))}
           
           <Button type="button" onClick={addSection}>
@@ -639,60 +424,68 @@ export default function ResumePage() {
           </Button>
         </form>
       </div>
-      <div className="w-full lg:w-1/2 p-4 bg-gray-100 overflow-y-auto">
-        <div 
-          ref={pdfRef} 
-          className={`bg-white p-6 shadow-lg ${fonts[font].className}`}
-          style={{ fontFamily: fonts[font].name }}
-        >
-          <div className="text-center mb-4">
-            <h1 className={`${themes[theme].fontSize.name} font-bold ${themes[theme].colors.primary}`}>
-              {resumeData.name}
-            </h1>
-            <p className={`${themes[theme].fontSize.small} ${themes[theme].colors.secondary}`}>
-              {resumeData.email} | {resumeData.phone} | {resumeData.location}
-            </p>
-          </div>
-          
-          {resumeData.sections.map((section) => (
-            <div key={section.id} className={themes[theme].spacing.section}>
-              <h2 className={`${themes[theme].fontSize.section} font-bold uppercase ${themes[theme].colors.primary} mb-2`}>
-                {section.title}
-              </h2>
+   <div className="w-full lg:w-1/2 flex flex-col ">
+  <div className="w-full p-4 flex items-end justify-end">
+  <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="w-48">
+            Download Options
+            <ChevronDown className="ml-2 h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56">
+          <DropdownMenuLabel>Document Formats</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+              <Button variant={'ghost'} onClick={generatePDF}>
+              <File className="mr-2 h-4 w-4 text-red-500" />
+              PDF (ATS-friendly)
+              </Button>
+            
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Button onClick={saveAsHighQualityPdf} variant={'ghost'}>
+              <File className="mr-2 h-4 w-4 text-blue-500" />
+              PDF (Print-friendly)
+              </Button>
+         
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Image Formats</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+            <Button onClick={saveAsImagePng} variant={'ghost'}>
+            <FileImage className="mr-2 h-4 w-4 text-green-500" />
+            PNG
+            </Button>
+            
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+            <Button onClick={saveAsImageJpeg} variant={'ghost'}>
+            <FileImage className="mr-2 h-4 w-4 text-yellow-500" />
+            JPG
+            </Button>
+             
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+            <Button onClick={saveAsImageWebp} variant={'ghost'}>
+            <FileImage className="mr-2 h-4 w-4 text-purple-500" />
+            WebP
+            </Button>
               
-              {Object.entries(section.content).map(([key, bullets]) => (
-                <div key={key} className={themes[theme].spacing.item}>
-                  {key && (
-                    <div className="flex justify-between items-baseline">
-                      <div className="flex-1 pr-4">
-                        <h3 className={`${themes[theme].fontSize.content} font-semibold`}>
-                          {key.split(' | ')[0]}
-                        </h3>
-                      </div>
-                      <div className="text-right">
-                        <span className={`${themes[theme].fontSize.small} ${themes[theme].colors.secondary}`}>
-                          {key.split(' | ')[1]}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                  <ul className={key ? "list-disc ml-4 mt-1" : ""}>
-                    {bullets.map((bullet, index) => (
-                      <li 
-                        key={index} 
-                        className={`${themes[theme].fontSize.small} ${themes[theme].colors.text} mb-1`}
-                      >
-                        {bullet}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-        <Button onClick={generatePDF} className="mt-4">Download PDF</Button>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+  </div>
+      <div className="p-4 bg-gray-100 overflow-y-auto">
+        {memoizedATS1}
+   
       </div>
+   </div>
     </div>
   )
 }
