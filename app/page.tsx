@@ -201,7 +201,7 @@ export default function HomePage() {
                   ,
                   {
                     question: "Is there customer support available for this free resume maker?",
-                    answer: "Currently, we do not have dedicated customer support. However, if you encounter any bugs or issues, feel free to contact us at freeresumebuilder@gmail.com. We're working on building our support team, so dedicated assistance will be available soon."
+                    answer: "Currently, we do not have dedicated customer support. However, if you encounter any bugs or issues, feel free to contact us at yourfreeresume@gmail.com. We're working on building our support team, so dedicated assistance will be available soon."
                   }
                   
                 ].map((faq, index) => (
