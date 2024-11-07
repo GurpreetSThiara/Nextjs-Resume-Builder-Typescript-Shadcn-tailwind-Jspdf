@@ -10,13 +10,15 @@ const Navbar = () => {
     <div className="container mx-auto px-4 h-16 flex items-center justify-between">
       <Link className="flex items-center justify-center" href="/">
         <FileText className="h-8 w-8 text-purple-600" />
-        <span className="ml-2 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">FreeResumeATS</span>
+        <span className=" l-2 text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">Free <span className=" bg-gradient-to-r from-yellow-500 to-yellow-800 font-extrabold text-3xl text-transparent bg-clip-text bg-[length:100%_100%] bg-no-repeat selection:bg-yellow-400 selection:text-white">
+Resume
+</span> ATS</span>
       </Link>
       <nav className="hidden md:flex space-x-8">
-        <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="#features">Features</Link>
-        <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="#how-it-works">How It Works</Link>
-        <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="#testimonials">Testimonials</Link>
-        <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="#faq">FAQ</Link>
+        <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="/#features">Features</Link>
+        <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="/#how-it-works">How It Works</Link>
+        <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="/#testimonials">Testimonials</Link>
+        <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="/#faq">FAQ</Link>
       </nav>
       <Sheet>
         <SheetTrigger asChild>

@@ -397,12 +397,12 @@ export default function ResumePage() {
   
   
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen">
-      <div className="w-full lg:w-1/2 p-4 overflow-y-auto">
-        <h1 className="text-2xl font-bold mb-4">Resume Builder</h1>
+    <div className="flex flex-col lg:flex-row min-h-screen ">
+      <div className="w-full lg:w-1/2 p-4 overflow-y-auto bg-gradient-to-br from-purple-300 via-blue-200  to-indigo-300">
+        <h1 className="text-2xl font-bold mb-4"><span className="text-3xl font-extrabold">Resume</span> Builder Tool</h1>
         {/* <Header theme={theme} setTheme={setTheme} font={font} setFont={setFont} /> */}
         <PersonalInfo resumeData={resumeData} handleInputChange={handleInputChange} />
-        <form className="space-y-4">
+        <form className="space-y-4 ">
           {resumeData.sections.map((section) => (
             <Section
               key={section.id}
@@ -418,13 +418,13 @@ export default function ResumePage() {
             />
           ))}
           
-          <Button type="button" onClick={addSection}>
+          <Button variant={'purpleblack'} type="button" onClick={addSection}>
             <PlusCircle className="mr-2 h-4 w-4" /> Add New Section
           </Button>
         </form>
       </div>
    <div className="w-full lg:w-1/2 flex flex-col ">
-  <div className="w-full p-4 flex items-end justify-end">
+  <div className="w-full p-4 flex items-end justify-end bg-gradient-to-br from-purple-100 to-purple-100">
   <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="w-48">
@@ -480,7 +480,7 @@ export default function ResumePage() {
         </DropdownMenuContent>
       </DropdownMenu>
   </div>
-      <div className="p-4 bg-gray-100 overflow-y-auto">
+      <div className="p-4 bg-white overflow-y-auto">
         {memoizedATS1}
    
       </div>

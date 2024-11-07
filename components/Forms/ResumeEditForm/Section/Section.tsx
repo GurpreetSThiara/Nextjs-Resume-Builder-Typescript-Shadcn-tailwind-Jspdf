@@ -110,7 +110,7 @@ export const Section = React.memo<SectionProps>(({
                 }}
               />
             )}
-            <Button type="button" size="sm" variant="outline" onClick={() => removeKey(section.id, key)}>
+            <Button type="button" size="sm" variant="destructive" onClick={() => removeKey(section.id, key)}>
               Remove
             </Button>
           </div>
