@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Head from 'next/head'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent,  CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, Edit, Download, Share2,  ArrowRight, Search, Users, BarChart,  Menu } from 'lucide-react'
+import { FileText, Edit, Download, Share2,  ArrowRight, Search, Users,  Menu } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useRouter } from 'next/navigation'
 
@@ -20,7 +20,7 @@ export default function HomePage() {
         <title>Free Resume Builder | Create ATS-Friendly Resumes | FreeResumeATS</title>
         <meta name="description" content="Create professional, ATS-friendly resumes for free with FreeResumeATS. Our AI-powered resume builder helps you craft the perfect CV to land your dream job." />
         <meta name="keywords" content="resume, resume builder, free resume, CV, curriculum vitae, free CV, resume maker, ATS-friendly resume, job application" />
-        <link rel="canonical" href="https://freeresumeats.com" />
+        <link rel="canonical" href="https://resume.giveaways4u.com" />
       </Head>
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <header className="sticky top-0 z-50 w-full backdrop-blur-lg bg-white/75 border-b border-gray-200">
@@ -90,7 +90,7 @@ export default function HomePage() {
                   { icon: Download, title: "Multiple CV Formats", description: "Download your resume or CV in PDF, DOCX, or TXT formats - all for free." },
                   { icon: Share2, title: "Easy Resume Sharing", description: "Share your resume directly with employers or on social media at no cost." },
                   { icon: Users, title: "Industry-Specific Templates", description: "Choose from a variety of free resume templates tailored to your industry." },
-                  { icon: BarChart, title: "Resume Analytics", description: "Get insights on how your resume performs - completely free." },
+                  // { icon: BarChart, title: "Resume Analytics", description: "Get insights on how your resume performs - completely free." },
                 ].map((feature, index) => (
                   <Card key={index} className="bg-gray-50 border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
                     <CardHeader>
@@ -133,7 +133,7 @@ export default function HomePage() {
             </div>
           </section>
           
-          <section id="testimonials" className="py-20 bg-white">
+          {/* <section id="testimonials" className="py-20 bg-white">
             <div className="container mx-auto px-4">
               <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
                 What Users Say About Our Free <span className="text-purple-600">Resume</span> Builder
@@ -168,7 +168,7 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
-          </section>
+          </section> */}
           
           <section id="faq" className="py-20 bg-gradient-to-br from-purple-100 to-indigo-100">
             <div className="container mx-auto px-4">
@@ -183,8 +183,9 @@ export default function HomePage() {
                   },
                   {
                     question: "How does this free resume maker generate income?",
-                    answer: "We're supported by partnerships with job boards and educational institutions. This allows us to keep our resume builder services completely free for job seekers."
+                    answer: "We generate income through displaying ads on the platform. These ads help keep the resume maker free for everyone, and we ensure they are non-intrusive and won't disrupt your experience."
                   },
+                  
                   {
                     question: "Can I really create an ATS-friendly resume for free?",
                     answer: "Our platform is designed to create resumes and CVs that are optimized for Applicant Tracking Systems, and it's all available for free."
@@ -195,14 +196,14 @@ export default function HomePage() {
                   },
                   {
                     question: "Is my information secure on this free resume maker?",
-                    answer: "Yes, we take data security very seriously. We use encryption and follow best practices to keep your resume information safe."
-                  },
-                  {
-                    question: "Can I get help if I'm stuck while creating my resume?",
-
-
-answer: "Of course! We offer free customer support and have a comprehensive help center to assist you with our resume builder."
+                    answer: "Yes, your information is completely secure. We do not provide cloud storage or store any of your data on our servers. All your data is stored only on your device, ensuring full privacy and security."
                   }
+                  ,
+                  {
+                    question: "Is there customer support available for this free resume maker?",
+                    answer: "Currently, we do not have dedicated customer support. However, if you encounter any bugs or issues, feel free to contact us at freeresumebuilder@gmail.com. We're working on building our support team, so dedicated assistance will be available soon."
+                  }
+                  
                 ].map((faq, index) => (
                   <Card key={index} className="mb-6 bg-white border-none shadow-md hover:shadow-lg transition-shadow duration-300">
                     <CardHeader>
