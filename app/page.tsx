@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Head from 'next/head'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent,  CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, Edit, Download, Share2,  ArrowRight, Search, Users,  Pencil } from 'lucide-react'
+import { Edit, Download, Share2,  ArrowRight, Search, Users,  Pencil } from 'lucide-react'
 
 import { useRouter } from 'next/navigation'
 import FAQ from '@/components/Accordians/FAQ'
