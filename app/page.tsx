@@ -22,6 +22,7 @@ export default function HomePage() {
         <meta name="description" content="Create professional, ATS-friendly resumes for free with FreeResumeATS. Our AI-powered resume builder helps you craft the perfect CV to land your dream job." />
         <meta name="keywords" content="resume, resume builder, free resume, CV, curriculum vitae, free CV, resume maker, ATS-friendly resume, job application" />
         <meta name="google-site-verification" content="B36csgvM_AAnw_8kLhlNeSVddetiFzp_0BimIM7IMVM" />
+       
         <link rel="canonical" href="https://resume.giveaways4u.com" />
       </Head>
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
