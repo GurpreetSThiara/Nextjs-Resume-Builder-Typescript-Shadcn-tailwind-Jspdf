@@ -1,7 +1,6 @@
 import { FontConfig, ResumeData, ThemeConfig } from '@/lib/types'
-import html2canvas from 'html2canvas';
+
 import React, { LegacyRef } from 'react'
-import { Button } from '../ui/button';
 //fonts[font] second param
 //themes[theme]
 const ATS1 = ({pdfRef,font,theme,resumeData}:{
@@ -12,18 +11,7 @@ const ATS1 = ({pdfRef,font,theme,resumeData}:{
 
 }) => {
 
-  const saveAsImage = async () => {
-    if (pdfRef && pdfRef.current) {
-      const canvas = await html2canvas(pdfRef.current, {
-        scale: 2,  // Increase scale for high-quality output
-        useCORS: true  // Useful if images or fonts need CORS handling
-      });
-      const link = document.createElement('a');
-      link.href = canvas.toDataURL('image/png', 1.0);  // 1.0 for max quality
-      link.download = 'resume.png';
-      link.click();
-    }
-  };
+
   return (
    <div className="">
      <div 
@@ -78,7 +66,7 @@ const ATS1 = ({pdfRef,font,theme,resumeData}:{
     ))}
   </div>
 
-  <Button onClick={saveAsImage}>Click</Button>
+
    </div>
   )
 }
