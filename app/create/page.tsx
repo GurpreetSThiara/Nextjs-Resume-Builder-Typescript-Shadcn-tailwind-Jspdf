@@ -10,6 +10,8 @@ import { PlusCircle,  ChevronDown, File, FileImage } from 'lucide-react'
 import { ResumeData } from '@/lib/types'
 import { fonts, initialResumeData, themes } from '@/lib/constants'
 import ATS1 from '@/components/resume/Ats_1'
+import PizZip from 'pizzip';
+import Docxtemplater from 'docxtemplater';
 
 import {
   DropdownMenu,
@@ -25,6 +27,13 @@ import {
 import { PersonalInfo } from '@/components/Forms/ResumeEditForm/PersonalInfo/PersonalInfo'
 import { Section } from '@/components/Forms/ResumeEditForm/Section/Section'
 import html2canvas from 'html2canvas'
+// import { BoldHeaderResume, ClassicResume, CompactResume, ElegantResume, MinimalistResume, ModernCardResume, ModernGridResume, SidebarResume, TimelineResume, TwoColumnResume } from '@/components/resume/Precision'
+// import { ClassicTechResume, CleanCodeResume, MinimalistTechResume, ModernTechResume, ProjectShowcaseResume, TechnicalFocusResume, TechTimelineResume } from '@/components/resume/softwareEng'
+// import { BoldTypographyResume, GeometricPatternsResume, MinimalistAccentResume, NeonGlowResume, PastelCirclesResume, VibrantBlocksResume, WatercolorSplashResume } from '@/components/resume/creative'
+// import { ArtisticCollageResume, FuturisticHologramResume, InfographicResume, MagazineResume, MinimalistTimelineResume, RetroPixelResume, TechCircuitResume } from '@/components/resume/unique'
+// import { AlternatingSidesTimeline, CircularTimeline, ClassicVerticalTimeline, ColorfulCardTimeline, MetroStyleTimeline, MinimalistDotTimeline, ModernHorizontalTimeline, ZigzagTimeline } from '@/components/resume/timeline'
+// import { GoogleCalendarResume, GoogleDocsResume, GoogleDriveResume, GoogleKeepResume, GoogleMaterialYouResume, GoogleSearchResume, MaterialCardResume } from '@/components/resume/google'
+// import { ATSOptimizedResume, ClassicProfessionalResume, CleanCompactResume, ExecutiveStyleResume, ModernMinimalistResume, ProfessionalSerifResume } from '@/components/resume/microsoft'
 
 // Header Component
 //  const Header = React.memo(({ theme, setTheme, font, setFont }) => (
@@ -299,14 +308,91 @@ export default function ResumePage() {
   ), [font, resumeData, theme]);
 
 
+
+
+  const generateDOCX = useCallback(() => {
+    // Build HTML string based on resumeData
+    let htmlContent = `
+      <html>
+        <body>
+          <div style="text-align: center; font-size: 14pt; font-weight: bold;">
+            <h1>${resumeData.name}</h1>
+          </div>
+          <div style="text-align: center; font-size: 10pt;">
+            <p>${resumeData.email} | ${resumeData.phone} | ${resumeData.location}</p>
+          </div>
+    `;
+  
+    // Add resume sections
+    resumeData.sections.forEach((section) => {
+      htmlContent += `<h2 style="font-size: 12pt; font-weight: bold;">${section.title.toUpperCase()}</h2>`;
+      htmlContent += '<ul style="list-style-type: none;">';
+  
+      Object.entries(section.content).forEach(([key, bullets]) => {
+        if (key) {
+          const parts = key.split(' | ');
+          const title = parts[0];
+          const details = parts[1];
+  
+          htmlContent += `
+            <li style="font-weight: bold; font-size: 11pt;">
+              <span style="display: inline-block; width: 60%;">${title}</span>
+              <span style="text-align: right; display: inline-block; width: 35%;">${details || ''}</span>
+            </li>
+          `;
+        }
+  
+        bullets.forEach((bullet) => {
+          htmlContent += `<li style="font-size: 10pt;">• ${bullet}</li>`;
+        });
+      });
+  
+      htmlContent += '</ul>';
+    });
+  
+    htmlContent += '</body></html>';
+  
+    // DOCX template
+    const template = `
+      <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:body>
+          <w:p><w:r><w:t>{{htmlContent}}</w:t></w:r></w:p>
+        </w:body>
+      </w:document>
+    `;
+  
+    // Create a PizZip instance for the DOCX format
+    const zip = new PizZip(template);
+    const doc = new Docxtemplater(zip);
+  
+    // Replace the placeholder with the actual HTML content
+    doc.setData({ htmlContent });
+  
+    try {
+      doc.render();
+    } catch (error) {
+      console.error('Error rendering docxtemplater:', error);
+      return;
+    }
+  
+    // Generate the DOCX file as a Blob
+    const generatedDocx = doc.getZip().generate({ type: 'blob' });
+  
+    // Trigger the download
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(generatedDocx);
+    link.download = 'resume.docx';
+    link.click();
+  }, [resumeData]);
+  
   const saveAsImagePng = async () => {
     if (pdfRef && pdfRef.current) {
       const canvas = await html2canvas(pdfRef.current, {
-        scale: 2,  // Increase scale for high-quality output
+        scale: 4,  // Increase scale for high-quality output
         useCORS: true  // Useful if images or fonts need CORS handling
       });
       const link = document.createElement('a');
-      link.href = canvas.toDataURL('image/png', 1.0);  // 1.0 for max quality
+      link.href = canvas.toDataURL('image/png', 1.0);
       link.download = 'resume.png';
       link.click();
     }
@@ -315,7 +401,7 @@ export default function ResumePage() {
   const saveAsImageWebp = async () => {
     if (pdfRef && pdfRef.current) {
       const canvas = await html2canvas(pdfRef.current, {
-        scale: 2,
+        scale: 4,
         useCORS: true,
       });
       const link = document.createElement('a');
@@ -328,7 +414,7 @@ export default function ResumePage() {
   const saveAsImageJpeg = async () => {
     if (pdfRef && pdfRef.current) {
       const canvas = await html2canvas(pdfRef.current, {
-        scale: 2,
+        scale: 4,
         useCORS: true,
       });
       const link = document.createElement('a');
@@ -367,7 +453,7 @@ export default function ResumePage() {
 
       const totalPages = Math.ceil((imgHeight + paddingTop + paddingBottom) / (pdf.internal.pageSize.getHeight() - paddingTop));
   
-      let position = 0;
+      let position = 0;generateDOCX
   
       // Only add new pages when needed (only if the content height exceeds the page height)
       for (let page = 0; page < totalPages; page++) {
@@ -444,7 +530,7 @@ export default function ResumePage() {
             
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Button onClick={saveAsHighQualityPdf} variant={'ghost'}>
+              <Button onClick={generateDOCX} variant={'ghost'}>
               <File className="mr-2 h-4 w-4 text-blue-500" />
               PDF (Print-friendly)
               </Button>
@@ -482,6 +568,15 @@ export default function ResumePage() {
   </div>
       <div className="p-4 bg-white overflow-y-auto">
         {memoizedATS1}
+        {/* <ATSOptimizedResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
+
+        {/* ok <ElegantResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
+
+        {/* can be used as design for 2 col <SidebarResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
+        {/* ok <BoldHeaderResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
+
+        {/* good <TimelineResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
+
    
       </div>
    </div>
