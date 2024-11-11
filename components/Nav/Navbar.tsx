@@ -6,7 +6,7 @@ import { Button } from '../ui/button'
 
 const Navbar = () => {
   return (
-    <header className="sticky top-0 z-50 w-full backdrop-blur-lg bg-white/75 border-b border-gray-200">
+    <header className="sticky top-0 z-[10000] w-full backdrop-blur-lg bg-white/75 border-b border-gray-200">
     <div className="container mx-auto px-4 h-16 flex items-center justify-between">
       <Link className="flex items-center justify-center" href="/">
         <FileText className="h-8 w-8 text-purple-600" />
@@ -15,9 +15,13 @@ Resume
 </span> ATS</span>
       </Link>
       <nav className="hidden md:flex space-x-8">
+      <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="/">Home</Link>
+
         <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="/#features">Features</Link>
         <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="/#how-it-works">How It Works</Link>
-        <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="/#testimonials">Testimonials</Link>
+        {/* <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="/#testimonials">Testimonials</Link> */}
+        <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="/blog">Blog</Link>
+
         <Link className="text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors" href="/#faq">FAQ</Link>
       </nav>
       <Sheet>
