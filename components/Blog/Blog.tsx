@@ -1,31 +1,12 @@
 "use client";
 
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import { recentPosts } from '@/app/blog/page';
+import Image from 'next/image';
 
 const Blog = () => {
-  const blogPosts = [
-    {
-      title: "How to Create an ATS-Friendly Resume",
-      description: "Learn the essentials of crafting resumes that pass through Applicant Tracking Systems effortlessly.",
-      link:'/'
-     // link: "/blog/ats-friendly-resume",
-    },
-    {
-      title: "Top 5 Resume Mistakes to Avoid",
-      description: "Discover common resume pitfalls and how to avoid them to make a great first impression.",
-        link:'/'
-     // link: "/blog/resume-mistakes",
-    },
-    {
-      title: "Why You Should Customize Your Resume for Each Job",
-      description: "Find out how tailoring your resume to each job application can increase your chances of success.",
-        link:'/'
-      //link: "/blog/customize-resume",
-    },
-  ];
+
 
   return (
     <section id="blog" className="py-20 bg-gradient-to-br from-gray-50 to-gray-100">
@@ -44,6 +25,7 @@ const Blog = () => {
           >
             <div className="relative overflow-hidden rounded-t-lg">
               <img
+        
                 src={post.image}
                 alt={post.title}
                 className="w-full h-56 object-cover object-center"

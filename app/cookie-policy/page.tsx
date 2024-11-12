@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -32,7 +31,7 @@ export default function CookiePolicy() {
               </Card>
               <Card className="mt-8">
                 <CardHeader>
-                  <CardTitle>2. Why We Don't Use Cookies</CardTitle>
+                  <CardTitle>2. Why We Don&apos;t Use Cookies</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p>Our website focuses on providing a simple and efficient resume-building tool, and we respect your privacy. Since there is no need for user accounts or cloud storage, there are no cookies used to track or store information about your activity.</p>
@@ -43,7 +42,7 @@ export default function CookiePolicy() {
           <section className="bg-gray-100 py-16">
             <div className="container mx-auto px-4 text-center">
               <h2 className="text-3xl font-bold mb-8">Questions About Our Cookie Policy?</h2>
-              <p className="text-xl mb-8">If you have any questions about our Cookie Policy, please don't hesitate to contact us.</p>
+              <p className="text-xl mb-8">If you have any questions about our Cookie Policy, please don&apos;t hesitate to contact us.</p>
               <Button className="bg-purple-500 text-white hover:bg-purple-600">Contact Us</Button>
             </div>
           </section>

@@ -27,6 +27,11 @@ import {
 import { PersonalInfo } from '@/components/Forms/ResumeEditForm/PersonalInfo/PersonalInfo'
 import { Section } from '@/components/Forms/ResumeEditForm/Section/Section'
 import html2canvas from 'html2canvas'
+import { PastelCirclesResume } from '@/components/resume/creative'
+import { GoogleDocsResume } from '@/components/resume/google'
+import { TechTimelineResume } from '@/components/resume/softwareEng'
+import { BoldHeaderResume, ElegantResume, TimelineResume } from '@/components/resume/Precision'
+import { ATSOptimizedResume } from '@/components/resume/microsoft'
 // import { BoldHeaderResume, ClassicResume, CompactResume, ElegantResume, MinimalistResume, ModernCardResume, ModernGridResume, SidebarResume, TimelineResume, TwoColumnResume } from '@/components/resume/Precision'
 // import { ClassicTechResume, CleanCodeResume, MinimalistTechResume, ModernTechResume, ProjectShowcaseResume, TechnicalFocusResume, TechTimelineResume } from '@/components/resume/softwareEng'
 // import { BoldTypographyResume, GeometricPatternsResume, MinimalistAccentResume, NeonGlowResume, PastelCirclesResume, VibrantBlocksResume, WatercolorSplashResume } from '@/components/resume/creative'
@@ -303,14 +308,283 @@ export default function ResumePage() {
     pdf.save('resume.pdf');
   }, [resumeData, theme]);
 
+  const generatePDF2 = () => {
+    if (!pdfRef.current) return;
+  
+    const pdf = new jsPDF({
+      unit: 'pt',
+      format: 'a4'
+    });
+  
+    const themes = {
+      default: { fontFamily: 'times' },
+      times: { fontFamily: 'times' }
+    };
+  
+    const fontFamily = themes[theme]?.fontFamily || 'times';
+    pdf.setFont(fontFamily);
+  
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const margin = 40;
+    let yOffset = margin;
+  
+    // Add black header background
+    pdf.setFillColor(0, 0, 0);
+    pdf.rect(0, 0, pdfWidth, 80, 'F');
+  
+    const addWrappedText = (
+      text: string,
+      fontSize: number,
+      fontStyle = 'normal',
+      maxWidth = pdfWidth - 2 * margin,
+      align = 'left',
+      h=true
+    ) => {
+      pdf.setFontSize(fontSize);
+      pdf.setFont(fontFamily, fontStyle);
+      const lines = pdf.splitTextToSize(text, maxWidth);
+  
+      if (yOffset > pdfHeight - margin) {
+        pdf.addPage();
+        yOffset = margin;
+      }
+  
+      const xPos = align === 'center' ? 
+        (pdfWidth - pdf.getTextWidth(lines[0])) / 2 : 
+        margin;
+  
+      lines.forEach((line: string) => {
+        if (yOffset > pdfHeight - margin) {
+          pdf.addPage();
+          yOffset = margin;
+        }
+        pdf.text(line, xPos, yOffset);
+        if(h)yOffset += fontSize * 1.15;
+      });
+    };
+  
+    // Header text in white
+    pdf.setTextColor(255, 255, 255);
+    addWrappedText(resumeData.name, 18, 'bold', pdfWidth - 2 * margin, 'center');
+    yOffset -= 5;
+  
+    // Contact info in white
+    const contactInfo = `${resumeData.email} | ${resumeData.phone} | ${resumeData.location}`;
+    addWrappedText(contactInfo, 10, 'normal', pdfWidth - 2 * margin, 'center');
+    yOffset += 50;
+  
+    // Reset text color to black for rest of document
+    pdf.setTextColor(0, 0, 0);
+  
+    // Add sections
+    resumeData.sections.forEach((section) => {
+      // Section title
+      addWrappedText(section.title.toUpperCase(), 16, 'bold',pdfWidth - 2 * margin,'left',false);
+      yOffset +=5;
+      
+      pdf.setLineWidth(1);
+      pdf.setDrawColor("#000000"); // Adjust the width as needed for boldness
+
+// Set the starting and ending points of the line
+const x1 = 40, y1 = 10, x2 = 200, y2 = 10;
+
+// Draw the line
+pdf.line(x1, yOffset, pdfWidth-40, yOffset);
+      yOffset += 20;
+  
+      // Section content
+      Object.entries(section.content).forEach(([key, bullets]) => {
+        if (key) {
+          const parts = key.split(' | ');
+          const title = parts[0];
+          const details = parts[1];
+  
+          const maxTitleWidth = (pdfWidth - 2 * margin) * 0.6;
+  
+          pdf.setFontSize(11);
+          pdf.setFont(fontFamily, 'bold');
+  
+          const wrappedTitle = pdf.splitTextToSize(title, maxTitleWidth);
+          pdf.text(wrappedTitle[0], margin, yOffset);
+  
+          if (details) {
+            const detailsWidth = pdf.getTextWidth(details);
+            pdf.text(details, pdfWidth - margin - detailsWidth, yOffset);
+          }
+  
+          yOffset += 15;
+   
+          if (wrappedTitle.length > 1) {
+            for (let i = 1; i < wrappedTitle.length; i++) {
+              pdf.text(wrappedTitle[i], margin, yOffset);
+              yOffset += 12;
+            }
+          }
+        }
+  
+        // Bullet points
+        bullets.forEach((bullet) => {
+          if (yOffset > pdfHeight - margin) {
+            pdf.addPage();
+            yOffset = margin;
+          }
+  
+          pdf.setFont(fontFamily, 'normal');
+          pdf.setFontSize(10);
+          const bulletText = key ? `• ${bullet}` : bullet;
+          const lines = pdf.splitTextToSize(bulletText, pdfWidth - (key ? margin * 3 : margin * 2));
+          
+          lines.forEach((line: string) => {
+            pdf.text(line, key ? margin + 15 : margin, yOffset);
+            yOffset += 14;
+          });
+        });
+        yOffset += 5;
+      });
+  
+      yOffset += 20;
+    });
+  
+    pdf.save('resume.pdf');
+  };
+
+  function generatePDF2xcv() {
+    const doc = new jsPDF();
+    
+    // Add black header background
+    doc.setFillColor(0, 0, 0);
+    doc.rect(0, 0, 210, 25, 'F');
+    
+    // Header text in white
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text('John Doe', 105, 10, { align: 'center' });
+    
+    // Contact info in white
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text('john.doe@resumeworld.com', 85, 16);
+    doc.text('+1 (123) 456-7890', 145, 16);
+    doc.text('San Francisco, CA', 175, 16);
+    
+    // Reset text color to black for rest of document
+    doc.setTextColor(0, 0, 0);
+    
+    // Start content after header
+    let y = 35;
+    
+    // Helper functions
+    function addSection(title, y) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.text(title, 20, y);
+        doc.setLineWidth(0.5);
+        doc.line(20, y + 1, 190, y + 1);
+        return y + 10;
+    }
+    
+    function addBulletPoint(text, y) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.text('•', 25, y);
+        doc.text(text, 30, y);
+        return y + 5;
+    }
+
+    // Education Section
+    y = addSection('EDUCATION', y);
+    
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text('Tech University', 20, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Master of Science in Computer Science', 120, y);
+    y += 5;
+    y = addBulletPoint('May 2015', y);
+    y = addBulletPoint('Austin, TX', y);
+    y = addBulletPoint('Graduated with High Distinction (Top 10%)', y);
+    y = addBulletPoint('President of the Tech Innovation Club (400+ members), Hackathon Organizer', y);
+    y = addBulletPoint('Co-authored research paper on machine learning model to predict network security threats with 95% accuracy', y);
+    y += 5;
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('Tech University', 20, y);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Bachelor of Science in Software Engineering', 120, y);
+    y += 5;
+    y = addBulletPoint('May 2013', y);
+    y = addBulletPoint('San Francisco, CA', y);
+    y = addBulletPoint('Cumulative GPA: 3.94/4.0, Dean\'s List 2011, 2012, 2013', y);
+    y = addBulletPoint('Vice President of the Coding Club, Member of Robotics Club', y);
+    y += 5;
+
+    // Professional Experience
+    y = addSection('PROFESSIONAL EXPERIENCE', y);
+    
+    // Innovatech Solutions
+    doc.setFont('helvetica', 'bold');
+    doc.text('Innovatech Solutions', 20, y);
+    doc.text('Senior Software Engineer', 140, y);
+    y += 5;
+    y = addBulletPoint('Oct 2017 - Present', y);
+    y = addBulletPoint('San Francisco, CA', y);
+    y = addBulletPoint('Led a team of 8 engineers across 3 locations, collaborating on developing scalable web applications and APIs for high-traffic environments', y);
+    y = addBulletPoint('Implemented automated testing and CI/CD pipelines, reducing deployment time by 40% and improving code reliability', y);
+    y = addBulletPoint('Designed a data processing system that reduced report generation time by 60%, enhancing data accessibility for decision-making', y);
+    y += 5;
+
+    // WebWise Inc.
+    doc.setFont('helvetica', 'bold');
+    doc.text('WebWise Inc.', 20, y);
+    doc.text('Software Engineer', 140, y);
+    y += 5;
+    y = addBulletPoint('Jun 2015 - Oct 2017', y);
+    y = addBulletPoint('San Francisco, CA', y);
+    y = addBulletPoint('Built and maintained RESTful APIs, optimizing performance to handle over 100,000 requests per minute', y);
+    y = addBulletPoint('Streamlined data retrieval processes, decreasing load times by 20% across the platform', y);
+    y += 5;
+
+    // Other sections
+    y = addSection('OTHER', y);
+    
+    // Technical Skills
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text('Technical Skills', 20, y);
+    y += 5;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text('JavaScript, TypeScript, Python, Java, SQL, MongoDB, AWS, Docker, Jenkins, React, Node.js, Express', 20, y);
+    y += 10;
+
+    // Languages
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text('Languages', 20, y);
+    y += 5;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text('English (Native), Spanish (Fluent)', 20, y);
+    y += 10;
+
+    // Certifications
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text('Certifications', 20, y);
+    y += 5;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text('AWS Certified Solutions Architect (2019), Certified ScrumMaster (CSM), Machine Learning Specialization', 20, y);
+    doc.save('resumwwewee.pdf');
+    return doc;
+}
   const memoizedATS1 = useMemo(() => (
     <ATS1 font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]} />
   ), [font, resumeData, theme]);
 
-
-
-
-  const generateDOCX = useCallback(() => {
+ const generateDOCX = useCallback(() => {
     // Build HTML string based on resumeData
     let htmlContent = `
       <html>
@@ -429,57 +703,57 @@ export default function ResumePage() {
 
 
 
-  const saveAsHighQualityPdf = async () => {
-    if (pdfRef && pdfRef.current) {
-      const canvas = await html2canvas(pdfRef.current, {
-        scale: 2,
-        useCORS: true
-      });
+  // const saveAsHighQualityPdf = async () => {
+  //   if (pdfRef && pdfRef.current) {
+  //     const canvas = await html2canvas(pdfRef.current, {
+  //       scale: 2,
+  //       useCORS: true
+  //     });
   
-      const pdf = new jsPDF({
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait'
-      });
+  //     const pdf = new jsPDF({
+  //       unit: 'mm',
+  //       format: 'a4',
+  //       orientation: 'portrait'
+  //     });
   
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      const imgWidth = pdf.internal.pageSize.getWidth() - 20;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  //     const imgData = canvas.toDataURL('image/jpeg', 1.0);
+  //     const imgWidth = pdf.internal.pageSize.getWidth() - 20;
+  //     const imgHeight = (canvas.height * imgWidth) / canvas.width;
   
-      const paddingTop = 10;
-      const paddingLeft = 10;
-      const paddingBottom = 10;
+  //     const paddingTop = 10;
+  //     const paddingLeft = 10;
+  //     const paddingBottom = 10;
   
 
-      const totalPages = Math.ceil((imgHeight + paddingTop + paddingBottom) / (pdf.internal.pageSize.getHeight() - paddingTop));
+  //     const totalPages = Math.ceil((imgHeight + paddingTop + paddingBottom) / (pdf.internal.pageSize.getHeight() - paddingTop));
   
-      let position = 0;generateDOCX
+  //     let position = 0;
   
-      // Only add new pages when needed (only if the content height exceeds the page height)
-      for (let page = 0; page < totalPages; page++) {
-        // Add image on the current page with padding
-        pdf.addImage(
-          imgData,
-          'JPEG',
-          paddingLeft,
-          paddingTop - position,
-          imgWidth,
-          imgHeight
-        );
+  //     // Only add new pages when needed (only if the content height exceeds the page height)
+  //     for (let page = 0; page < totalPages; page++) {
+  //       // Add image on the current page with padding
+  //       pdf.addImage(
+  //         imgData,
+  //         'JPEG',
+  //         paddingLeft,
+  //         paddingTop - position,
+  //         imgWidth,
+  //         imgHeight
+  //       );
   
        
-        if (page < totalPages - 1) {
-          pdf.addPage();
-        }
+  //       if (page < totalPages - 1) {
+  //         pdf.addPage();
+  //       }
   
       
-        position += pdf.internal.pageSize.getHeight() - paddingTop - paddingBottom;
-      }
+  //       position += pdf.internal.pageSize.getHeight() - paddingTop - paddingBottom;
+  //     }
   
      
-      pdf.save('printableresume.pdf');
-    }
-  };
+  //     pdf.save('printableresume.pdf');
+  //   }
+  // };
   
   
   return (
@@ -530,7 +804,7 @@ export default function ResumePage() {
             
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Button onClick={generateDOCX} variant={'ghost'}>
+              <Button onClick={generatePDF2} variant={'ghost'}>
               <File className="mr-2 h-4 w-4 text-blue-500" />
               PDF (Print-friendly)
               </Button>
@@ -567,18 +841,21 @@ export default function ResumePage() {
       </DropdownMenu>
   </div>
       <div className="p-4 bg-white overflow-y-auto">
-        {memoizedATS1}
-        {/* <ATSOptimizedResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
+        {/* {memoizedATS1} */}
+        {/* <TechTimelineResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
+        {/* done         <GoogleDocsResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/>
+ */}
 
-        {/* ok <ElegantResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
+         {/* <ElegantResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
 
         {/* can be used as design for 2 col <SidebarResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
-        {/* ok <BoldHeaderResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
+         <BoldHeaderResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/>
 
-        {/* good <TimelineResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
+         {/* <TimelineResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
 
    
       </div>
+
    </div>
     </div>
   )

@@ -91,7 +91,7 @@ export default function PrivacyPolicy() {
           <section className="bg-gray-100 py-16">
             <div className="container mx-auto text-center">
               <h2 className="text-3xl font-semibold text-gray-800 mb-6">Your Privacy Matters to Us</h2>
-              <p className="text-xl text-gray-600 mb-8">If you have any questions about our Privacy Policy, please don't hesitate to contact us.</p>
+              <p className="text-xl text-gray-600 mb-8">If you have any questions about our Privacy Policy, please don&apos;t hesitate to contact us.</p>
               <Button className="bg-indigo-600 text-white hover:bg-indigo-700 py-3 px-6 rounded-lg font-medium">Contact Us</Button>
             </div>
           </section>

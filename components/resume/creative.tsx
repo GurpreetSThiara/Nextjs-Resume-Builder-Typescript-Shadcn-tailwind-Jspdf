@@ -2,7 +2,6 @@ import { FontConfig, ResumeData, ThemeConfig } from '@/lib/types'
 import React, { LegacyRef } from 'react'
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 
 type ResumeProps = {
   theme: ThemeConfig,
@@ -12,94 +11,7 @@ type ResumeProps = {
 }
 
 // Design 1: Vibrant Blocks
-const VibrantBlocksResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }) => {
-  return (
-    <div 
-      ref={pdfRef} 
-      className={`bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 p-8 min-h-screen ${font.className}`}
-      style={{ fontFamily: font.name }}
-    >
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <header className="bg-gray-900 text-white p-6">
-          <h1 className={`${theme.fontSize.name} font-bold mb-2`}>
-            {resumeData.name}
-          </h1>
-          <div className={`${theme.fontSize.small} flex flex-wrap gap-4`}>
-            <span>{resumeData.email}</span>
-            <span>{resumeData.phone}</span>
-            <span>{resumeData.location}</span>
-          </div>
-        </header>
 
-        <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-6">
-            {resumeData.summary && (
-              <section>
-                <h2 className={`${theme.fontSize.section} font-bold text-gray-800 mb-2`}>
-                  About Me
-                </h2>
-                <p className={`${theme.fontSize.small} text-gray-600`}>
-                  {resumeData.summary}
-                </p>
-              </section>
-            )}
-
-            {resumeData.sections.map((section) => (
-              <section key={section.id}>
-                <h2 className={`${theme.fontSize.section} font-bold text-gray-800 mb-4`}>
-                  {section.title}
-                </h2>
-                {Object.entries(section.content).map(([key, bullets]) => (
-                  <Card key={key} className="mb-4">
-                    <CardContent className="p-4">
-                      {key && (
-                        <div className="flex justify-between items-baseline mb-2">
-                          <h3 className={`${theme.fontSize.content} font-semibold text-gray-700`}>
-                            {key.split(' | ')[0]}
-                          </h3>
-                          <span className={`${theme.fontSize.small} text-gray-500`}>
-                            {key.split(' | ')[1]}
-                          </span>
-                        </div>
-                      )}
-                      <ul className="list-disc ml-6 space-y-1">
-                        {bullets.map((bullet, index) => (
-                          <li 
-                            key={index} 
-                            className={`${theme.fontSize.small} text-gray-600`}
-                          >
-                            {bullet}
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                ))}
-              </section>
-            ))}
-          </div>
-
-          <div className="space-y-6">
-            {resumeData.skills && (
-              <section>
-                <h2 className={`${theme.fontSize.section} font-bold text-gray-800 mb-4`}>
-                  Skills
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {resumeData.skills.map((skill, index) => (
-                    <Badge key={index} variant="secondary" className="bg-purple-100 text-purple-800">
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
-              </section>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 // Design 2: Pastel Circles
 const PastelCirclesResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }) => {
@@ -109,7 +21,7 @@ const PastelCirclesResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resum
       className={`bg-gradient-to-r from-blue-200 via-indigo-200 to-purple-200 p-8 min-h-screen ${font.className}`}
       style={{ fontFamily: font.name }}
     >
-      <div className="bg-white rounded-full shadow-lg overflow-hidden max-w-4xl mx-auto">
+      <div className="bg-white  shadow-lg overflow-hidden max-w-4xl mx-auto">
         <header className="bg-indigo-600 text-white p-8 text-center">
           <h1 className={`${theme.fontSize.name} font-bold mb-2`}>
             {resumeData.name}
@@ -600,7 +512,7 @@ const BoldTypographyResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resu
 }
 
 export {
-  VibrantBlocksResume,
+
   PastelCirclesResume,
   NeonGlowResume,
   WatercolorSplashResume,

@@ -108,9 +108,8 @@ export  const initialResumeData: ResumeData = {
           "Innovatech Solutions | Senior Software Engineer": [
             "Oct 2017 – Present",
             "San Francisco, CA",
-            "Led a team of 8 engineers across 3 locations, collaborating on developing scalable web applications and APIs for high-traffic environments",
+            "Led a team of 8 engineers across 3 locations, collaborating on developing scalable web applications and APIs.",
             "Implemented automated testing and CI/CD pipelines, reducing deployment time by 40% and improving code reliability",
-            "Designed a data processing system that reduced report generation time by 60%, enhancing data accessibility for decision-making"
           ],
           "Webwise Inc. | Software Engineer": [
             "Jun 2015 – Oct 2017",
