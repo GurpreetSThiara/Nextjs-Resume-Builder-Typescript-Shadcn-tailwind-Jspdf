@@ -2,25 +2,16 @@
 
 import React, { useState, useCallback, useMemo } from 'react'
 import Image, { StaticImageData } from 'next/image'
+import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Search } from 'lucide-react'
+import { Search, ArrowRight } from 'lucide-react'
 
-// Assuming you have these images in your public folder
 import resume1 from '../../public/images/1.png'
 import resume2 from '../../public/images/2.png'
-import Link from 'next/link'
 
-// SEO metadata
-//  const metadata = {
-//   title: 'Professional Resume Templates | Create Your Perfect CV',
-//   description: 'Choose from our collection of professional resume templates. Find the perfect design to showcase your skills and experience.',
-//   keywords: 'resume templates, CV designs, professional resumes, job application',
-// }
-
-// Template data
 const templates = [
   {
     id: 1,
@@ -30,20 +21,17 @@ const templates = [
   },
   {
     id: 2,
-    name: 'Modern Creative',
+    name: 'Modern Professional',
     description: 'A contemporary layout ideal for creative professionals.',
     image: resume2,
   },
-
-  // Add more templates as needed
 ]
 
-// Memoized Template component
-const Template = React.memo(({ name, description, image }:{name:string,description:string, image:StaticImageData}) => (
-  <Card className="w-full shadow-none border-none max-w-md">
+const Template = React.memo(({ name, description, image }: { name: string, description: string, image: StaticImageData }) => (
+  <Card className="w-full shadow-lg border-none max-w-md bg-white hover:shadow-xl transition-shadow duration-300">
     <CardHeader>
-      <CardTitle>{name}</CardTitle>
-      <CardDescription>{description}</CardDescription>
+      <CardTitle className="text-2xl font-bold text-gray-800">{name}</CardTitle>
+      <CardDescription className="text-gray-600">{description}</CardDescription>
     </CardHeader>
     <CardContent>
       <Image
@@ -55,23 +43,25 @@ const Template = React.memo(({ name, description, image }:{name:string,descripti
         className="rounded-md border"
       />
     </CardContent>
-    <CardFooter>
-     <Link href={`/template/${name.split(' ')[0]}/create`}>
-     <Button>Use This Template</Button>
-     </Link>
-     <Link href={`/template/${name.split(' ')[0]}`}>
-     <Button>Details</Button>
-     </Link>
+    <CardFooter className="flex justify-between">
+      <Link href={`/template/${name.split(' ')[0].toLowerCase()}`}>
+        <Button variant="outline" className="text-purple-600 border-purple-600 hover:bg-purple-50">Details</Button>
+      </Link>
+      <Link href={`/template/${name.split(' ')[0].toLowerCase()}/create`}>
+        <Button className="bg-purple-600 text-white hover:bg-purple-700">
+          Use This Template
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+      </Link>
     </CardFooter>
   </Card>
 ))
 
 Template.displayName = 'Template'
 
-const ResumeTemplatesPage = () => {
+export default function ResumeTemplatesPage() {
   const [searchTerm, setSearchTerm] = useState('')
 
-  // Memoized filtered templates
   const filteredTemplates = useMemo(() => {
     return templates.filter(template =>
       template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -79,38 +69,62 @@ const ResumeTemplatesPage = () => {
     )
   }, [searchTerm])
 
-  // Callback for search input change
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
   }, [])
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8 text-center">Professional Resume Templates</h1>
-      
-      <div className="mb-8">
-        <Label htmlFor="search">Search Templates</Label>
-        <div className="flex w-full max-w-sm items-center space-x-2">
-          <Input
-            type="text"
-            id="search"
-            placeholder="Search by name or description"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-          <Button type="submit">
-            <Search className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="container mx-auto px-4 py-16">
+        <section className="text-center mb-16">
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl mb-6 text-gray-900">
+            Professional <span className="text-purple-600">Resume</span> Templates
+          </h1>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Choose from our collection of professional resume templates. Find the perfect design to showcase your skills and experience.
+          </p>
+          <div className="max-w-md mx-auto">
+            <Label htmlFor="search" className="sr-only">Search Templates</Label>
+            <div className="flex w-full items-center space-x-2">
+              <Input
+                type="text"
+                id="search"
+                placeholder="Search by name or description"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="flex-grow"
+              />
+              <Button type="submit" className="bg-purple-600 text-white hover:bg-purple-700">
+                <Search className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredTemplates.map(template => (
-          <Template key={template.id} {...template} />
-        ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredTemplates.map(template => (
+            <Template key={template.id} {...template} />
+          ))}
+        </div>
+
+        {filteredTemplates.length === 0 && (
+          <p className="text-center text-gray-600 mt-8">No templates found matching your search criteria.</p>
+        )}
+
+        <section className="mt-20 text-center">
+          <h2 className="text-3xl font-bold mb-4 text-gray-800">
+            Ready to Create Your Perfect <span className="text-purple-600">Resume</span>?
+          </h2>
+          <p className="text-xl mb-8 text-gray-600 max-w-2xl mx-auto">
+            Start building your career-changing resume with our easy-to-use templates.
+            100% free - no catches, no hidden fees.
+          </p>
+          <Button size="lg" className="bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300 transform hover:scale-105">
+            Get Started Now
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </section>
       </div>
     </div>
   )
 }
-
-export default ResumeTemplatesPage

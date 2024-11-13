@@ -14,7 +14,7 @@ export default function HomePage() {
   const router = useRouter();
 
   const navigate = () => {
-    router.push('/create')
+    router.push('/template')
   }
   return (
     <>
