@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react'
 import Image from 'next/image'
-import { notFound } from 'next/navigation'
+import { notFound, useParams } from 'next/navigation'
 import { jsPDF } from "jspdf"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -160,8 +160,10 @@ const sampleResumeData = {
   ]
 }
 
-export default function TemplateDetail({ params }: { params: { resume: string } }) {
-  const templateName = params.resume.toLowerCase()
+export default function TemplateDetail() {
+    const params = useParams();
+    const r = params.resume?.toString() ?? ' classic';
+  const templateName = r?.toLowerCase()
   const template = templates[templateName as keyof typeof templates]
   //const pdfRef = useRef(null)
 
@@ -235,7 +237,7 @@ export default function TemplateDetail({ params }: { params: { resume: string } 
       addWrappedText(section.title.toUpperCase(), 12, "bold");
       yOffset += 10;
 
-      
+
       Object.entries(section.content).forEach(([key, bullets]) => {
         if (key) {
           const parts = key.split(" | ");
