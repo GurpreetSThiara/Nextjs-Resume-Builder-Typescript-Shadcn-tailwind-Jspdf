@@ -1,6 +1,5 @@
 import { FontConfig, ResumeData, ThemeConfig } from '@/lib/types'
 import React, { LegacyRef } from 'react'
-import { Badge } from "@/components/ui/badge"
 
 
 
@@ -55,18 +54,6 @@ const GoogleResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }
             </section>
           ))}
 
-          {resumeData.skills && (
-            <section className="mb-8">
-              <h2 className={`${theme.fontSize.section} font-medium text-blue-700 mb-4 pb-2 border-b border-gray-200`}>Skills</h2>
-              <div className="flex flex-wrap gap-2">
-                {resumeData.skills.map((skill, index) => (
-                  <Badge key={index} variant="outline" className="bg-gray-100 text-gray-800">
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            </section>
-          )}
         </div>
       </div>
     </div>

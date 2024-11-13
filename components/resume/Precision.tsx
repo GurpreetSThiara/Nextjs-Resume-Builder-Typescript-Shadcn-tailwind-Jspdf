@@ -3,7 +3,7 @@ import React, { LegacyRef } from 'react'
 import { Separator } from "@/components/ui/separator"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
 
 export type ResumeProps = {
   theme: ThemeConfig,
@@ -66,23 +66,6 @@ const ClassicResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData 
         </section>
       ))}
 
-      {resumeData.skills && (
-        <section className={`${theme.spacing.section} mb-6`}>
-          <h2 className={`${theme.fontSize.section} font-bold ${theme.colors.primary} mb-4`}>
-            Skills
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {resumeData.skills.map((skill, index) => (
-              <span 
-                key={index} 
-                className={`${theme.fontSize.small} ${theme.colors.secondary} bg-gray-100 px-2 py-1 rounded`}
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   )
 }
@@ -143,21 +126,7 @@ const ModernCardResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeDa
               </section>
             ))}
             
-            {resumeData.skills && (
-              <section className={`${theme.spacing.section} mb-6`}>
-                <h2 className={`${theme.fontSize.section} font-bold uppercase ${theme.colors.primary} mb-4`}>
-                  Skills
-                </h2>
-                <Separator className="mb-4" />
-                <div className="flex flex-wrap gap-2">
-                  {resumeData.skills.map((skill, index) => (
-                    <Badge key={index} variant="secondary">
-                      {skill}
-                    </Badge>
-                  ))}
-                </div>
-              </section>
-            )}
+        
           </div>
         </CardContent>
       </Card>
@@ -217,23 +186,6 @@ const MinimalistResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeDa
         </section>
       ))}
 
-      {resumeData.skills && (
-        <section className={`${theme.spacing.section} mb-8`}>
-          <h2 className={`${theme.fontSize.section} font-normal ${theme.colors.primary} mb-4 uppercase tracking-widest`}>
-            Skills
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {resumeData.skills.map((skill, index) => (
-              <span 
-                key={index} 
-                className={`${theme.fontSize.small} ${theme.colors.text}`}
-              >
-                {skill}{index < resumeData.skills.length - 1 ? ',' : ''}
-              </span>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   )
 }
@@ -258,20 +210,7 @@ const TwoColumnResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeDat
           </div>
         </header>
 
-        {resumeData.skills && (
-          <section className={`${theme.spacing.section} mb-6`}>
-            <h2 className={`${theme.fontSize.section} font-bold ${theme.colors.primary} mb-4`}>
-              Skills
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {resumeData.skills.map((skill, index) => (
-                <Badge key={index} variant="outline">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </section>
-        )}
+  
       </div>
 
       <div className="md:w-2/3">
@@ -367,20 +306,6 @@ const TimelineResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData
         </section>
       ))}
 
-      {resumeData.skills && (
-        <section className={`${theme.spacing.section} mb-8`}>
-          <h2 className={`${theme.fontSize.section} font-bold ${theme.colors.primary} mb-4 text-center`}>
-            Skills
-          </h2>
-          <div className="flex flex-wrap justify-center gap-2">
-            {resumeData.skills.map((skill, index) => (
-              <Badge key={index} variant="secondary">
-                {skill}
-              </Badge>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   )
 }
@@ -441,23 +366,6 @@ const CompactResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData 
         </section>
       ))}
 
-      {resumeData.skills && (
-        <section className={`${theme.spacing.section} mb-4`}>
-          <h2 className={`${theme.fontSize.section} font-bold ${theme.colors.primary} mb-2 uppercase`}>
-            Skills
-          </h2>
-          <div className="flex flex-wrap gap-1">
-            {resumeData.skills.map((skill, index) => (
-              <span 
-                key={index} 
-                className={`${theme.fontSize.small} ${theme.colors.text} bg-gray-100 px-1.5 py-0.5 rounded`}
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   )
 }
@@ -516,20 +424,7 @@ const BoldHeaderResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeDa
           </section>
         ))}
 
-        {resumeData.skills && (
-          <section className={`${theme.spacing.section} mb-8`}>
-            <h2 className={`${theme.fontSize.section} font-bold ${theme.colors.primary} mb-4 uppercase border-b-2 border-primary pb-2`}>
-              Skills
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {resumeData.skills.map((skill, index) => (
-                <Badge key={index} variant="outline">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </section>
-        )}
+   
       </div>
     </div>
   )
@@ -555,20 +450,7 @@ const SidebarResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData 
           </div>
         </header>
 
-        {resumeData.skills && (
-          <section className={`${theme.spacing.section} mb-8`}>
-            <h2 className={`${theme.fontSize.section} font-bold ${theme.colors.primary} mb-4 uppercase`}>
-              Skills
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {resumeData.skills.map((skill, index) => (
-                <Badge key={index} variant="secondary">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </section>
-        )}
+    
       </aside>
 
       <main className="p-8 md:w-2/3">
@@ -665,20 +547,6 @@ const ModernGridResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeDa
         ))}
       </div>
 
-      {resumeData.skills && (
-        <section className={`${theme.spacing.section} mt-8`}>
-          <h2 className={`${theme.fontSize.section} font-bold ${theme.colors.primary} mb-4 uppercase text-center`}>
-            Skills
-          </h2>
-          <div className="flex flex-wrap justify-center gap-2">
-            {resumeData.skills.map((skill, index) => (
-              <Badge key={index} variant="outline" className="text-lg px-3 py-1">
-                {skill}
-              </Badge>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   )
 }
@@ -737,23 +605,7 @@ const ElegantResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData 
         </section>
       ))}
 
-      {resumeData.skills && (
-        <section className={`${theme.spacing.section} mb-12`}>
-          <h2 className={`${theme.fontSize.section} font-light ${theme.colors.primary} mb-6 uppercase tracking-widest text-center`}>
-            Skills
-          </h2>
-          <div className="flex flex-wrap justify-center gap-3">
-            {resumeData.skills.map((skill, index) => (
-              <span 
-                key={index} 
-                className={`${theme.fontSize.small} ${theme.colors.text} border border-gray-300 px-3 py-1 rounded-full`}
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </section>
-      )}
+    
 
       <Separator className="my-8" />
 
