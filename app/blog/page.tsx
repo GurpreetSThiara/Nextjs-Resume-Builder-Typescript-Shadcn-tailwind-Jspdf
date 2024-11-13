@@ -7,30 +7,6 @@ import { ArrowRight, Search } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
- const recentPosts = [
-    {
-      link: '/blog/networking-strategies-for-job-seekers',
-      title: "Networking Strategies for Job Seekers",
-      date: "November 11, 2024",
-      image: "https://img.freepik.com/premium-vector/hands-using-tablet-check-social-networks_18591-25253.jpg?ga=GA1.1.198708123.1730970819&semt=ais_hybrid",
-      seoDescription: "Discover essential networking strategies for job seekers to build valuable professional connections and land your dream job. Learn how to network effectively both online and offline."
-    },
-    {
-      link: '/blog/highlight-soft-skills-on-your-resume',
-      title: "How to Highlight Soft Skills on Your Resume",
-      date: "November 11, 2024",
-      image: "https://img.freepik.com/premium-vector/soft-skills-vector-illustration-office-workers-empathy-skill-work-template_2175-16558.jpg?ga=GA1.1.198708123.1730970819&semt=ais_hybrid",
-      seoDescription: "Learn how to effectively showcase your soft skills on your resume, including communication, teamwork, and problem-solving. Enhance your chances of getting hired by emphasizing these essential qualities."
-    },
-    {
-      link: '/blog/resume-formatting-dos-and-donts',
-      title: "The Do's and Don'ts of Resume Formatting",
-      date: "November 11, 2024",
-      image: "https://img.freepik.com/premium-vector/hands-holding-signboard-with-tick-cross-symbols-flat-design_798171-2095.jpg?w=996",
-      seoDescription: "Master resume formatting with this comprehensive guide on the do’s and don’ts. Learn how to structure your resume to grab the attention of hiring managers and boost your chances of landing an interview."
-    }
-  ];
-  
 export default function ResumeBlog() {
     
   const featuredPosts = [
@@ -225,4 +201,3 @@ export default function ResumeBlog() {
   )
 }
 
-export {recentPosts}

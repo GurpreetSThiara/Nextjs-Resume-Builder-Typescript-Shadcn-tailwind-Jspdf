@@ -33,7 +33,7 @@ const templates = {
       },
       {
         feature: 'Customizable color scheme',
-        description: 'Personalize your resume with a color palette that fits your style.'
+        description: 'Personalize your resume with a color palette that fits you/template/[resumer style.'
       },
       {
         feature: 'ATS-friendly format',

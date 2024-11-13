@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { ArrowRight } from "lucide-react";
-import { recentPosts } from '@/app/blog/page';
+import { recentPosts } from '@/lib/constants';
+
 
 const Blog = () => {
 
