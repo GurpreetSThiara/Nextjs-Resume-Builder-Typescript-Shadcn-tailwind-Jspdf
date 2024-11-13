@@ -37,7 +37,7 @@ export default function AboutUs() {
                   <p className="mb-4">
                   Founded in 2024, resume.giveaways4u.com was born out of a simple yet powerful idea: everyone deserves access to tools that can help them land their dream job, regardless of their financial situation                  </p>
                   <p className="mb-4">
-                  Our team of career experts, HR professionals, and tech enthusiasts came together with a shared mission to democratize the job application process. We recognized that many talented individuals were being overlooked simply because their resumes weren't optimized for modern hiring practices.                  </p>
+                  Our team of career experts, HR professionals, and tech enthusiasts came together with a shared mission to democratize the job application process. We recognized that many talented individuals were being overlooked simply because their resumes weren&apos;t optimized for modern hiring practices.                  </p>
                   <p>
                   Today, {"we're "}proud to be helping job seekers create professional, ATS-friendly resumes that open doors to exciting career opportunities.                  </p>
                 </div>

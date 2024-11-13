@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-type ResumeProps = {
+export type ResumeProps = {
   theme: ThemeConfig,
   resumeData: ResumeData,
   font: FontConfig,
@@ -464,6 +464,7 @@ const CompactResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData 
 
 // Design 7: Bold Header
 const BoldHeaderResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }) => {
+  if(!pdfRef && !font && !theme && !resumeData) return null
   return (
     <div 
       ref={pdfRef} 
