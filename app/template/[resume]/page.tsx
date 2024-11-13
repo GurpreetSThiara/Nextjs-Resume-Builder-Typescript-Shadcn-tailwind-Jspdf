@@ -235,6 +235,7 @@ export default function TemplateDetail({ params }: { params: { resume: string } 
       addWrappedText(section.title.toUpperCase(), 12, "bold");
       yOffset += 10;
 
+      
       Object.entries(section.content).forEach(([key, bullets]) => {
         if (key) {
           const parts = key.split(" | ");
