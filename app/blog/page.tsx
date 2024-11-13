@@ -7,7 +7,7 @@ import { ArrowRight, Search } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
-export const recentPosts = [
+ const recentPosts = [
     {
       link: '/blog/networking-strategies-for-job-seekers',
       title: "Networking Strategies for Job Seekers",
@@ -225,3 +225,4 @@ export default function ResumeBlog() {
   )
 }
 
+export {recentPosts}
