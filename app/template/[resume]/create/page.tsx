@@ -336,11 +336,7 @@ export default function ResumePage() {
       format: "a4",
     });
 
-    const themes = {
-      default: { fontFamily: "times" },
-      times: { fontFamily: "times" },
-    };
-
+  
     const fontFamily = themes[theme]?.fontFamily || "times";
     pdf.setFont(fontFamily);
 
@@ -421,11 +417,8 @@ export default function ResumePage() {
       pdf.setDrawColor("#000000"); // Adjust the width as needed for boldness
 
       // Set the starting and ending points of the line
-      const x1 = 40,
-        y1 = 10,
-        x2 = 200,
-        y2 = 10;
-
+      const x1 = 40
+    
       // Draw the line
       pdf.line(x1, yOffset, pdfWidth - 40, yOffset);
       yOffset += 20;

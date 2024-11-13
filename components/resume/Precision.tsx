@@ -2,7 +2,7 @@ import { FontConfig, ResumeData, ThemeConfig } from '@/lib/types'
 import React, { LegacyRef } from 'react'
 import { Separator } from "@/components/ui/separator"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+
 
 
 export type ResumeProps = {
@@ -277,7 +277,7 @@ const TimelineResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData
           </h2>
           
           <div className="relative border-l-2 border-gray-200 ml-4">
-            {Object.entries(section.content).map(([key, bullets], index) => (
+            {Object.entries(section.content).map(([key, bullets]) => (
               <div key={key} className={`${theme.spacing.item} mb-6 ml-6`}>
                 <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px]" style={{top: '6px'}}></div>
                 {key && (

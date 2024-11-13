@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { ArrowRight } from "lucide-react";
 import { recentPosts } from '@/app/blog/page';
-import Image from 'next/image';
 
 const Blog = () => {
 

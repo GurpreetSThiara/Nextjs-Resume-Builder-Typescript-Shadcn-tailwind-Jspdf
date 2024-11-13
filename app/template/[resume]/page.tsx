@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useRef } from 'react'
+import { useCallback } from 'react'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { jsPDF } from "jspdf"
