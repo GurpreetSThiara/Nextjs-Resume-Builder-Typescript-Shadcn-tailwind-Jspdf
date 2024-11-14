@@ -10,6 +10,8 @@ import { useRouter } from 'next/navigation'
 import FAQ from '@/components/Accordians/FAQ'
 import Blog from '@/components/Blog/Blog'
 import PropellerScriptLoader from '@/components/PropellerScriptLoader'
+import InPushBanner from '@/components/Propeller/InPushBanner'
+import Interstitial from '@/components/Propeller/Interstitial'
 
 export default function HomePage() {
   const router = useRouter();
@@ -26,10 +28,10 @@ export default function HomePage() {
         <meta name="google-site-verification" content="B36csgvM_AAnw_8kLhlNeSVddetiFzp_0BimIM7IMVM" />
        
         <link rel="canonical" href="https://resume.giveaways4u.com" />
-     
-   
+        
       </Head>
-   <PropellerScriptLoader/>
+      <InPushBanner/>
+      <Interstitial/>
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
      
         
