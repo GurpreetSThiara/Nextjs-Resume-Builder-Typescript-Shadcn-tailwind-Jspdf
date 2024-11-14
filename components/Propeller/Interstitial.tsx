@@ -23,7 +23,7 @@ const Interstitial = () => {
     onLoad={() => console.log('Propeller Ads script loaded successfully')}
     onError={(e) => console.error('Error loading Propeller Ads script', e)}
   />
-    //   https://chikraighotoops.com/4/8506878
+
    
   )
 }

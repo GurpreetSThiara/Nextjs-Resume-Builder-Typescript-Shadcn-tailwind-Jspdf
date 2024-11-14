@@ -57,8 +57,8 @@ export default function ResumePage() {
   const font = "times";
   const pdfRef = useRef<HTMLDivElement>(null);
 
-  const [openSection, setOpenSection] = useState<string>();
-
+  const [openSection, setOpenSection] = useState<string>('1');
+   console.log(openSection)
   const handleAccordionChange = useCallback(
     (value: string) => {
       setOpenSection(value === openSection ? "" : value);
@@ -589,8 +589,10 @@ export default function ResumePage() {
   const memoizedSections = useMemo(
     () =>
       resumeData.sections.map((section) => (
-        <AccordionItem key={section.id} value={section.id}>
-          <AccordionTrigger>{section.title}</AccordionTrigger>
+        <AccordionItem className="bg-white rounded-lg px-4" key={section.id} value={section.id}>
+          <AccordionTrigger>
+            <h1 className="text-purple-600 font-bold text-xl">{section.title}</h1>
+          </AccordionTrigger>
           <AccordionContent>
             <Section
               section={section}
@@ -631,6 +633,7 @@ export default function ResumePage() {
         />
         <form className="space-y-4 ">
           <Accordion
+          className="py-2 gap-2 flex flex-col"
             type="single"
             value={openSection}
             onValueChange={handleAccordionChange}
@@ -659,7 +662,7 @@ export default function ResumePage() {
               <DropdownMenuGroup>
                 <DropdownMenuItem>
                   <Button variant={"ghost"} onClick={()=>{
-                    if(template === 'Classic'){
+                    if(template === 'classic' || template === 'Classic' ){
                       generateClassic();
                     }else{
                       generateModern();

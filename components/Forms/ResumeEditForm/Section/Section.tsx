@@ -57,7 +57,7 @@ export const Section = React.memo<SectionProps>(({
   }, [section.id, setResumeData]);
 
   return (
-    <div key={section.id} className="border p-4 rounded-md mb-4">
+    <div key={section.id} className="border-purple-100  p-4 rounded-md mb-4">
       <div className="flex items-center justify-between mb-2">
         {editingTitle ? (
           <Input
@@ -70,7 +70,7 @@ export const Section = React.memo<SectionProps>(({
             autoFocus
           />
         ) : (
-          <h2 className="text-xl font-bold">{section.title}</h2>
+          <h2 className="text-xl font-bold">{}</h2>
         )}
         <div className="flex space-x-2">
           <Button type="button" size="icon" variant="outline" onClick={() => setEditingTitle(true)}>
@@ -89,8 +89,8 @@ export const Section = React.memo<SectionProps>(({
       </div>
 
       {Object.entries(section.content).map(([key, bullets]) => (
-        <div key={key} className="mb-4">
-          <div className="flex justify-between items-center mb-2">
+        <div key={key} className="mb-4 border p-4 bg-purple-100 rounded-lg">
+          <div className="flex justify-between gap-2  items-center mb-2">
             {isEditingKey && editingKeyId === key ? (
               <Input
                 value={newKeyValue}
