@@ -9,7 +9,6 @@ import { Edit, Download, Share2,  ArrowRight, Search, Users,  Pencil } from 'luc
 import { useRouter } from 'next/navigation'
 import FAQ from '@/components/Accordians/FAQ'
 import Blog from '@/components/Blog/Blog'
-import PropellerScriptLoader from '@/components/PropellerScriptLoader'
 import InPushBanner from '@/components/Propeller/InPushBanner'
 import Interstitial from '@/components/Propeller/Interstitial'
 
