@@ -132,8 +132,8 @@ export default function Component() {
           />
         </div>
 
-        <div className="grid grid-cols-[240px_1fr] gap-10">
-          <aside className="self-start sticky top-6">
+        <div className="flex flex-col md:flex-row  gap-4 ">
+          <aside className="self-start   md:sticky top-6">
             <div className="space-y-4">
               <h2 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
                 Summary
