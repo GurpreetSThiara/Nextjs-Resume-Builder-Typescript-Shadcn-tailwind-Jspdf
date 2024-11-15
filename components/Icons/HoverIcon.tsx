@@ -8,6 +8,7 @@ const HoverIcon = ({
 }) => {
   return (
     <div>
+      {text}
         <Info/>
     </div>
   )
