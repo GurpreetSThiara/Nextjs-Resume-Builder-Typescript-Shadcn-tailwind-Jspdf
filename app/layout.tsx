@@ -18,6 +18,8 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Free Resume Builder",
   description: "Free Resume, CV builder. create professional and ATS friendly Resumes and download for free.",
+  keywords: "resume, resume builder, free resume, CV, curriculum vitae, free CV, resume maker, ATS-friendly resume, job application",
+  
 };
 
 export default function RootLayout({

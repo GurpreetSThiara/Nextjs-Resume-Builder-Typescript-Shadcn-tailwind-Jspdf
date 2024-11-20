@@ -1,17 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useState, useRef, useCallback, useMemo, useEffect } from "react";
+//basic react/next imports
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+} from "react";
+import { useParams } from "next/navigation";
 
-//import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button";
-//import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { jsPDF } from "jspdf";
+// UI Components Shadn cn and React Lucide Icons
 import { PlusCircle, ChevronDown, File, FileImage } from "lucide-react";
-import { ResumeData } from "@/lib/types";
-import { fonts, initialResumeData, themes } from "@/lib/constants";
-import ATS1 from "@/components/resume/Ats_1";
-
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,44 +22,67 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { PersonalInfo } from "@/components/Forms/ResumeEditForm/PersonalInfo/PersonalInfo";
-import { Section } from "@/components/Forms/ResumeEditForm/Section/Section";
-import html2canvas from "html2canvas";
-
-import {
-  BoldHeaderResume,
-  ResumeProps,
-} from "@/components/resume/Precision";
-
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+
+// Custom Components
+import { PersonalInfo } from "@/components/Forms/ResumeEditForm/PersonalInfo/PersonalInfo";
+import { Section } from "@/components/Forms/ResumeEditForm/Section/Section";
+
+//Resume Templates
+import ATS1 from "@/components/resume/Ats_1";
+import { BoldHeaderResume, ResumeProps } from "@/components/resume/Precision";
+import { GoogleResume } from "@/components/resume/google";
+
+//External Libraries
+
+import html2canvas from "html2canvas";
+
+// Custom types, Constants and utils
+import { ResumeData } from "@/lib/types";
+import { fonts, initialResumeData, themes } from "@/lib/constants";
+import {
+  generateClassic,
+  generateImpact,
+  generateModern,
+} from "@/lib/generateResume";
+import Head from "next/head";
 
 const allTemplates = new Map<string, React.FC<ResumeProps>>([
-  ['Modern', BoldHeaderResume],
-  ['Classic', ATS1],
+  ["modern", BoldHeaderResume],
+  ["classic", ATS1],
+  ["impact", GoogleResume],
 ]);
 export default function ResumePage() {
-  const params = useParams();
-  const temp : string | undefined = params.resume?.toString();
-  console.log(params);
-  console.log(initialResumeData)
+  const params = useParams(); // used to get the resume template
+
   const [resumeData, setResumeData] = useState<ResumeData>(initialResumeData);
-  const [template, setTemplate] = useState(params.resume);
+  const [template, setTemplate] = useState(params.resume ?? "classic");
 
-  const selectedResume = useMemo(() => allTemplates.get(temp ?? 'classic') ?? allTemplates.get('Classic'), [template]); 
+  const selectedResume = useMemo(
+    () =>
+      allTemplates.get(template.toString().toLowerCase() ?? "classic") ??
+      allTemplates.get("classic"),
+    [template]
+  );
 
+  const generateResumeFunction: any = {
+    classic: generateClassic,
+    modern: generateModern,
+    impact: generateImpact,
+  };
 
   const theme = "traditional";
   const font = "times";
   const pdfRef = useRef<HTMLDivElement>(null);
 
-  const [openSection, setOpenSection] = useState<string>('1');
-   console.log(openSection)
+  const [openSection, setOpenSection] = useState<string>("1");
+
   const handleAccordionChange = useCallback(
     (value: string) => {
       setOpenSection(value === openSection ? "" : value);
@@ -204,298 +228,8 @@ export default function ResumePage() {
     []
   );
 
-  const generateClassic = useCallback(() => {
-    if (!pdfRef.current) return;
-
-    const pdf = new jsPDF({
-      unit: "pt",
-      format: "a4",
-    });
-
-    const fontFamily =
-      themes[theme].fontFamily === "times" ? "times" : "helvetica";
-    pdf.setFont(fontFamily);
-
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const margin = 40;
-    let yOffset = margin;
-
-    const addWrappedText = (
-      text: string,
-      fontSize: number,
-      fontStyle = "normal",
-      maxWidth = pdfWidth - 2 * margin,
-      align = "left"
-    ) => {
-      pdf.setFontSize(fontSize);
-      pdf.setFont(fontFamily, fontStyle);
-      const lines = pdf.splitTextToSize(text, maxWidth);
-
-      if (yOffset > pdfHeight - margin) {
-        pdf.addPage();
-        yOffset = margin;
-      }
-
-      const xPos =
-        align === "center"
-          ? (pdfWidth - pdf.getTextWidth(lines[0])) / 2
-          : margin;
-
-      lines.forEach((line: string) => {
-        if (yOffset > pdfHeight - margin) {
-          pdf.addPage();
-          yOffset = margin;
-        }
-        pdf.text(line, xPos, yOffset);
-        yOffset += fontSize * 1.15;
-      });
-    };
-
-    // Add name and contact info
-    addWrappedText(
-      resumeData.name,
-      14,
-      "bold",
-      pdfWidth - 2 * margin,
-      "center"
-    );
-    yOffset += 5;
-
-    const contactInfo = `${resumeData.email} | ${resumeData.phone} | ${resumeData.location}`;
-    addWrappedText(contactInfo, 10, "normal", pdfWidth - 2 * margin, "center");
-    yOffset += 15;
-
-    // Add sections
-    resumeData.sections.forEach((section) => {
-      addWrappedText(section.title.toUpperCase(), 12, "bold");
-      yOffset += 10;
-
-      Object.entries(section.content).forEach(([key, bullets]) => {
-        if (key) {
-          const parts = key.split(" | ");
-          const title = parts[0];
-          const details = parts[1];
-
-          const maxTitleWidth = (pdfWidth - 2 * margin) * 0.6;
-
-          pdf.setFontSize(11);
-          pdf.setFont(fontFamily, "bold");
-
-          const wrappedTitle = pdf.splitTextToSize(title, maxTitleWidth);
-          pdf.text(wrappedTitle[0], margin, yOffset);
-
-          if (details) {
-            const detailsWidth = pdf.getTextWidth(details);
-            pdf.text(details, pdfWidth - margin - detailsWidth, yOffset);
-          }
-
-          yOffset += 15;
-
-          if (wrappedTitle.length > 1) {
-            for (let i = 1; i < wrappedTitle.length; i++) {
-              pdf.text(wrappedTitle[i], margin, yOffset);
-              yOffset += 12;
-            }
-          }
-        }
-
-        bullets.forEach((bullet) => {
-          if (yOffset > pdfHeight - margin) {
-            pdf.addPage();
-            yOffset = margin;
-          }
-
-          pdf.setFont(fontFamily, "normal");
-          pdf.setFontSize(10);
-          const bulletText = key ? `• ${bullet}` : bullet;
-          const lines = pdf.splitTextToSize(
-            bulletText,
-            pdfWidth - (key ? margin * 3 : margin * 2)
-          );
-
-          lines.forEach((line: string) => {
-            pdf.text(line, key ? margin + 15 : margin, yOffset);
-            yOffset += 12;
-          });
-        });
-        yOffset += 5;
-      });
-
-      yOffset += 15;
-    });
-
-    pdf.save("resume.pdf");
-  }, [resumeData, theme]);
-
-  const generateModern = () => {
-    if (!pdfRef.current) return;
-
-    const pdf = new jsPDF({
-      unit: "pt",
-      format: "a4",
-    });
-
-  
-    const fontFamily = themes[theme]?.fontFamily || "times";
-    pdf.setFont(fontFamily);
-
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const margin = 40;
-    let yOffset = margin;
-
-    // Add black header background
-    pdf.setFillColor(0, 0, 0);
-    pdf.rect(0, 0, pdfWidth, 80, "F");
-
-    const addWrappedText = (
-      text: string,
-      fontSize: number,
-      fontStyle = "normal",
-      maxWidth = pdfWidth - 2 * margin,
-      align = "left",
-      h = true
-    ) => {
-      pdf.setFontSize(fontSize);
-      pdf.setFont(fontFamily, fontStyle);
-      const lines = pdf.splitTextToSize(text, maxWidth);
-
-      if (yOffset > pdfHeight - margin) {
-        pdf.addPage();
-        yOffset = margin;
-      }
-
-      const xPos =
-        align === "center"
-          ? (pdfWidth - pdf.getTextWidth(lines[0])) / 2
-          : margin;
-
-      lines.forEach((line: string) => {
-        if (yOffset > pdfHeight - margin) {
-          pdf.addPage();
-          yOffset = margin;
-        }
-        pdf.text(line, xPos, yOffset);
-        if (h) yOffset += fontSize * 1.15;
-      });
-    };
-
-    // Header text in white
-    pdf.setTextColor(255, 255, 255);
-    addWrappedText(
-      resumeData.name,
-      18,
-      "bold",
-      pdfWidth - 2 * margin,
-      "center"
-    );
-    yOffset -= 5;
-
-    // Contact info in white
-    const contactInfo = `${resumeData.email} | ${resumeData.phone} | ${resumeData.location}`;
-    addWrappedText(contactInfo, 10, "normal", pdfWidth - 2 * margin, "center");
-    yOffset += 50;
-
-    // Reset text color to black for rest of document
-    pdf.setTextColor(0, 0, 0);
-
-    // Add sections
-    resumeData.sections.forEach((section) => {
-      // Section title
-      addWrappedText(
-        section.title.toUpperCase(),
-        16,
-        "bold",
-        pdfWidth - 2 * margin,
-        "left",
-        false
-      );
-      yOffset += 5;
-
-      pdf.setLineWidth(1);
-      pdf.setDrawColor("#000000"); // Adjust the width as needed for boldness
-
-      // Set the starting and ending points of the line
-      const x1 = 40
-    
-      // Draw the line
-      pdf.line(x1, yOffset, pdfWidth - 40, yOffset);
-      yOffset += 20;
-
-      // Section content
-      Object.entries(section.content).forEach(([key, bullets]) => {
-        if (key) {
-          const parts = key.split(" | ");
-          const title = parts[0];
-          const details = parts[1];
-
-          const maxTitleWidth = (pdfWidth - 2 * margin) * 0.6;
-
-          pdf.setFontSize(11);
-          pdf.setFont(fontFamily, "bold");
-
-          const wrappedTitle = pdf.splitTextToSize(title, maxTitleWidth);
-          pdf.text(wrappedTitle[0], margin, yOffset);
-
-          if (details) {
-            const detailsWidth = pdf.getTextWidth(details);
-            pdf.text(details, pdfWidth - margin - detailsWidth, yOffset);
-          }
-
-          yOffset += 15;
-
-          if (wrappedTitle.length > 1) {
-            for (let i = 1; i < wrappedTitle.length; i++) {
-              pdf.text(wrappedTitle[i], margin, yOffset);
-              yOffset += 12;
-            }
-          }
-        }
-
-        // Bullet points
-        bullets.forEach((bullet) => {
-          if (yOffset > pdfHeight - margin) {
-            pdf.addPage();
-            yOffset = margin;
-          }
-
-          pdf.setFont(fontFamily, "normal");
-          pdf.setFontSize(10);
-          const bulletText = key ? `• ${bullet}` : bullet;
-          const lines = pdf.splitTextToSize(
-            bulletText,
-            pdfWidth - (key ? margin * 3 : margin * 2)
-          );
-
-          lines.forEach((line: string) => {
-            pdf.text(line, key ? margin + 15 : margin, yOffset);
-            yOffset += 14;
-          });
-        });
-        yOffset += 5;
-      });
-
-      yOffset += 20;
-    });
-
-    pdf.save("resume.pdf");
-  };
-
-  // const memoizedATS1 = useMemo(
-  //   () => (
-  //     <ATS1
-  //       font={fonts[font]}
-  //       pdfRef={pdfRef}
-  //       resumeData={resumeData}
-  //       theme={themes[theme]}
-  //     />
-  //   ),
-  //   [font, resumeData, theme]
-  // );
-
   const saveAsImagePng = async () => {
-    if (pdfRef && pdfRef.current) {
+    if (pdfRef?.current) {
       const canvas = await html2canvas(pdfRef.current, {
         scale: 4, // Increase scale for high-quality output
         useCORS: true, // Useful if images or fonts need CORS handling
@@ -507,14 +241,8 @@ export default function ResumePage() {
     }
   };
 
-
-  useEffect(()=>{
-    setTemplate(params.resume)
-  },[
-
-  ])
   const saveAsImageWebp = async () => {
-    if (pdfRef && pdfRef.current) {
+    if (pdfRef.current) {
       const canvas = await html2canvas(pdfRef.current, {
         scale: 4,
         useCORS: true,
@@ -527,7 +255,7 @@ export default function ResumePage() {
   };
 
   const saveAsImageJpeg = async () => {
-    if (pdfRef && pdfRef.current) {
+    if (pdfRef.current) {
       const canvas = await html2canvas(pdfRef.current, {
         scale: 4,
         useCORS: true,
@@ -539,59 +267,22 @@ export default function ResumePage() {
     }
   };
 
-  // const saveAsHighQualityPdf = async () => {
-  //   if (pdfRef && pdfRef.current) {
-  //     const canvas = await html2canvas(pdfRef.current, {
-  //       scale: 2,
-  //       useCORS: true
-  //     });
+  useEffect(() => {
+    setTemplate(params.resume);
+  }, []);
 
-  //     const pdf = new jsPDF({
-  //       unit: 'mm',
-  //       format: 'a4',
-  //       orientation: 'portrait'
-  //     });
-
-  //     const imgData = canvas.toDataURL('image/jpeg', 1.0);
-  //     const imgWidth = pdf.internal.pageSize.getWidth() - 20;
-  //     const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  //     const paddingTop = 10;
-  //     const paddingLeft = 10;
-  //     const paddingBottom = 10;
-
-  //     const totalPages = Math.ceil((imgHeight + paddingTop + paddingBottom) / (pdf.internal.pageSize.getHeight() - paddingTop));
-
-  //     let position = 0;
-
-  //     // Only add new pages when needed (only if the content height exceeds the page height)
-  //     for (let page = 0; page < totalPages; page++) {
-  //       // Add image on the current page with padding
-  //       pdf.addImage(
-  //         imgData,
-  //         'JPEG',
-  //         paddingLeft,
-  //         paddingTop - position,
-  //         imgWidth,
-  //         imgHeight
-  //       );
-
-  //       if (page < totalPages - 1) {
-  //         pdf.addPage();
-  //       }
-
-  //       position += pdf.internal.pageSize.getHeight() - paddingTop - paddingBottom;
-  //     }
-
-  //     pdf.save('printableresume.pdf');
-  //   }
-  // };
   const memoizedSections = useMemo(
     () =>
       resumeData.sections.map((section) => (
-        <AccordionItem className="bg-white rounded-lg px-4" key={section.id} value={section.id}>
+        <AccordionItem
+          className="bg-white rounded-lg px-4"
+          key={section.id}
+          value={section.id}
+        >
           <AccordionTrigger>
-            <h1 className="text-purple-600 font-bold text-xl">{section.title}</h1>
+            <h1 className="text-purple-600 font-bold text-xl">
+              {section.title}
+            </h1>
           </AccordionTrigger>
           <AccordionContent>
             <Section
@@ -621,19 +312,73 @@ export default function ResumePage() {
   );
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen ">
+<>
+<Head>
+      <title>Free ATS-Friendly Resume Builder & Templates</title>
+      <meta name="description" content="Create professional, ATS-friendly resumes for free with customizable templates to help you land your dream job." />
+      <meta name="keywords" content="free resume builder, professional resume templates, ATS friendly, resume templates, job applications" />
+      <meta name="author" content="Gurpreet" />
+      <meta name="copyright" content="2024 FreeResumeBuilder" />
+      <meta name="robots" content="index, follow" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta property="og:title" content="Free Resume Builder Professional ATS Friendly Templates" />
+      <meta property="og:description" content="Free Professional ATS friendly Resume templates to help you land your dream job. all resume templates are completely 100% free, customize according to your needs. create professional Resume for job applications." />
+      <meta property="og:image" content="https://drive.google.com/file/d/1SShn45ecoAdy3p0MrpPLoSnDHyPKX8Zq/view?usp=sharing" />
+      <meta property="og:url" content={`https://resume.giveaways4u.com/templates/${template.toString()??'classic'}/create`} />
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content="Free Resume Builder ATS" />
+      {/* <meta property="fb:app_id" content="YOUR_APP_ID" /> */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="Free Resume Builder Professional ATS Friendly Templates" />
+      <meta name="twitter:description" content="Free Professional ATS friendly Resume templates to help you land your dream job. all resume templates are completely 100% free, customize according to your needs. create professional Resume for job applications." />
+      <meta name="twitter:image" content="https://drive.google.com/file/d/1SShn45ecoAdy3p0MrpPLoSnDHyPKX8Zq/view?usp=sharing" />
+      <meta name="twitter:site" content="@YourAtsResume" />
+      <script type="application/ld+json">
+  {`
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Free Resume Builder Tool",
+      "description": "Create professional, ATS-friendly resumes for free with our intuitive resume builder tool. Customize templates to fit your career needs and land your dream job.",
+      "url": "https://resume.giveaways4u.com/templates/${template.toString() ?? 'classic'}/create",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://resume.giveaways4u.com/templates/${template.toString() ?? 'classic'}/create"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Gurpreet",
+        "url": "https://gurpreetthiara-portfolio.vercel.app/"
+      },
+      "datePublished": "2024-11-20",
+     
+      "operatingSystem": "Web-based",
+      "softwareVersion": "1.0",
+      "applicationCategory": "Resume Builder",
+      "priceCurrency": "USD",
+      "offers": {
+        "@type": "Offer",
+        "url": "https://resume.giveaways4u.com/templates/${template.toString() ?? 'classic'}/create",
+        "price": "0.00",
+        "priceCurrency": "USD"
+      }
+    }
+  `}
+</script>
+
+    </Head>
+<div className="flex flex-col lg:flex-row min-h-screen ">
       <div className="w-full lg:w-1/2 p-4 overflow-y-auto bg-gradient-to-br from-purple-300 via-blue-200  to-indigo-300">
         <h1 className="text-2xl font-bold mb-4">
           <span className="text-3xl font-extrabold">Resume</span> Builder Tool
         </h1>
-        {/* <Header theme={theme} setTheme={setTheme} font={font} setFont={setFont} /> */}
         <PersonalInfo
           resumeData={resumeData}
           handleInputChange={handleInputChange}
         />
         <form className="space-y-4 ">
           <Accordion
-          className="py-2 gap-2 flex flex-col"
+            className="py-2 gap-2 flex flex-col"
             type="single"
             value={openSection}
             onValueChange={handleAccordionChange}
@@ -661,25 +406,38 @@ export default function ResumePage() {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem>
-                  <Button variant={"ghost"} onClick={()=>{
-                    if(template === 'classic' || template === 'Classic' ){
-                      generateClassic();
-                    }else{
-                      generateModern();
-                    }
-                  }}>
+                  <Button
+                    variant={"ghost"}
+                    onClick={() => {
+                      const fun = generateResumeFunction[template.toString().toLowerCase()];
+                      if (fun) {
+                        fun({ pdfRef, resumeData, theme: themes[theme] });
+                      }
+                    }}
+                  >
                     <File className="mr-2 h-4 w-4 text-red-500" />
                     PDF (ATS-friendly)
                   </Button>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Button onClick={()=>{
-                      if(template === 'Classic'){
-                        generateClassic();
-                      }else{
-                        generateModern();
+                  <Button
+                    onClick={() => {
+                      if (template === "Classic") {
+                        generateClassic({
+                          pdfRef,
+                          resumeData,
+                          theme: themes[theme],
+                        });
+                      } else {
+                        generateModern({
+                          pdfRef,
+                          resumeData,
+                          theme: themes[theme],
+                        });
                       }
-                  }} variant={"ghost"}>
+                    }}
+                    variant={"ghost"}
+                  >
                     <File className="mr-2 h-4 w-4 text-blue-500" />
                     PDF (Print-friendly)
                   </Button>
@@ -712,16 +470,19 @@ export default function ResumePage() {
           </DropdownMenu>
         </div>
         <div className="p-4 bg-white overflow-y-auto">
-          
-          {React.createElement(selectedResume as React.ComponentType<ResumeProps>, {
-  font: fonts[font],
-  pdfRef: pdfRef,
-  resumeData: resumeData,
-  theme: themes[theme],
-})}
+          {React.createElement(
+            selectedResume as React.ComponentType<ResumeProps>,
+            {
+              font: fonts[font],
+              pdfRef: pdfRef,
+              resumeData: resumeData,
+              theme: themes[theme],
+            }
+          )}
           {/* <TimelineResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
         </div>
       </div>
     </div>
+</>
   );
 }

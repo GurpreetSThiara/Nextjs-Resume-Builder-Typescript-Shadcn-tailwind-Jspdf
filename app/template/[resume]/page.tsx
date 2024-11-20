@@ -10,6 +10,8 @@ import { CheckCircle, Download, Edit, ArrowRight, Users } from 'lucide-react'
 
 import resume1 from '../../../public/images/1.png'
 import resume2 from '../../../public/images/2.png'
+import resume3 from '../../../public/images/3.png'
+
 import Link from 'next/link'
 
 const templates = {
@@ -17,7 +19,7 @@ const templates = {
     id: 1,
     name: 'Classic Professional',
     description: 'A timeless design suitable for traditional industries.',
-    image: '/placeholder.svg?height=600&width=400',
+    image: resume1,
     features: [
       {
         feature: 'Clean and professional layout',
@@ -55,7 +57,7 @@ const templates = {
     id: 2,
     name: 'Modern Creative',
     description: 'A contemporary layout ideal for creative professionals and startups.',
-    image: '/placeholder.svg?height=600&width=400',
+    image: resume2,
     features: [
       {
         feature: 'Sleek and modern design',
@@ -88,7 +90,46 @@ const templates = {
       text: "The Modern Creative template perfectly showcases my portfolio and skills. It's helped me stand out in the competitive design industry.",
       author: "Alex M., Graphic Designer"
     }
+  },
+  impact:{
+    "id": 4,
+    "name": "Professional Impact",
+    "description": "A clean, ATS-friendly resume template tailored for professionals in technical and leadership roles, highlighting achievements with a modern design.",
+    "image": resume3,
+    "features": [
+      {
+        "feature": "Clear and structured layout",
+        "description": "Organized sections for education, experience, skills, and certifications, making information easy to find."
+      },
+      {
+        "feature": "ATS-friendly format",
+        "description": "Optimized design to ensure compatibility with applicant tracking systems and increase application visibility."
+      },
+      {
+        "feature": "Focus on quantifiable achievements",
+        "description": "Highlights accomplishments with measurable metrics to showcase your professional impact effectively."
+      },
+      {
+        "feature": "One-page design",
+        "description": "Space-efficient format that condenses essential information into a single page for recruiter convenience."
+      },
+      {
+        "feature": "Customizable for different industries",
+        "description": "Easily adaptable layout for professionals in tech, business, project management, or creative fields."
+      }
+    ],
+    "bestFor": [
+      "Software Engineers: Ideal for showcasing technical expertise and coding achievements.",
+      "Project Managers: Perfect for highlighting leadership roles and collaborative project successes.",
+      "Data Analysts: Great for presenting metrics-driven results and certifications.",
+      "Business Professionals: Tailored to emphasize strategy, leadership, and problem-solving skills."
+    ],
+    "testimonial": {
+      "text": "This resume template helped me land interviews with top tech companies. Its clean, metrics-focused design made my achievements stand out!",
+      "author": "Raj S., Software Engineer"
+    }
   }
+  
 }
 
 const sampleResumeData = {
@@ -478,7 +519,7 @@ export default function TemplateDetail() {
           <div className="container mx-auto px-4">
             <div className="bg-gray-100 p-4 rounded-lg">
               <Image
-                src={templateName === 'classic' ? resume1 : resume2}
+                src={template.image}
                 alt={`${template.name} resume template preview`}
                 width={600}
                 height={800}

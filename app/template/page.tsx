@@ -11,6 +11,10 @@ import { Search, ArrowRight } from 'lucide-react'
 
 import resume1 from '../../public/images/1.png'
 import resume2 from '../../public/images/2.png'
+import resume3 from '../../public/images/3.png'
+
+
+
 
 const templates = [
   {
@@ -24,6 +28,12 @@ const templates = [
     name: 'Modern Professional',
     description: 'A contemporary layout ideal for creative professionals.',
     image: resume2,
+  },
+  {
+    id: 3,
+    name: 'Impact Professional',
+    description: 'A contemporary layout ideal for creative professionals.',
+    image: resume3,
   },
 ]
 

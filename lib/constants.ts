@@ -1,3 +1,4 @@
+import { rgb } from "pdf-lib";
 import { FontConfig, FontType, ResumeData, ThemeConfig, ThemeType } from "./types";
 
 export const themes: Record<ThemeType, ThemeConfig> = {
@@ -17,6 +18,23 @@ export const themes: Record<ThemeType, ThemeConfig> = {
         primary: 'text-gray-900',
         secondary: 'text-gray-600',
         text: 'text-gray-700'
+      },
+      rgb: {
+        primary: rgb(17/255, 17/255, 17/255),
+        secondary: rgb(99/255, 99/255, 99/255),
+        text: rgb(55/255, 55/255, 55/255),
+        heading: rgb(29/255,78/255,216/255)
+      },
+      pdfSize: {
+        name: 24,
+        section: 14,
+        content: 12,
+        small: 10
+      },
+      pdfSpacing: {
+        section: 24,
+        item: 4,
+        page:16
       }
     },
     traditional: {
@@ -35,6 +53,23 @@ export const themes: Record<ThemeType, ThemeConfig> = {
         primary: 'text-black',
         secondary: 'text-gray-800',
         text: 'text-gray-900'
+      },
+      rgb:{
+        primary: rgb(17/255, 17/255, 17/255),
+        secondary: rgb(99/255, 99/255, 99/255),
+        text: rgb(55/255, 55/255, 55/255),
+        heading:rgb(29/255,78/255,216/255)
+      },
+      pdfSize: {
+        name: 24,
+        section: 14,
+        content: 12,
+        small: 10
+      },
+      pdfSpacing: {
+        section: 24,
+        item: 4,
+        page:16
       }
     },
     minimal: {
@@ -53,6 +88,23 @@ export const themes: Record<ThemeType, ThemeConfig> = {
         primary: 'text-gray-800',
         secondary: 'text-gray-600',
         text: 'text-gray-700'
+      },
+      rgb: {
+        primary: rgb(17/255, 17/255, 17/255),
+        secondary: rgb(99/255, 99/255, 99/255),
+        text: rgb(55/255, 55/255, 55/255),
+        heading: rgb(29/255,78/255,216/255)
+      },
+      pdfSize: {
+        name: 24,
+        section: 14,
+        content: 12,
+        small: 10
+      },
+      pdfSpacing: {
+        section: 24,
+        item: 4,
+        page:16
       }
     }
   }
