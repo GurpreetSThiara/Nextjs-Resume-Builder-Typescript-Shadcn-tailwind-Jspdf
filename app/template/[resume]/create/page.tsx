@@ -62,7 +62,7 @@ export default function ResumePage() {
   const params = useParams(); // used to get the resume template
 
   const [resumeData, setResumeData] = useState<ResumeData>(initialResumeData);
-  const [template, setTemplate] = useState(params.resume ?? "classic");
+  const template = useState(params.resume ?? "classic");
 
   const selectedResume = useMemo(
     () =>
@@ -268,7 +268,7 @@ export default function ResumePage() {
   };
 
   useEffect(() => {
-    setTemplate(params.resume);
+    //setTemplate(params.resume?.toString());
   }, []);
 
   const memoizedSections = useMemo(
@@ -422,7 +422,7 @@ export default function ResumePage() {
                 <DropdownMenuItem>
                   <Button
                     onClick={() => {
-                      if (template === "Classic") {
+                      if (template.toString() === "Classic") {
                         generateClassic({
                           pdfRef,
                           resumeData,
