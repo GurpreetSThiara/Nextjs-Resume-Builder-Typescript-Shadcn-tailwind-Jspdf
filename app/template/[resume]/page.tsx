@@ -13,6 +13,7 @@ import resume2 from '../../../public/images/2.png'
 import resume3 from '../../../public/images/3.png'
 
 import Link from 'next/link'
+import TemplateDetailRouteHead from '@/components/seo/TemplateDetailRoute'
 
 const templates = {
   classic: {
@@ -487,7 +488,9 @@ export default function TemplateDetail() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+<>
+<TemplateDetailRouteHead templateName={templateName}/>
+<div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <main className="flex-1 z-50">
         <section className="relative overflow-hidden py-20 md:py-32 lg:py-48">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-600 pointer-events-none" />
@@ -604,5 +607,6 @@ export default function TemplateDetail() {
         </section>
       </main>
     </div>
+</>
   )
 }

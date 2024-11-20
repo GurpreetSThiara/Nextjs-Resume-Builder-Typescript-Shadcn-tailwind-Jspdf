@@ -12,6 +12,7 @@ import { Search, ArrowRight } from 'lucide-react'
 import resume1 from '../../public/images/1.png'
 import resume2 from '../../public/images/2.png'
 import resume3 from '../../public/images/3.png'
+import TemplatesRouteHead from '@/components/seo/TemplatesRouteHead'
 
 
 
@@ -84,6 +85,8 @@ export default function ResumeTemplatesPage() {
   }, [])
 
   return (
+    <>
+    <TemplatesRouteHead/>
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="container mx-auto px-4 py-16">
         <section className="text-center mb-16">
@@ -135,6 +138,6 @@ export default function ResumeTemplatesPage() {
           </Button>
         </section>
       </div>
-    </div>
+    </div></>
   )
 }
