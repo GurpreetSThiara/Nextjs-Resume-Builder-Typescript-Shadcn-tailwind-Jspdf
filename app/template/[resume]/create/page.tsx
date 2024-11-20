@@ -62,7 +62,7 @@ export default function ResumePage() {
   const params = useParams(); // used to get the resume template
 
   const [resumeData, setResumeData] = useState<ResumeData>(initialResumeData);
-  const template = useState(params.resume ?? "classic");
+  const template = params.resume ?? "classic"
 
   const selectedResume = useMemo(
     () =>
