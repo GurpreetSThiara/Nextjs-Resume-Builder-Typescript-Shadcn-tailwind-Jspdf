@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
-import { PDFDocument, PageSizes, degrees } from 'pdf-lib'
+import { PDFDocument, PageSizes, } from 'pdf-lib'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -107,7 +107,8 @@ export default function PDFEditor() {
 
   const movePage = (fromIndex: number, toIndex: number) => {
     if (!pdfDoc) return
-    const page = pdfDoc.removePage(fromIndex)
+    const page = pdfDoc.getPage(fromIndex)
+    pdfDoc.removePage(fromIndex)
     pdfDoc.insertPage(toIndex, page)
     setPdfDoc(pdfDoc)
   }
