@@ -27,7 +27,7 @@ export const themes: Record<ThemeType, ThemeConfig> = {
       },
       pdfSize: {
         name: 24,
-        
+        //fdgrgreg
         section: 14,
         content: 12,
         small: 10
