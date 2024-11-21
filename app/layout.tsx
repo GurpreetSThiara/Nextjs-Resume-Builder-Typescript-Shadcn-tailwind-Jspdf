@@ -16,9 +16,16 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Free Resume Builder",
+  title: {
+    default:"Free Resume Builder",
+    template:"%s - Free Resume Builder"
+  },
   description: "Free Resume, CV builder. create professional and ATS friendly Resumes and download for free.",
   keywords: "resume, resume builder, free resume, CV, curriculum vitae, free CV, resume maker, ATS-friendly resume, job application",
+
+  twitter:{
+    card:"summary_large_image"
+  }
   
 };
 

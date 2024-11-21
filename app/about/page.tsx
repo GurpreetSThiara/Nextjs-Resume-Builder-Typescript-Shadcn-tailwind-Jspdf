@@ -3,7 +3,12 @@ import Head from 'next/head'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Rocket, Heart, CheckCircle } from 'lucide-react'
+import { Metadata } from 'next'
 
+
+export const metadata: Metadata = {
+  title:"About"
+}
 export default function AboutUs() {
     const benefits = [
         "ATS-Friendly Templates",
