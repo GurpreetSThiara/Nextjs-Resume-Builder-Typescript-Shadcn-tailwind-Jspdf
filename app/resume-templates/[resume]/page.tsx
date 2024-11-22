@@ -489,7 +489,7 @@ export default function TemplateDetail() {
 
   return (
 <>
-<TemplateDetailRouteHead templateName={templateName}/>
+
 <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <main className="flex-1 z-50">
         <section className="relative overflow-hidden py-20 md:py-32 lg:py-48">
@@ -502,7 +502,7 @@ export default function TemplateDetail() {
               {template.description}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href={`/template/${templateName}/create`}>
+              <Link href={`/resume-templates/${templateName}/create`}>
               <Button size="lg" className="bg-white text-purple-600 hover:bg-purple-50 transition-all duration-300 transform hover:scale-105">
                 <Edit className="mr-2 h-4 w-4" /> Customize Now
               </Button>
@@ -542,7 +542,7 @@ export default function TemplateDetail() {
                 <Card key={index} className="bg-gray-50 border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <CardHeader>
                     <CheckCircle className="h-8 w-8 text-purple-600 mb-2" />
-                    <CardTitle className="text-xl font-semibold text-gray-800">{feature.feature}</CardTitle>
+                    <CardTitle className="text-xl font-semitemplatebold text-gray-800">{feature.feature}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-gray-600">{feature.description}</p>
@@ -598,10 +598,12 @@ export default function TemplateDetail() {
                 Start building your career-changing resume with our easy-to-use template.
                 100% free - no catches, no hidden fees.
               </p>
-              <Button size="lg" className="bg-white text-purple-600 hover:bg-purple-50 transition-all duration-300 transform hover:scale-105">
+           <Link href= {`/resume-templates/${templateName}/create`}>
+           <Button size="lg" className="bg-white text-purple-600 hover:bg-purple-50 transition-all duration-300 transform hover:scale-105">
                 Create Your Free Resume Now
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
+           </Link>
             </div>
           </div>
         </section>

@@ -89,7 +89,7 @@ const Template = React.memo(
         />
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Link href={`/template/${name.split(" ")[0].toLowerCase()}`}>
+        <Link href={`/resume-templates/${name.split(" ")[0].toLowerCase()}`}>
           <Button
             variant="outline"
             className="text-purple-600 border-purple-600 hover:bg-purple-50"
@@ -97,7 +97,7 @@ const Template = React.memo(
             Details
           </Button>
         </Link>
-        <Link href={`/template/${name.split(" ")[0].toLowerCase()}/create`}>
+        <Link href={`/resume-templates/${name.split(" ")[0].toLowerCase()}/create`}>
           <Button className="bg-purple-400 text-gray-800  text-bol hover:bg-purple-700">
             Use This    <span className="text-2xl text-gray-950 ">
                 <strong>Resume</strong>
