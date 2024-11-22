@@ -19,11 +19,14 @@ import Blog from "@/components/Blog/Blog";
 import InPushBanner from "@/components/Propeller/InPushBanner";
 import Interstitial from "@/components/Propeller/Interstitial";
 
+
+//import resumeLogo from '../public/Free Resume Builder 100% free No Hidden Cost.png'
+
 export default function HomePage() {
   const router = useRouter();
 
   const navigate = () => {
-    router.push("/template");
+    router.push("/resume-templates");
   };
   return (
     <>
@@ -127,6 +130,9 @@ export default function HomePage() {
                 </strong>{" "}
                 for Free
               </h1>
+              {/* <div className="">
+                <Image src={resumeLogo} alt="Free Resume Builder 100% free No Hidden Cost" width={600} height={600}/>
+              </div> */}
               <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
                 Craft{" "}
                 <strong>

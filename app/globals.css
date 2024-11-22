@@ -72,3 +72,21 @@ html {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes colorShift {
+  0% {
+    color: #6B46C1; /* Purple */
+  }
+  70% {
+    color: #D69E2E; /* Yellow */
+  }
+  100% {
+    color: #000; /* Purple */
+  }
+}
+
+.animated-text {
+
+  font-weight: bold;
+  animation: colorShift 6s infinite;
+}

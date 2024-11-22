@@ -5,12 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileText, Shield, Lock } from 'lucide-react'
 
-import { Metadata } from 'next'
 
-
-// export const metadata: Metadata = {
-//   title:"Legal"
-// }
 
 export default function Legal() {
   return (
