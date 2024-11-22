@@ -13,7 +13,7 @@ import resume2 from '../../../public/images/2.png'
 import resume3 from '../../../public/images/3.png'
 
 import Link from 'next/link'
-import TemplateDetailRouteHead from '@/components/seo/TemplateDetailRoute'
+
 
 const templates = {
   classic: {
