@@ -9,10 +9,7 @@ const config: Config = {
   ],
   theme: {
   	extend: {
-		animation: {
-			bounceInfinite: 'bounce 1s ease-in-out infinite',
-			colorShiftInfinite: 'colorShift 2s ease-in-out infinite',
-		  },
+	
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
@@ -84,6 +81,6 @@ const config: Config = {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [],
 };
 export default config;
