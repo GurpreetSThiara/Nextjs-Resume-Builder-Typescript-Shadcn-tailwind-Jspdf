@@ -18,7 +18,12 @@ import FAQ from "@/components/Accordians/FAQ";
 import Blog from "@/components/Blog/Blog";
 import InPushBanner from "@/components/Propeller/InPushBanner";
 import Interstitial from "@/components/Propeller/Interstitial";
+import Carousel from "@/components/Header/Carousal";
+import FeatureGrid from "@/components/grid/FeatureGrid";
 
+// import classicResume from '../public/images/1.png'
+// import ModernProfessional from '../public/images/1.png'
+// import ImpactProfessional from '../public/images/1.png'
 
 //import resumeLogo from '../public/Free Resume Builder 100% free No Hidden Cost.png'
 
@@ -118,7 +123,8 @@ export default function HomePage() {
 
       <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         <main className="flex-1 z-50">
-          <section className="relative overflow-hidden py-20 md:py-32 lg:py-48">
+         <div className="block ">
+         <section className=" w-full relative overflow-hidden py-20 md:py-32 lg:py-48">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-600 pointer-events-none" />
             <div className="relative container mx-auto px-4 text-center">
               <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl  md:text-6xl mb-6 text-white">
@@ -148,6 +154,9 @@ export default function HomePage() {
                 </strong>{" "}
                 that land interviews. Powered by AI, 100% free, no hidden
                 charges.
+                <strong>Best for students and professionals</strong>
+                <strong className="hidden">resume builder los angeles</strong>
+                <strong className="hidden">maintenance building resume</strong>
               </p>
 
               <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -169,6 +178,30 @@ export default function HomePage() {
             </div>
             <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px] pointer-events-none" />
           </section>
+       <div className="block lg:flex">
+       <section className=" w-full lg:w-[50%] bg-gradient-to-b from-background to-muted flex flex-col justify-center items-center">
+        <h1 className='text-center font-bold text-4xl py-4'>Choose any from Completely <strong><span>FREE Professional Resume Templates</span></strong></h1>
+
+<Carousel/>
+        </section>
+        <FeatureGrid/>
+        {/* <section className="grid grid-cols-2 ">
+          {
+            ['Free Resume Maker','No Hidden Charges','Highly ATS Friendly','Professonal Free Templates','Multiple Downlaod Formats'].map((item,index)=>{
+              return <div className="" key={`key ${index}`}>
+                <div className="bg-purple-500 p-2 rounded-lg">
+                  <h1 className="text-2xl text-gray-50 " >
+                    <strong>
+                    {item}
+                    </strong>
+                  </h1>
+                </div>
+              </div>
+            })
+          }
+        </section> */}
+       </div>
+         </div>
 
           <section id="features" className="py-20 bg-white">
             <div className="container mx-auto px-4">
