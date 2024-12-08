@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://resume.giveaways4u.com
+
+# Sitemaps
+Sitemap: https://resume.giveaways4u.com/sitemap.xml

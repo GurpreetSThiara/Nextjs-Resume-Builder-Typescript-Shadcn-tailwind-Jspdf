@@ -1,3 +1,5 @@
+import { RGB } from "pdf-lib"
+
 export type SectionContent = {
     [key: string]: string[]
   }
@@ -35,6 +37,24 @@ export type SectionContent = {
       primary: string
       secondary: string
       text: string
+    },
+
+    rgb: {
+      primary: RGB;
+      secondary: RGB;
+      text: RGB;
+      heading:RGB
+    },
+    pdfSize: {
+      name: number;
+      section: number;
+      content: number;
+      small: number;
+    },
+    pdfSpacing: {
+      section: number;
+      item: number;
+      page:number
     }
   }
 

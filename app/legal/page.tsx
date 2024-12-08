@@ -1,8 +1,11 @@
+"use client"
 import Head from 'next/head'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileText, Shield, Lock } from 'lucide-react'
+
+
 
 export default function Legal() {
   return (

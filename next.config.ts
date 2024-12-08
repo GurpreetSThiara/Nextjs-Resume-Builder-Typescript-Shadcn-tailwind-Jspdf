@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: ['img.freepik.com'],
   },
+
 };
 
 export default nextConfig;

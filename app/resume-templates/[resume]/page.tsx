@@ -10,14 +10,17 @@ import { CheckCircle, Download, Edit, ArrowRight, Users } from 'lucide-react'
 
 import resume1 from '../../../public/images/1.png'
 import resume2 from '../../../public/images/2.png'
+import resume3 from '../../../public/images/3.png'
+
 import Link from 'next/link'
+
 
 const templates = {
   classic: {
     id: 1,
     name: 'Classic Professional',
     description: 'A timeless design suitable for traditional industries.',
-    image: '/placeholder.svg?height=600&width=400',
+    image: resume1,
     features: [
       {
         feature: 'Clean and professional layout',
@@ -55,7 +58,7 @@ const templates = {
     id: 2,
     name: 'Modern Creative',
     description: 'A contemporary layout ideal for creative professionals and startups.',
-    image: '/placeholder.svg?height=600&width=400',
+    image: resume2,
     features: [
       {
         feature: 'Sleek and modern design',
@@ -88,7 +91,46 @@ const templates = {
       text: "The Modern Creative template perfectly showcases my portfolio and skills. It's helped me stand out in the competitive design industry.",
       author: "Alex M., Graphic Designer"
     }
+  },
+  impact:{
+    "id": 4,
+    "name": "Professional Impact",
+    "description": "A clean, ATS-friendly resume template tailored for professionals in technical and leadership roles, highlighting achievements with a modern design.",
+    "image": resume3,
+    "features": [
+      {
+        "feature": "Clear and structured layout",
+        "description": "Organized sections for education, experience, skills, and certifications, making information easy to find."
+      },
+      {
+        "feature": "ATS-friendly format",
+        "description": "Optimized design to ensure compatibility with applicant tracking systems and increase application visibility."
+      },
+      {
+        "feature": "Focus on quantifiable achievements",
+        "description": "Highlights accomplishments with measurable metrics to showcase your professional impact effectively."
+      },
+      {
+        "feature": "One-page design",
+        "description": "Space-efficient format that condenses essential information into a single page for recruiter convenience."
+      },
+      {
+        "feature": "Customizable for different industries",
+        "description": "Easily adaptable layout for professionals in tech, business, project management, or creative fields."
+      }
+    ],
+    "bestFor": [
+      "Software Engineers: Ideal for showcasing technical expertise and coding achievements.",
+      "Project Managers: Perfect for highlighting leadership roles and collaborative project successes.",
+      "Data Analysts: Great for presenting metrics-driven results and certifications.",
+      "Business Professionals: Tailored to emphasize strategy, leadership, and problem-solving skills."
+    ],
+    "testimonial": {
+      "text": "This resume template helped me land interviews with top tech companies. Its clean, metrics-focused design made my achievements stand out!",
+      "author": "Raj S., Software Engineer"
+    }
   }
+  
 }
 
 const sampleResumeData = {
@@ -446,7 +488,9 @@ export default function TemplateDetail() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+<>
+
+<div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <main className="flex-1 z-50">
         <section className="relative overflow-hidden py-20 md:py-32 lg:py-48">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-600 pointer-events-none" />
@@ -458,7 +502,7 @@ export default function TemplateDetail() {
               {template.description}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href={`/template/${templateName}/create`}>
+              <Link href={`/resume-templates/${templateName}/create`}>
               <Button size="lg" className="bg-white text-purple-600 hover:bg-purple-50 transition-all duration-300 transform hover:scale-105">
                 <Edit className="mr-2 h-4 w-4" /> Customize Now
               </Button>
@@ -478,7 +522,7 @@ export default function TemplateDetail() {
           <div className="container mx-auto px-4">
             <div className="bg-gray-100 p-4 rounded-lg">
               <Image
-                src={templateName === 'classic' ? resume1 : resume2}
+                src={template.image}
                 alt={`${template.name} resume template preview`}
                 width={600}
                 height={800}
@@ -498,7 +542,7 @@ export default function TemplateDetail() {
                 <Card key={index} className="bg-gray-50 border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <CardHeader>
                     <CheckCircle className="h-8 w-8 text-purple-600 mb-2" />
-                    <CardTitle className="text-xl font-semibold text-gray-800">{feature.feature}</CardTitle>
+                    <CardTitle className="text-xl font-semitemplatebold text-gray-800">{feature.feature}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-gray-600">{feature.description}</p>
@@ -554,14 +598,17 @@ export default function TemplateDetail() {
                 Start building your career-changing resume with our easy-to-use template.
                 100% free - no catches, no hidden fees.
               </p>
-              <Button size="lg" className="bg-white text-purple-600 hover:bg-purple-50 transition-all duration-300 transform hover:scale-105">
+           <Link href= {`/resume-templates/${templateName}/create`}>
+           <Button size="lg" className="bg-white text-purple-600 hover:bg-purple-50 transition-all duration-300 transform hover:scale-105">
                 Create Your Free Resume Now
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
+           </Link>
             </div>
           </div>
         </section>
       </main>
     </div>
+</>
   )
 }

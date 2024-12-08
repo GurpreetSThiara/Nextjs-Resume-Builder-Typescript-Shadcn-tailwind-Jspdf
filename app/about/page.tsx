@@ -1,8 +1,12 @@
+"use client"
 import Head from 'next/head'
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Rocket, Heart, CheckCircle } from 'lucide-react'
+
+
+
 
 export default function AboutUs() {
     const benefits = [
