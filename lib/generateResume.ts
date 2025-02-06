@@ -78,6 +78,52 @@ export async function generateImpact({pdfRef,theme , resumeData}:generationProps
    // yOffset -= (pdFtheme.pdfSpacing?.page);
     yOffset -= (pdFtheme.pdfSpacing?.section);
 
+// Custom Section with Proper Justification Between Key & Value
+const customEntries = Object.entries(resumeData.custom).filter(([_, item]) => !item.hidden);
+const columnCount = 2;
+const rowCount = Math.ceil(customEntries.length / columnCount);
+
+const leftX = margin;
+const rightX = margin + pageWidth / 2; // Right column starts halfway
+const columnWidth = pageWidth / 2 - 10;
+const rowHeight = 15;
+
+for (let i = 0; i < rowCount; i++) {
+  ensureSpace(rowHeight + 5);
+
+  for (let j = 0; j < columnCount; j++) {
+    const index = i + j * rowCount;
+    if (index >= customEntries.length) break;
+
+    const [key, item] = customEntries[index];
+    const xPos = j === 0 ? leftX : rightX;
+
+    // Key (left-aligned)
+    currentPage.drawText(`${key}:`, {
+      x: xPos,
+      y: yOffset,
+      size: pdFtheme.pdfSize?.small,
+      font: boldFont,
+      color: pdFtheme.rgb?.text,
+    });
+
+    // Value (right-aligned within the same column)
+    const textWidth = regularFont.widthOfTextAtSize(item.content, pdFtheme.pdfSize?.small);
+    currentPage.drawText(item.content, {
+      x: xPos + columnWidth - textWidth, // Align to the right within the column
+      y: yOffset,
+      size: pdFtheme.pdfSize?.small,
+      font: regularFont,
+      color: pdFtheme.rgb?.text,
+    });
+  }
+
+  yOffset -= rowHeight;
+}
+
+    
+yOffset -= (pdFtheme.pdfSpacing?.section)/2;
+
   
     // Sections
     for (const section of resumeData.sections) {

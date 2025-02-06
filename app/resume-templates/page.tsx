@@ -1,7 +1,7 @@
 import ResumeTemplatesPage from "@/components/resume/TemplatesPage/Templates";
 
 export const metadata = {
-  title: "Professional Resume Templates",
+  title: "Professional Free Resume Templates",
   description:
     "Choose from a variety of 100% free professional resume templates. Perfect designs to showcase your skills and experience. Build and download your resume for free today!",
   keywords:

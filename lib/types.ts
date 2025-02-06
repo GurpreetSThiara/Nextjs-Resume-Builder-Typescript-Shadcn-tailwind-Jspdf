@@ -9,12 +9,26 @@ export type SectionContent = {
     title: string
     content: SectionContent
   }
+
+  export type CustomPersonalInformationItem = {
+    id:string
+    title:string
+    content:string
+    link:boolean
+    hidden:boolean
+  }
+
+  export type CustomPersonalInformation = {
+    [key:string] : CustomPersonalInformationItem
+  }
   
  export type ResumeData = {
     name: string
     email: string
     phone: string
     location: string
+    linkedin:string
+    custom:CustomPersonalInformation
     sections: Section[]
   }
   

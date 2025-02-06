@@ -134,6 +134,72 @@ export  const initialResumeData: ResumeData = {
     email: "john.doe@resumeworld.com",
     phone: "+1 (123) 456-7890",
     location: "San Francisco, CA",
+    linkedin:"linkedin",
+    custom:{
+        "date_of_birth":{
+          "title": "date_of_birth",
+          "content": "January 1, 1990",
+          "hidden": false,
+          "id": "custom_dob_963852",
+          "link": false
+        },
+        nationality:{
+          "title": "nationality",
+          "content": "American",
+          "hidden": true,
+          "id": "custom_nationality_753951",
+          "link": false
+        },
+        "marital_status":{
+          "title": "marital_status",
+          "content": "Single",
+          "hidden": false,
+          "id": "custom_marital_status_852147",
+          "link": false
+        },
+        website:{
+          "title": "website",
+          "content": "www.johndoe.com",
+          "hidden": false,
+          "id": "custom_website_369741",
+          "link": true
+        },
+        gender:{
+          "title": "gender",
+          "content": "Male",
+          "hidden": false,
+          "id": "custom_gender_951753",
+          "link": false
+        },
+        "blood_group":{
+          "title": "blood_group",
+          "content": "O+",
+          "hidden": false,
+          "id": "custom_blood_group_159753",
+          "link": false
+        },
+        "emergency_contact":{
+          "title": "emergency_contact",
+          "content": "+1 (987) 654-3210",
+          "hidden": false,
+          "id": "custom_emergency_contact_357951",
+          "link": false
+        },
+        // "permanent_address":{
+        //   "title": "permanent_address",
+        //   "content": "1234 Elm Street, San Francisco, CA, USA",
+        //   "hidden": false,
+        //   "id": "custom_permanent_address_258369",
+        //   "link": false
+        // },
+        // "current_address":{
+        //   "title": "current_address",
+        //   "content": "5678 Oak Street, San Francisco, CA, USA",
+        //   "hidden": false,
+        //   "id": "custom_current_address_456987",
+        //   "link": false
+        // }
+        },
     sections: [
       {
         id: '1',

@@ -14,8 +14,8 @@ type ResumeProps = {
 // Design 6: Google Docs
 const GoogleResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }) => {
   return (
-    <div 
-      ref={pdfRef} 
+    <div
+      ref={pdfRef}
       className={`bg-blue-50 min-h-screen ${font.className}`}
       style={{ fontFamily: font.name }}
     >
@@ -31,7 +31,20 @@ const GoogleResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }
             <span>{resumeData.email}</span>
             <span>{resumeData.phone}</span>
             <span>{resumeData.location}</span>
+            <a href={resumeData.linkedin}> <span>Linkedin</span></a>
           </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-1 gap-x-8 pb-6">
+            {Object.keys(resumeData.custom).map((i, index) => {
+              const item = resumeData.custom[i];
+              return (
+                <div className={`flex gap-2 text-xs justify-between ${item.hidden && "hidden"}`} key={`${index} ${item.id}`}>
+                  <span className="font-semibold">{i}:</span>
+                  <span>{item.content}</span>
+                </div>
+              );
+            })}
+          </div>
+
 
           {resumeData.sections.map((section) => (
             <section key={section.id} className="mb-8">
@@ -62,8 +75,8 @@ const GoogleResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }
 
 const CleanProfessionalResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }) => {
   return (
-    <div 
-      ref={pdfRef} 
+    <div
+      ref={pdfRef}
       className={`bg-white min-h-screen ${font.className} p-8`}
       style={{ fontFamily: font.name }}
     >
@@ -212,7 +225,7 @@ const CleanProfessionalResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, r
 
 
 export {
- 
+
 
 
 
