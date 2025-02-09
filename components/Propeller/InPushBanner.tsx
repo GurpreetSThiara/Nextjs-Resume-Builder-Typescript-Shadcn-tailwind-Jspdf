@@ -23,7 +23,7 @@ const InPushBanner = () => {
     
     
   return (
-   <div className="pt-8">
+   <div className="">
      <Script data-cfasync="false"
     type="text/javascript"  id="propeller-script-banner" onError={()=>{
         console.log("error")

@@ -44,7 +44,7 @@ import { GoogleResume } from "@/components/resume/google";
 import html2canvas from "html2canvas";
 
 // Custom types, Constants and utils
-import { CustomPersonalInformation, CustomPersonalInformationItem, ResumeData } from "@/lib/types";
+import {  CustomPersonalInformationItem, ResumeData } from "@/lib/types";
 import { fonts, initialResumeData, themes } from "@/lib/constants";
 import {
   generateClassic,
@@ -102,12 +102,27 @@ export default function Create() {
     ({data,key}:{data:CustomPersonalInformationItem,key:string}) => {
       setResumeData((prev) => ({
         ...prev,
-        custom: {...prev.custom,[key]:data }, // Ensure correct structure
+        custom: {...prev.custom,[data.id]:data }, // Ensure correct structure
       }));
     },
     []
   );
 
+const handleCustomInfoChange = useCallback(
+  (id: string, field: "title" | "content", value: string) => {
+    setResumeData((prev) => ({
+      ...prev,
+      custom: {
+        ...prev.custom,
+        [id]: {
+          ...prev.custom[id], // Keep other properties intact
+          [field]: value, // Update the specific field
+        },
+      },
+    }));
+  },
+  []
+);
   const handleHideItem = useCallback(
     (key:string) => {
       setResumeData((prev) => ({ ...prev,custom:{...resumeData.custom ,[key]:{...resumeData.custom[key],hidden:!resumeData.custom[key].hidden}  } }));
@@ -290,17 +305,33 @@ export default function Create() {
   }, []);
 
   const memoizedSections = useMemo(
-    () =>
-      resumeData.sections.map((section) => (
+    () => [
+      <AccordionItem
+        className="bg-white rounded-lg px-4"
+        key="personal-info"
+        value="personal-info"
+      >
+        <AccordionTrigger>
+          <h1 className="text-purple-600 font-bold text-xl">Personal Information</h1>
+        </AccordionTrigger>
+        <AccordionContent>
+          <PersonalInfo
+            resumeData={resumeData}
+            handleInputChange={handleInputChange}
+            handleCustomInfoAdd={handleCustomInfoAdd}
+            handleHideItem={handleHideItem}
+            handleCustomInfoChange={handleCustomInfoChange}
+          />
+        </AccordionContent>
+      </AccordionItem>,
+      ...resumeData.sections.map((section) => (
         <AccordionItem
           className="bg-white rounded-lg px-4"
           key={section.id}
           value={section.id}
         >
           <AccordionTrigger>
-            <h1 className="text-purple-600 font-bold text-xl">
-              {section.title}
-            </h1>
+            <h1 className="text-purple-600 font-bold text-xl">{section.title}</h1>
           </AccordionTrigger>
           <AccordionContent>
             <Section
@@ -317,8 +348,9 @@ export default function Create() {
           </AccordionContent>
         </AccordionItem>
       )),
+    ],
     [
-      resumeData.sections,
+      resumeData,
       moveSection,
       removeSection,
       addKey,
@@ -326,8 +358,13 @@ export default function Create() {
       addBulletPoint,
       removeBulletPoint,
       handleBulletPointChange,
+      handleInputChange,
+      handleCustomInfoAdd,
+      handleHideItem,
+      handleCustomInfoChange,
     ]
   );
+  
 
   return (
 <>
@@ -390,12 +427,7 @@ export default function Create() {
         <h1 className="text-2xl font-bold mb-4">
           <span className="text-3xl font-extrabold">Resume</span> Builder Tool
         </h1>
-        <PersonalInfo
-          resumeData={resumeData}
-          handleInputChange={handleInputChange}
-          handleCustomInfoAdd={handleCustomInfoAdd}
-          handleHideItem={handleHideItem}
-        />
+
         <form className="space-y-4 ">
           <Accordion
             className="py-2 gap-2 flex flex-col"

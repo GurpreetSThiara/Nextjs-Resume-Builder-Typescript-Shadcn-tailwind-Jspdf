@@ -2,7 +2,7 @@ import React from "react"
 import HoverIcon from "@/components/Icons/HoverIcon"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import type { ResumeData, CustomPersonalInformation } from "@/lib/types"
+import type { ResumeData, CustomPersonalInformation , CustomPersonalInformationItem } from "@/lib/types"
 import { AddCustomInfoDialog } from "./AddCustomInfoDialog"
 import { Checkbox } from "@/components/checkbox/Checkbox"
 
@@ -16,7 +16,7 @@ export const PersonalInfo = React.memo(
   }: {
     resumeData: ResumeData
     handleInputChange: (field: keyof ResumeData, value: string) => void
-    handleCustomInfoAdd: (newInfo: CustomPersonalInformation) => void
+    handleCustomInfoAdd: ({data , key}:{data:CustomPersonalInformationItem , key:string}) => void
     handleCustomInfoChange: (id: string, field: "title" | "content", value: string) => void
     handleHideItem: (id: string) => void
   }) => {
@@ -26,10 +26,10 @@ export const PersonalInfo = React.memo(
 
     return (
       <div className="p-4 bg-white border rounded-lg">
-        <div className="flex items-center justify-between">
+        {/* <div className="flex items-center justify-between">
           <h1 className="font-bold text-xl text-purple-500 pb-2">Personal Information</h1>
           <HoverIcon text="" />
-        </div>
+        </div> */}
         <div className="grid grid-cols-2 gap-2 mb-4">
           {infoSections.map((field) => (
             <div key={field} className="">

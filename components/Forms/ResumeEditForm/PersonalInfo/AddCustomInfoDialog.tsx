@@ -11,6 +11,8 @@ import { DialogTrigger } from "@/components/Dialog/DialogTrigger"
 import { DialogHeader } from "@/components/Dialog/DialogHeader"
 import { DialogTitle } from "@/components/Dialog/DialogTitle"
 import { DialogFooter } from "@/components/Dialog/DialogFooter"
+import { Checkbox } from "@/components/checkbox/Checkbox"
+import { isValidURL } from "@/utils/urlUtils"
 
 interface AddCustomInfoDialogProps {
     onAdd: ({data,key}:{data:CustomPersonalInformationItem,key:string}) => void
@@ -20,22 +22,35 @@ export function AddCustomInfoDialog({ onAdd }: AddCustomInfoDialogProps) {
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
     const [open, setOpen] = useState(false)
+    const [isLink , setIsLink] = useState(false);
 
     const handleSubmit = () => {
-        if (title && content) {
-            onAdd({
-                data: {
-                    id: Date.now().toString(),
-                    title,
-                    content, hidden: false, link: false
-                },
-                key: title
-            })
-            setTitle("")
-            setContent("")
-            setOpen(false)
+        if (!title || !content) {
+            alert("title or content should not be empty");
+            return};
+    
+        if (isLink && !isValidURL(content)) {
+            alert("Invalid link! Please enter a valid URL starting with http or https.");
+            return;
         }
-    }
+    
+        onAdd({
+            data: {
+                id: Date.now().toString(),
+                title,
+                content,
+                hidden: false,
+                link: isLink
+            },
+            key: title
+        });
+    
+        setTitle("");
+        setContent("");
+        setIsLink(false);
+        setOpen(false);
+    };
+    
 
     return (
         <Dialog>
@@ -62,6 +77,12 @@ export function AddCustomInfoDialog({ onAdd }: AddCustomInfoDialogProps) {
                             placeholder="e.g., www.example.com"
                         />
                     </div>
+                       <Checkbox
+                                      id="isLink"
+                                      label="Link"
+                                      checked={isLink}
+                                      onChange={() =>setIsLink(!isLink)}
+                                    />
                 </div>
                 <DialogFooter>
                     <button

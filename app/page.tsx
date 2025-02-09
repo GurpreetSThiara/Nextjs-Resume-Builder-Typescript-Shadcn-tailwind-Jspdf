@@ -131,7 +131,9 @@ export default function HomePage() {
       <div className=" flex flex-col  bg-gradient-to-br from-gray-50 to-gray-100">
         <main className="flex-1 z-50">
          <div className="block ">
-         <div className=" absolute w-[100vw] h-[80vh]">
+         <div className=" absolute w-[100vw] h-[80vh]" style={{
+          height:"calc(100vh - 64px)"
+         }}>
         <Image src={resume_background} layout="fill" alt="no image"/>
       </div>
       <section className="w-full relative overflow-hidden py-20 md:py-32 lg:py-48">

@@ -54,6 +54,7 @@ export type SectionContent = {
     },
 
     rgb: {
+      linkColor: RGB
       primary: RGB;
       secondary: RGB;
       text: RGB;

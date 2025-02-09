@@ -136,7 +136,7 @@ export  const initialResumeData: ResumeData = {
     location: "San Francisco, CA",
     linkedin:"linkedin",
     custom:{
-        "date_of_birth":{
+        "custom_dob_963852":{
           "title": "date_of_birth",
           "content": "January 1, 1990",
           "hidden": false,

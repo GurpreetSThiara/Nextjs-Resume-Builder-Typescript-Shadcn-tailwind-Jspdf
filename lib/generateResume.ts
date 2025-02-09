@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PDFDocument, StandardFonts } from "pdf-lib";
+import { PDFArray, PDFDocument, PDFName, rgb, StandardFonts } from "pdf-lib";
 import { ResumeData, ThemeConfig } from "./types";
 import jsPDF from "jspdf";
 
@@ -99,7 +99,7 @@ for (let i = 0; i < rowCount; i++) {
     const xPos = j === 0 ? leftX : rightX;
 
     // Key (left-aligned)
-    currentPage.drawText(`${key}:`, {
+    currentPage.drawText(`${item.title}:`, {
       x: xPos,
       y: yOffset,
       size: pdFtheme.pdfSize?.small,
@@ -107,15 +107,63 @@ for (let i = 0; i < rowCount; i++) {
       color: pdFtheme.rgb?.text,
     });
 
-    // Value (right-aligned within the same column)
     const textWidth = regularFont.widthOfTextAtSize(item.content, pdFtheme.pdfSize?.small);
-    currentPage.drawText(item.content, {
-      x: xPos + columnWidth - textWidth, // Align to the right within the column
-      y: yOffset,
-      size: pdFtheme.pdfSize?.small,
-      font: regularFont,
-      color: pdFtheme.rgb?.text,
-    });
+    const contentX = xPos + columnWidth - textWidth;
+
+    if (item.link) {
+      // Draw the link text
+      currentPage.drawText(item.content, {
+        x: contentX,
+        y: yOffset,
+        size: pdFtheme.pdfSize?.small,
+        font: regularFont,
+        color: pdFtheme.rgb?.linkColor || rgb(0, 0, 1), // Blue color for links
+      });
+
+      // Ensure URL starts with http(s)
+      const url = item.content.startsWith("http") ? item.content : `https://${item.content}`;
+
+      // Create the link annotation
+      const linkAnnotation = currentPage.doc.context.obj({
+        Type: PDFName.of("Annot"),
+        Subtype: PDFName.of("Link"),
+        Rect: [contentX, yOffset, contentX + textWidth, yOffset + pdFtheme.pdfSize?.small],
+        Border: [0, 0, 0],
+        A: currentPage.doc.context.obj({
+          Type: PDFName.of("Action"),
+          S: PDFName.of("URI"),
+          URI: currentPage.doc.context.obj(url),
+        }),
+      });
+
+      // Register the annotation in the document context
+      const linkRef = currentPage.doc.context.register(linkAnnotation);
+
+      // Get existing annotations or create a new array
+      let annotations = currentPage.node.get(PDFName.of("Annots"));
+
+      if (!annotations) {
+        annotations = currentPage.doc.context.obj([]); // Create new annotations array
+        currentPage.node.set(PDFName.of("Annots"), annotations);
+      }
+
+      // Ensure annotations is a PDFArray and add the new link
+      if (annotations instanceof PDFArray) {
+        annotations.push(linkRef);
+      } else {
+        const newAnnotations = currentPage.doc.context.obj([annotations, linkRef]);
+        currentPage.node.set(PDFName.of("Annots"), newAnnotations);
+      }
+    } else {
+      // Draw regular text if it's not a link
+      currentPage.drawText(item.content, {
+        x: contentX,
+        y: yOffset,
+        size: pdFtheme.pdfSize?.small,
+        font: regularFont,
+        color: pdFtheme.rgb?.text,
+      });
+    }
   }
 
   yOffset -= rowHeight;

@@ -38,7 +38,7 @@ const GoogleResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }
               const item = resumeData.custom[i];
               return (
                 <div className={`flex gap-2 text-xs justify-between ${item.hidden && "hidden"}`} key={`${index} ${item.id}`}>
-                  <span className="font-semibold">{i}:</span>
+                  <span className="font-semibold">{item.title}:</span>
                   <span>{item.content}</span>
                 </div>
               );
