@@ -4,7 +4,7 @@ import { useState } from "react"
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import type { CustomPersonalInformation, CustomPersonalInformationItem } from "@/lib/types"
+import type { CustomPersonalInformationItem } from "@/lib/types"
 import { Dialog } from "@/components/Dialog/Dialog"
 import { DialogContent } from "@/components/Dialog/DialogContent"
 import { DialogTrigger } from "@/components/Dialog/DialogTrigger"
@@ -21,7 +21,7 @@ interface AddCustomInfoDialogProps {
 export function AddCustomInfoDialog({ onAdd }: AddCustomInfoDialogProps) {
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
-    const [open, setOpen] = useState(false)
+   
     const [isLink , setIsLink] = useState(false);
 
     const handleSubmit = () => {
@@ -48,12 +48,12 @@ export function AddCustomInfoDialog({ onAdd }: AddCustomInfoDialogProps) {
         setTitle("");
         setContent("");
         setIsLink(false);
-        setOpen(false);
+        //setOpen(false);
     };
     
 
     return (
-        <Dialog>
+        <Dialog >
             <DialogTrigger>
                 <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50">
                     Add Custom Field
@@ -86,7 +86,7 @@ export function AddCustomInfoDialog({ onAdd }: AddCustomInfoDialogProps) {
                 </div>
                 <DialogFooter>
                     <button
-                        onClick={() => setOpen(false)}
+                        onClick={() =>{}}
                         className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50"
                     >
                         Cancel

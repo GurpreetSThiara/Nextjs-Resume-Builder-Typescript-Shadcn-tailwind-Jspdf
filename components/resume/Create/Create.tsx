@@ -82,7 +82,7 @@ export default function Create() {
   const font = "times";
   const pdfRef = useRef<HTMLDivElement>(null);
 
-  const [openSection, setOpenSection] = useState<string>("1");
+  const [openSection, setOpenSection] = useState<string>("0");
 
   const handleAccordionChange = useCallback(
     (value: string) => {

@@ -1,8 +1,8 @@
 import React from "react"
-import HoverIcon from "@/components/Icons/HoverIcon"
+
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import type { ResumeData, CustomPersonalInformation , CustomPersonalInformationItem } from "@/lib/types"
+import type { ResumeData , CustomPersonalInformationItem } from "@/lib/types"
 import { AddCustomInfoDialog } from "./AddCustomInfoDialog"
 import { Checkbox } from "@/components/checkbox/Checkbox"
 

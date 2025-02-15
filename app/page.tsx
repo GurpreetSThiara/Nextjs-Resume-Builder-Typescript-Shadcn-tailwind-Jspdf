@@ -131,12 +131,14 @@ export default function HomePage() {
       <div className=" flex flex-col  bg-gradient-to-br from-gray-50 to-gray-100">
         <main className="flex-1 z-50">
          <div className="block ">
-         <div className=" absolute w-[100vw] h-[80vh]" style={{
+         <div className=" absolute w-[100vw] " style={{
           height:"calc(100vh - 64px)"
          }}>
         <Image src={resume_background} layout="fill" alt="no image"/>
       </div>
-      <section className="w-full relative overflow-hidden py-20 md:py-32 lg:py-48">
+      <section style={{
+          height:"calc(100vh - 64px)"
+         }} className="w-full relative overflow-hidden flex flex-col items-center justify-center">
   <div className="absolute inset-0 bg-gradient-to-br from-purple-500/95 to-indigo-600/95 pointer-events-none" />
   <div className="absolute inset-0 bg-grid-white/[0.095] bg-[size:20px_20px] pointer-events-none" />
   <div className="relative container mx-auto px-4 text-center">
@@ -177,7 +179,7 @@ export default function HomePage() {
       <Button
         onClick={navigate}
         size="lg"
-        className="bg-white text-purple-600 hover:bg-purple-50 transition-all duration-300 transform hover:scale-105 font-bold text-md md:text-2xl"
+        className="bg-white text-purple-600 p-6 hover:bg-purple-50 transition-all duration-300 transform hover:scale-105 font-bold text-md md:text-2xl"
       >
         Build Your Resume Now
       </Button>
