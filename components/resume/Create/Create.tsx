@@ -52,11 +52,11 @@ import {
   generateModern,
 } from "@/lib/generateResume";
 import Head from "next/head";
-import CreativeGrid from "@/components/resume/CreativeGrid";
+//import CreativeGrid from "@/components/resume/CreativeGrid";
 
 const allTemplates = new Map<string, React.FC<ResumeProps>>([
   ["modern", BoldHeaderResume],
-  ["classic", CreativeGrid],
+  ["classic", ATS1],
   ["impact", GoogleResume],
 ]);
 export default function Create() {
@@ -99,7 +99,7 @@ export default function Create() {
   );
 
   const handleCustomInfoAdd = useCallback(
-    ({data,key}:{data:CustomPersonalInformationItem,key:string}) => {
+    ({data}:{data:CustomPersonalInformationItem,key:string}) => {
       setResumeData((prev) => ({
         ...prev,
         custom: {...prev.custom,[data.id]:data }, // Ensure correct structure

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { PDFArray, PDFDocument, PDFName, rgb, StandardFonts } from "pdf-lib";
 import { ResumeData, ThemeConfig } from "./types";
