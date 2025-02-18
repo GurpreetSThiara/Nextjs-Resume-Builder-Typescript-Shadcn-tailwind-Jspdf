@@ -1,9 +1,9 @@
 import Create from "@/components/resume/Create/Create";
 import { Metadata } from "next";
 
-interface Props {
-  params: { resume?: string };
-}
+// interface Props {
+//   params: { resume?: string };
+// }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const template = params.resume ?? "classic";
