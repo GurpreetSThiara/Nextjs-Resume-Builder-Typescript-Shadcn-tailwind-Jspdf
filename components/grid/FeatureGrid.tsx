@@ -10,7 +10,7 @@ const features = [
 
 export default function FeatureGrid() {
   return (
-    <section className="py-12 bg-purple-50 w-full lg:w-[50%]">
+    <section className="py-12 bg-purple-50 w-full ">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-purple-800 text-center mb-8">
           Why Choose Our Resume Builder

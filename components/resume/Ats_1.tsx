@@ -27,6 +27,17 @@ const ATS1 = ({pdfRef,font,theme,resumeData}:{
         {resumeData.email} | {resumeData.phone} | {resumeData.location}
       </p>
     </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-1 gap-x-8 pb-6">
+            {Object.keys(resumeData.custom).map((i, index) => {
+              const item = resumeData.custom[i];
+              return (
+                <div className={`flex gap-2 text-xs justify-between ${item.hidden && "hidden"}`} key={`${index} ${item.id}`}>
+                  <span className="font-semibold">{item.title}:</span>
+                  <span>{item.content}</span>
+                </div>
+              );
+            })}
+          </div>
     
     {resumeData.sections.map((section) => (
       <div key={section.id} className={theme.spacing.section}>

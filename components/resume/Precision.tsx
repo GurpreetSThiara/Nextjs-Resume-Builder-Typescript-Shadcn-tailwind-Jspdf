@@ -390,6 +390,18 @@ const BoldHeaderResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeDa
         </div>
       </header>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-1 gap-x-8 pb-6 px-8">
+            {Object.keys(resumeData.custom).map((i, index) => {
+              const item = resumeData.custom[i];
+              return (
+                <div className={`flex gap-2 text-xs justify-between ${item.hidden && "hidden"}`} key={`${index} ${item.id}`}>
+                  <span className="font-semibold">{item.title}:</span>
+                  <span>{item.content}</span>
+                </div>
+              );
+            })}
+          </div>
+
       <div className="max-w-4xl mx-auto px-8">
         {resumeData.sections.map((section) => (
           <section key={section.id} className={`${theme.spacing.section} mb-8`}>

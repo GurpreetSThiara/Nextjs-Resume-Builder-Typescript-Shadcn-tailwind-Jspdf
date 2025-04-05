@@ -1,36 +1,147 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Resume Builder Pro
 
-## Getting Started
+A modern, feature-rich resume builder application built with Next.js 15 and React, designed to help users create professional resumes with ease.
 
-First, run the development server:
+![Resume Builder Pro](public/og.png)
 
+## 🌟 Features
+
+- **Modern UI/UX**: Built with a clean, responsive interface using TailwindCSS and Radix UI components
+- **Multiple Resume Templates**: Choose from various professionally designed templates
+- **Export Options**: Download resumes in multiple formats (PDF, DOCX)
+- **AI Integration**: Smart resume suggestions and improvements
+- **Real-time Preview**: See changes as you type
+- **Privacy-Focused**: Your data stays local and secure
+- **Mobile Responsive**: Create resumes on any device
+- **SEO Optimized**: Implements next-sitemap for better search engine visibility
+
+## 🚀 Tech Stack
+
+- **Framework**: Next.js 15.0.2
+- **UI Library**: React 19.0.0
+- **Styling**: TailwindCSS 3.4.1
+- **Components**: Radix UI
+- **PDF Processing**: 
+  - jspdf
+  - pdf-lib
+  - html2canvas
+- **Document Handling**: 
+  - docxtemplater
+  - mammoth
+  - pizzip
+- **Type Safety**: TypeScript
+- **Code Quality**: ESLint
+
+## 📦 Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/resume-builder.git
+cd resume-builder
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Run the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏗️ Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+resume-builder/
+├── app/                    # Next.js app directory
+│   ├── about/             # About page
+│   ├── ai/               # AI features
+│   ├── blog/             # Blog section
+│   ├── contact/          # Contact page
+│   ├── resume-templates/ # Resume templates
+│   └── ...
+├── components/           # Reusable UI components
+├── lib/                 # Utility libraries
+├── public/              # Static assets
+└── utils/              # Helper functions
+```
 
-## Learn More
+## 🛠️ Configuration
 
-To learn more about Next.js, take a look at the following resources:
+### Environment Variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Create a `.env.local` file in the root directory:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+NEXT_PUBLIC_API_URL=your_api_url
+# Add other environment variables as needed
+```
 
-## Deploy on Vercel
+### Tailwind Configuration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The project uses a custom Tailwind configuration (tailwind.config.ts) with:
+- Custom color schemes
+- Extended typography
+- Animation utilities
+- Responsive breakpoints
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📝 Scripts
+
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
+- `npm run start`: Start production server
+- `npm run lint`: Run ESLint
+- `npm run postbuild`: Generate sitemap
+
+## 🔒 Security
+
+- All user data is processed client-side
+- No personal information is stored on servers
+- Implements secure PDF generation
+- Regular security updates
+
+## 🌐 Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## 📱 Mobile Support
+
+- Responsive design
+- Touch-friendly interface
+- Optimized for various screen sizes
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👥 Support
+
+For support, email support@resumebuilder.com or join our Slack channel.
+
+## 🙏 Acknowledgments
+
+- Next.js team for the amazing framework
+- Vercel for hosting
+- All contributors and users
+
+---
+
+Built with ❤️ using [Next.js](https://nextjs.org/)

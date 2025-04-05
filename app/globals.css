@@ -90,3 +90,8 @@ html {
   font-weight: bold;
   animation: colorShift 6s infinite;
 }
+
+
+.btn-primary {
+  @apply bg-white hover:bg-gray-100 text-purple-600 text-lg p-6 transition-all duration-300 transform hover:scale-105 font-bold;
+}

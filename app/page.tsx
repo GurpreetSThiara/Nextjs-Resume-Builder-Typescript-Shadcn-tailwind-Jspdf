@@ -122,115 +122,90 @@ export default function HomePage() {
   `}
         </script>
       </Head>
-   
-    
-            <InPushBanner/>
-           <Interstitial/>
-  
+
+
+      <InPushBanner />
+      <Interstitial />
+
 
       <div className=" flex flex-col  bg-gradient-to-br from-gray-50 to-gray-100">
         <main className="flex-1 z-50">
-         <div className="block ">
-         <div className=" absolute w-[100vw] " style={{
-          height:"calc(100vh - 64px)"
-         }}>
-        <Image src={resume_background} layout="fill" alt="no image"/>
-      </div>
-      <section style={{
-          height:"calc(100vh - 64px)"
-         }} className="w-full relative overflow-hidden flex flex-col items-center justify-center">
-  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/95 to-indigo-600/95 pointer-events-none" />
-  <div className="absolute inset-0 bg-grid-white/[0.095] bg-[size:20px_20px] pointer-events-none" />
-  <div className="relative container mx-auto px-4 text-center">
-    <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl mb-6 text-white">
-      Create Your Perfect{" "}
-      <strong>
-        <span className="text-yellow-400 text-5xl md:text-7xl font-extrabold">
-          Resume
-        </span>
-      </strong>{" "}
-      for Free
-    </h1>
-    <div className="flex justify-center">
-    <h2 className="font-semibold text-xl text-center text-white w-full md:w-[85%] lg:w-[65%]"><strong>Completely Free Resume Builder/Maker no hidden fees</strong>, no credit cards, no debit cards, no signups required, just put your data and get your resume ready at no cost</h2>
+          <div className="block ">
+            <div className="h-[calc(100vh-64px)] absolute w-[100vw] " >
+              <Image src={resume_background} fill alt="Resume background illustration" />
+            </div>
+            <section className="h-[calc(100vh-64px)] w-full relative overflow-hidden flex flex-col items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/95 to-indigo-600/95 pointer-events-none" />
+              <div className="absolute inset-0 bg-grid-white/[0.095] bg-[size:20px_20px] pointer-events-none" />
+              <div className="relative container mx-auto px-4 text-center">
+                <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl mb-6 text-white">
+                  Create Your Perfect{" "}
+                  <strong>
+                    <span className="text-yellow-400 text-5xl md:text-7xl font-extrabold">
+                      Resume
+                    </span>
+                  </strong>{" "}
+                  for Free
+                </h1>
+                <div className="flex justify-center">
+                  <h2 className="font-semibold text-lg text-justify md:text-xl  text-white w-full md:w-[85%] lg:w-[65%]"><strong>Completely Free Resume Builder / Maker no hidden fees</strong>, no credit cards, no debit cards, no signups required, just put your data and get your resume ready at no cost</h2>
+                </div>
+                <p className="text-lg md:text-xl text-justify text-purple-100 mb-8 max-w-2xl mx-auto pt-4">
+                  Craft{" "}
+                  <strong>
+                    <span className="font-semibold text-purple-50 text-2xl">
+                      ATS
+                    </span>
+                  </strong>
+                  -friendly{" "}
+                  <strong>
+                    <span className="font-semibold text-yellow-400 text-2xl">
+                      Resumes
+                    </span>
+                  </strong>{" "}
+                  that land interviews. Powered by AI, 100% free, <strong>no hidden Fees</strong> and
+                  charges.
+                  <strong> Best for students and professionals</strong>
+                  <strong className="hidden">resume builder los angeles</strong>
+                  <strong className="hidden">maintenance building resume</strong>
+                </p>
 
-    </div>
-    <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto pt-4">
-      Craft{" "}
-      <strong>
-        <span className="font-semibold text-purple-50 text-2xl">
-          ATS
-        </span>
-      </strong>
-      -friendly{" "}
-      <strong>
-        <span className="font-semibold text-yellow-400 text-2xl">
-          Resumes
-        </span>
-      </strong>{" "}
-      that land interviews. Powered by AI, 100% free, <strong>no hidden Fees</strong> and
-      charges.
-      <strong> Best for students and professionals</strong>
-      <strong className="hidden">resume builder los angeles</strong>
-      <strong className="hidden">maintenance building resume</strong>
-    </p>
+                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                  <Button
+                    onClick={navigate}
+                    size="lg"
+                    className="btn-primary"
+                  >
+                    Build Your Resume Now
+                  </Button>
+                </div>
 
-    <div className="flex flex-col sm:flex-row justify-center gap-4">
-      <Button
-        onClick={navigate}
-        size="lg"
-        className="bg-white text-purple-600 p-6 hover:bg-purple-50 transition-all duration-300 transform hover:scale-105 font-bold text-md md:text-2xl"
-      >
-        Build Your Resume Now
-      </Button>
-    </div>
-
-    <div className="email p-4">
-      <h3 className="font-semibold text-white text-xl">Email us At</h3>
-      <h1 className="font-bold text-white text-3xl"> 
-        <a href="mailto:yourfreeresume@gmail.com">
-          yourfreeresume@gmail.com
-        </a>
-      </h1>
-    </div>
-
-    {/* <div className="flex justify-between">
-     { ['100% free','No Fees', 'No Charges', 'No Subscriptions','Resume','CV','Free Download'].map((text,index)=>{
-      return <div className="" key={`index ${index}`}>
-        <HeroCard text={text}/>
-      </div>
-     })}
-    </div> */}
-  </div>
-</section>
-       <div className="block lg:flex">
-       <section className=" w-full lg:w-[50%] bg-gradient-to-b from-background to-muted flex flex-col justify-center items-center">
-        <h1 className='text-center font-bold text-4xl py-4'>Choose any from Completely <strong><span>FREE Professional Resume Templates</span></strong></h1>
-
-<Carousel/>
-        </section>
-        <FeatureGrid/>
-        {/* <section className="grid grid-cols-2 ">
-          {
-            ['Free Resume Maker','No Hidden Charges','Highly ATS Friendly','Professonal Free Templates','Multiple Downlaod Formats'].map((item,index)=>{
-              return <div className="" key={`key ${index}`}>
-                <div className="bg-purple-500 p-2 rounded-lg">
-                  <h1 className="text-2xl text-gray-50 " >
-                    <strong>
-                    {item}
-                    </strong>
+                <div className="email p-4">
+                  <h3 className="font-semibold text-white text-xl">Email us At</h3>
+                  <h1 className="font-bold text-white text-xl">
+                    <a href="mailto:yourfreeresume@gmail.com">
+                      yourfreeresume@gmail.com
+                    </a>
                   </h1>
                 </div>
+
+      
               </div>
-            })
-          }
-        </section> */}
-       </div>
-         </div>
+            </section>
+            <div className="block">
+              <section className=" w-full  bg-gradient-to-b from-background to-muted flex flex-col justify-center items-center">
+                <h1 className='text-center font-bold text-sm py-4'>Choose any from Completely <strong><span>FREE Professional Resume Templates</span></strong></h1>
+
+                <Carousel />
+              </section>
+              <FeatureGrid />
+         
+            </div>
+          </div>
 
           <section id="features" className="py-20 bg-white">
             <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
+              <h2 className="text-xl font-bold text-center mb-12 text-gray-800">
                 Powerful <span className="text-purple-600">Resume</span>{" "}
                 Building Features
               </h2>
@@ -360,7 +335,7 @@ export default function HomePage() {
                 </p>
                 <Button
                   onClick={navigate}
-                  className="bg-white text-purple-600 hover:bg-purple-50 transition-all duration-300 transform hover:scale-105 font-bold text-md md:text-2xl"
+                  className="btn-primary"
                 >
                   Create Your Free Resume Now
                   <ArrowRight className="ml-2 h-4 w-4" />
