@@ -9,7 +9,7 @@ let driveInstance: ReturnType<typeof google.drive> | null = null;
 
 function getDriveInstance() {
   if (!driveInstance) {
-    const auth = new google.auth.JWT({a
+    const auth = new google.auth.JWT({
       email: googleServiceAccount.client_email,
       key: googleServiceAccount.private_key,
       scopes: SCOPES,
