@@ -9,10 +9,10 @@ import React, {
   useMemo,
   useEffect,
 } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 // UI Components Shadn cn and React Lucide Icons
-import { PlusCircle, ChevronDown, File, FileImage } from "lucide-react";
+import { PlusCircle, ChevronDown, File, FileImage, Upload } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +29,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 // Custom Components
 import { PersonalInfo } from "@/components/Forms/ResumeEditForm/PersonalInfo/PersonalInfo";
@@ -50,17 +51,33 @@ import {
   generateClassic,
   generateImpact,
   generateModern,
+  generateModernMinimalistPDF,
 } from "@/lib/generateResume";
 import Head from "next/head";
 //import CreativeGrid from "@/components/resume/CreativeGrid";
+import { auth, db } from "@/lib/firebase";
+import { collection, addDoc, getDocs, query, where, limit } from "firebase/firestore";
+import { GoogleSignIn } from "@/components/auth/GoogleSignIn";
+import { compressResumeData, downloadEncryptedResume, readEncryptedFile } from "@/utils/resumeUtils";
+import { useAuth } from "@/lib/context/AuthContext";
+import { ResumeService } from "@/lib/resumeService";
+import { driveService } from "@/lib/driveService";
+import ModernMinimalist from "../ModernMinimalist";
+// import { toast } from "@/components/ui/use-toast";
+
 
 const allTemplates = new Map<string, React.FC<ResumeProps>>([
   ["modern", BoldHeaderResume],
   ["classic", ATS1],
   ["impact", GoogleResume],
+  ["modernminimalist",ModernMinimalist]
 ]);
+const MAX_RESUMES_PER_USER = 3;
+const RESUMES_COLLECTION = 'resumes';
+
 export default function Create() {
-  const params = useParams(); // used to get the resume template
+  const params = useParams();
+  const router = useRouter();
 
   const [resumeData, setResumeData] = useState<ResumeData>(initialResumeData);
   const template = params.resume ?? "classic"
@@ -76,6 +93,7 @@ export default function Create() {
     classic: generateClassic,
     modern: generateModern,
     impact: generateImpact,
+    modernminimalist:generateModernMinimalistPDF
   };
 
   const theme = "traditional";
@@ -83,6 +101,8 @@ export default function Create() {
   const pdfRef = useRef<HTMLDivElement>(null);
 
   const [openSection, setOpenSection] = useState<string>("0");
+  const { user } = useAuth();
+  const [saving, setSaving] = useState(false);
 
   const handleAccordionChange = useCallback(
     (value: string) => {
@@ -365,176 +385,348 @@ const handleCustomInfoChange = useCallback(
     ]
   );
   
+  const handleSaveToCloud = async () => {
+    if (!user) {
+      alert("Please sign in to save your resume to the cloud.");
+      return;
+    }
 
-  return (
-<>
-<Head>
-      <title>Free ATS-Friendly Resume Builder & Templates</title>
-      <meta name="description" content="Create professional, ATS-friendly resumes for free with customizable templates to help you land your dream job." />
-      <meta name="keywords" content="free resume builder, professional resume templates, ATS friendly, resume templates, job applications" />
-      <meta name="author" content="Gurpreet" />
-      <meta name="copyright" content="2024 FreeResumeBuilder" />
-      <meta name="robots" content="index, follow" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta property="og:title" content="Free Resume Builder Professional ATS Friendly Templates" />
-      <meta property="og:description" content="Free Professional ATS friendly Resume templates to help you land your dream job. all resume templates are completely 100% free, customize according to your needs. create professional Resume for job applications." />
-      <meta property="og:image" content="https://drive.google.com/file/d/1SShn45ecoAdy3p0MrpPLoSnDHyPKX8Zq/view?usp=sharing" />
-      <meta property="og:url" content={`https://resume.giveaways4u.com/templates/${template.toString()??'classic'}/create`} />
-      <meta property="og:type" content="website" />
-      <meta property="og:site_name" content="Free Resume Builder ATS" />
-      {/* <meta property="fb:app_id" content="YOUR_APP_ID" /> */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content="Free Resume Builder Professional ATS Friendly Templates" />
-      <meta name="twitter:description" content="Free Professional ATS friendly Resume templates to help you land your dream job. all resume templates are completely 100% free, customize according to your needs. create professional Resume for job applications." />
-      <meta name="twitter:image" content="https://drive.google.com/file/d/1SShn45ecoAdy3p0MrpPLoSnDHyPKX8Zq/view?usp=sharing" />
-      <meta name="twitter:site" content="@YourAtsResume" />
-      <script type="application/ld+json">
-  {`
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "Free Resume Builder Tool",
-      "description": "Create professional, ATS-friendly resumes for free with our intuitive resume builder tool. Customize templates to fit your career needs and land your dream job.",
-      "url": "https://resume.giveaways4u.com/templates/${template.toString() ?? 'classic'}/create",
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "https://resume.giveaways4u.com/templates/${template.toString() ?? 'classic'}/create"
-      },
-      "author": {
-        "@type": "Person",
-        "name": "Gurpreet",
-        "url": "https://gurpreetthiara-portfolio.vercel.app/"
-      },
-      "datePublished": "2024-11-20",
-     
-      "operatingSystem": "Web-based",
-      "softwareVersion": "1.0",
-      "applicationCategory": "Resume Builder",
-      "priceCurrency": "USD",
-      "offers": {
-        "@type": "Offer",
-        "url": "https://resume.giveaways4u.com/templates/${template.toString() ?? 'classic'}/create",
-        "price": "0.00",
-        "priceCurrency": "USD"
+    try {
+      setSaving(true);
+
+      // Check resume limit
+      const resumesQuery = query(
+        collection(db, RESUMES_COLLECTION),
+        where('userId', '==', user.uid),
+        limit(MAX_RESUMES_PER_USER)
+      );
+
+      const snapshot = await getDocs(resumesQuery);
+      if (snapshot.size >= MAX_RESUMES_PER_USER) {
+        alert(`You can only save up to ${MAX_RESUMES_PER_USER} resumes.`);
+        return;
+      }
+
+      // Upload to Google Drive
+      const fileName = `resume_${Date.now()}.enc`;
+      const compressedData = await compressResumeData(resumeData);
+      const fileId = await driveService.uploadFile(fileName, Buffer.from(compressedData));
+
+      // Store reference in Firestore
+      await addDoc(collection(db, RESUMES_COLLECTION), {
+        userId: user.uid,
+        fileName,
+        fileId,
+        name: resumeData.name || "Untitled Resume", // Changed from title to name
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+
+      alert("Your resume has been saved to the cloud successfully!");
+    } catch (error) {
+      console.error('Error saving resume:', error);
+      alert("Failed to save resume. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const decryptedData = await readEncryptedFile(file);
+      setResumeData(decryptedData);
+    } catch (error) {
+      console.error("Error reading encrypted file:", error);
+      alert("Failed to read the encrypted file. Please make sure it's a valid resume file.");
+    }
+  };
+
+  const handleDownload = async () => {
+    // ... existing download code ...
+    
+    // Show benefits modal if user is not signed in
+    if (!auth.currentUser) {
+      const showBenefits = window.confirm(
+        "Would you like to learn about the benefits of signing in with Google?"
+      );
+      if (showBenefits) {
+        // You can use a more sophisticated modal here
+        alert(
+          "Benefits of signing in:\n" +
+          "- Save up to 3 resumes in the cloud\n" +
+          "- Access your resumes from any device\n" +
+          "- Edit and download your resumes anytime\n" +
+          "- No need to save files locally\n" +
+          "- Automatic backup of your resume data"
+        );
       }
     }
-  `}
-</script>
+  };
 
-    </Head>
-<div className="flex flex-col lg:flex-row min-h-screen ">
-      <div className="w-full lg:w-1/2 p-4 overflow-y-auto bg-gradient-to-br from-purple-300 via-blue-200  to-indigo-300">
-        <h1 className="text-2xl font-bold mb-4">
-          <span className="text-3xl font-extrabold">Resume</span> Builder Tool
-        </h1>
+  return (
+    <>
+      <Head>
+        <title>Free ATS-Friendly Resume Builder & Templates</title>
+        <meta name="description" content="Create professional, ATS-friendly resumes for free with customizable templates to help you land your dream job." />
+        <meta name="keywords" content="free resume builder, professional resume templates, ATS friendly, resume templates, job applications" />
+        <meta name="author" content="Gurpreet" />
+        <meta name="copyright" content="2024 FreeResumeBuilder" />
+        <meta name="robots" content="index, follow" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta property="og:title" content="Free Resume Builder Professional ATS Friendly Templates" />
+        <meta property="og:description" content="Free Professional ATS friendly Resume templates to help you land your dream job. all resume templates are completely 100% free, customize according to your needs. create professional Resume for job applications." />
+        <meta property="og:image" content="https://drive.google.com/file/d/1SShn45ecoAdy3p0MrpPLoSnDHyPKX8Zq/view?usp=sharing" />
+        <meta property="og:url" content={`https://resume.giveaways4u.com/templates/${template.toString()??'classic'}/create`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Free Resume Builder ATS" />
+        {/* <meta property="fb:app_id" content="YOUR_APP_ID" /> */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Free Resume Builder Professional ATS Friendly Templates" />
+        <meta name="twitter:description" content="Free Professional ATS friendly Resume templates to help you land your dream job. all resume templates are completely 100% free, customize according to your needs. create professional Resume for job applications." />
+        <meta name="twitter:image" content="https://drive.google.com/file/d/1SShn45ecoAdy3p0MrpPLoSnDHyPKX8Zq/view?usp=sharing" />
+        <meta name="twitter:site" content="@YourAtsResume" />
+        <script type="application/ld+json">
+      {`
+        {
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "Free Resume Builder Tool",
+          "description": "Create professional, ATS-friendly resumes for free with our intuitive resume builder tool. Customize templates to fit your career needs and land your dream job.",
+          "url": "https://resume.giveaways4u.com/templates/${template.toString() ?? 'classic'}/create",
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://resume.giveaways4u.com/templates/${template.toString() ?? 'classic'}/create"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "Gurpreet",
+            "url": "https://gurpreetthiara-portfolio.vercel.app/"
+          },
+          "datePublished": "2024-11-20",
+         
+          "operatingSystem": "Web-based",
+          "softwareVersion": "1.0",
+          "applicationCategory": "Resume Builder",
+          "priceCurrency": "USD",
+          "offers": {
+            "@type": "Offer",
+            "url": "https://resume.giveaways4u.com/templates/${template.toString() ?? 'classic'}/create",
+            "price": "0.00",
+            "priceCurrency": "USD"
+          }
+        }
+      `}
+    </script>
 
-        <form className="space-y-4 ">
-          <Accordion
-            className="py-2 gap-2 flex flex-col"
-            type="single"
-            value={openSection}
-            onValueChange={handleAccordionChange}
-            collapsible
-          >
-            {memoizedSections}
-          </Accordion>
+      </Head>
+      <div className="flex flex-col lg:flex-row min-h-screen">
+        <div className="w-full lg:w-1/2 p-4 overflow-y-auto bg-gradient-to-br from-purple-300 via-blue-200 to-indigo-300">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <span className="text-2xl font-bold">Create Resume</span>
+              <div className="flex flex-wrap items-center gap-2">
+                {/* <GoogleSignIn /> */}
+                {/* {user && (
+                  <Button
+                    variant="outline"
+                    onClick={handleSaveToCloud}
+                    disabled={saving}
+                    className="w-full sm:w-auto"
+                  >
+                    {saving ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : null}
+                    Save to Cloud
+                  </Button>
+                )} */}
+                <Button
+                  variant="outline"
+                  onClick={() => downloadEncryptedResume(resumeData)}
+                  className="w-full sm:w-auto"
+                >
+                  Save as File
+                </Button>
+                <div className="relative w-full sm:w-auto">
+                  <input
+                    type="file"
+                    accept=".enc"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="resume-upload"
+                  />
+                  <label htmlFor="resume-upload" className="w-full">
+                    <Button variant="outline" className="w-full sm:w-auto" asChild>
+                      <div className="flex items-center justify-center gap-2">
+                        <Upload className="h-4 w-4" />
+                        Load Resume
+                      </div>
+                    </Button>
+                  </label>
+                </div>
+              </div>
+            </div>
 
-          <Button variant={"purpleblack"} type="button" onClick={addSection}>
-            <PlusCircle className="mr-2 h-4 w-4" /> Add New Section
-          </Button>
-        </form>
-      </div>
-      <div className="w-full lg:w-1/2 flex flex-col ">
-        <div className="w-full p-4 flex items-end justify-end bg-gradient-to-br from-purple-100 to-purple-100">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-48">
-                Download Options
-                <ChevronDown className="ml-2 h-4 w-4" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Template</h3>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      {template}
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-full">
+                    <DropdownMenuGroup>
+                      {Array.from(allTemplates.keys()).map((template) => (
+                        <DropdownMenuItem
+                          key={template}
+                          onClick={() => router.push(`/resume-templates/${template}/create`)}
+                        >
+                          {template}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+{/* 
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Theme</h3>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      {theme}
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-full">
+                    <DropdownMenuGroup>
+                      {Object.keys(themes).map((theme) => (
+                        <DropdownMenuItem
+                          key={theme}
+                          onClick={() => setResumeData((prev) => ({ ...prev, theme: theme }))}
+                        >
+                          {theme}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div> */}
+            </div>
+
+            <form className="space-y-4 ">
+              <Accordion
+                className="py-2 gap-2 flex flex-col"
+                type="single"
+                value={openSection}
+                onValueChange={handleAccordionChange}
+                collapsible
+              >
+                {memoizedSections}
+              </Accordion>
+
+              <Button variant={"purpleblack"} type="button" onClick={addSection}>
+                <PlusCircle className="mr-2 h-4 w-4" /> Add New Section
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuLabel>Document Formats</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() => {
-                      const fun = generateResumeFunction[template.toString().toLowerCase()];
-                      if (fun) {
-                        fun({ pdfRef, resumeData, theme: themes[theme] });
-                      }
-                    }}
-                  >
-                    <File className="mr-2 h-4 w-4 text-red-500" />
-                    PDF (ATS-friendly)
-                  </Button>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Button
-                    onClick={() => {
-                      if (template.toString() === "Classic") {
-                        generateClassic({
-                          pdfRef,
-                          resumeData,
-                          theme: themes[theme],
-                        });
-                      } else {
-                        generateModern({
-                          pdfRef,
-                          resumeData,
-                          theme: themes[theme],
-                        });
-                      }
-                    }}
-                    variant={"ghost"}
-                  >
-                    <File className="mr-2 h-4 w-4 text-blue-500" />
-                    PDF (Print-friendly)
-                  </Button>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel>Image Formats</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <Button onClick={saveAsImagePng} variant={"ghost"}>
-                    <FileImage className="mr-2 h-4 w-4 text-green-500" />
-                    PNG
-                  </Button>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Button onClick={saveAsImageJpeg} variant={"ghost"}>
-                    <FileImage className="mr-2 h-4 w-4 text-yellow-500" />
-                    JPG
-                  </Button>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Button onClick={saveAsImageWebp} variant={"ghost"}>
-                    <FileImage className="mr-2 h-4 w-4 text-purple-500" />
-                    WebP
-                  </Button>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </form>
+          </div>
         </div>
-        <div className="p-4 bg-white overflow-y-auto">
-          {React.createElement(
-            selectedResume as React.ComponentType<ResumeProps>,
-            {
-              font: fonts[font],
-              pdfRef: pdfRef,
-              resumeData: resumeData,
-              theme: themes[theme],
-            }
-          )}
-          {/* <TimelineResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
+        <div className="w-full lg:w-1/2 flex flex-col ">
+          <div className="w-full p-4 flex items-end justify-end bg-gradient-to-br from-purple-100 to-purple-100">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-48">
+                  Download Options
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Document Formats</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <Button
+                      variant={"ghost"}
+                      onClick={() => {
+                        const fun = generateResumeFunction[template.toString().toLowerCase()];
+                        if (fun) {
+                          fun({ pdfRef, resumeData, theme: themes[theme] });
+                        }
+                      }}
+                    >
+                      <File className="mr-2 h-4 w-4 text-red-500" />
+                      PDF (ATS-friendly)
+                    </Button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Button
+                      onClick={() => {
+                        if (template.toString() === "Classic") {
+                          generateClassic({
+                            pdfRef,
+                            resumeData,
+                            theme: themes[theme],
+                          });
+                        } else {
+                          generateModern({
+                            pdfRef,
+                            resumeData,
+                            theme: themes[theme],
+                          });
+                        }
+                      }}
+                      variant={"ghost"}
+                    >
+                      <File className="mr-2 h-4 w-4 text-blue-500" />
+                      PDF (Print-friendly)
+                    </Button>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel>Image Formats</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <Button onClick={saveAsImagePng} variant={"ghost"}>
+                      <FileImage className="mr-2 h-4 w-4 text-green-500" />
+                      PNG
+                    </Button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Button onClick={saveAsImageJpeg} variant={"ghost"}>
+                      <FileImage className="mr-2 h-4 w-4 text-yellow-500" />
+                      JPG
+                    </Button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Button onClick={saveAsImageWebp} variant={"ghost"}>
+                      <FileImage className="mr-2 h-4 w-4 text-purple-500" />
+                      WebP
+                    </Button>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <div className="p-4 bg-white overflow-y-auto">
+            {React.createElement(
+              selectedResume as React.ComponentType<ResumeProps>,
+              {
+                font: fonts[font],
+                pdfRef: pdfRef,
+                resumeData: resumeData,
+                theme: themes[theme],
+              }
+            )}
+            {/* <TimelineResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}
+          </div>
         </div>
       </div>
-    </div>
-</>
+    </>
   );
 }

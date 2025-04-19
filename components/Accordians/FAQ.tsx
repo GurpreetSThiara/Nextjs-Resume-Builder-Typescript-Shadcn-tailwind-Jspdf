@@ -40,12 +40,12 @@ export default function FAQ() {
     <section className="py-20 bg-gray-50" aria-labelledby="faq-heading">
       <div className="container mx-auto px-4">
         <header>
-          <h2
+          <span
             id="faq-heading"
             className="text-3xl font-bold text-center mb-12 text-gray-900"
           >
             Frequently Asked Questions About Our <h1 className="text-4xl font-extrabold text-purple-600" >Best Free Resume Builder</h1>
-          </h2>
+          </span>
         </header>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {faqs.map((faq, index) => (

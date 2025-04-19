@@ -8,16 +8,16 @@ declare global {
     }
   }
 const PropellerScriptLoader = () => {
-    console.log("ssssssssssssssssssssssssssssss")
+   
 
     useEffect(() => {
         // Define the global functions that the script expects
 
         (window as Window & typeof globalThis)._zdrqc = () => {
-          console.log("Propeller script failed to load")
+          console.error("Propeller script failed to load")
         }
         ;(window as Window & typeof globalThis)._xzhdi = () => {
-          console.log("Propeller script loaded successfully")
+        //  console.log("Propeller script loaded successfully")
         }
       }, [])
     
@@ -25,7 +25,7 @@ const PropellerScriptLoader = () => {
   return (
     <Script data-cfasync="false"
     type="text/javascript"  id="propeller-script" onError={()=>{
-        console.log("error")
+       // console.log("error")
     }} onLoad={()=>{"loaded successfully"}}
 
     src="//ptuksagidsie.net/tag.min.js" data-zone="8506676" async 

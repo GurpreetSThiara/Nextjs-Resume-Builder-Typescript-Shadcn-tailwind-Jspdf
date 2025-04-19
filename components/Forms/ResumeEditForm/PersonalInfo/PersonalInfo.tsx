@@ -22,7 +22,7 @@ export const PersonalInfo = React.memo(
   }) => {
     const infoSections = ["name", "email", "phone", "location", "linkedin"]
 
-    console.log("resumeData", resumeData)
+   // console.log("resumeData", resumeData)
 
     return (
       <div className="p-4 bg-white border rounded-lg">

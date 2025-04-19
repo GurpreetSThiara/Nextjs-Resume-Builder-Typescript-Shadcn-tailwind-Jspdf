@@ -245,7 +245,7 @@ yOffset -= (pdFtheme.pdfSpacing?.section)/2;
     link.href = URL.createObjectURL(blob);
     link.download = 'new.pdf';
     link.click();
-    console.log("saved")
+   
  }
 
 
@@ -530,7 +530,7 @@ yOffset -= (pdFtheme.pdfSpacing?.section)/2;
   link.href = URL.createObjectURL(blob)
   link.download = "resume.pdf"
   link.click()
-  console.log("saved")
+ 
 }
 
  export const generateClassic = async ({ pdfRef, theme, resumeData }: generationProps) => {
@@ -796,5 +796,629 @@ yOffset -= (pdFtheme.pdfSpacing?.section)/2;
   link.href = URL.createObjectURL(blob)
   link.download = "resume.pdf"
   link.click()
-  console.log("saved")
+
+}
+
+
+// export async function generateModernMinimalistPDF({ ResumeData:data}): Promise<Uint8Array> {
+//   const pdfDoc = await PDFDocument.create()
+//   let page = pdfDoc.addPage()
+//   const { width, height } = page.getSize()
+
+//   const margin = 50
+//   let y = height - margin
+
+//   const fontSize = 10
+//   const titleSize = 14
+//   const headingSize = 12
+//   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
+//   const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
+
+//   const drawText = (text: string, opts: { x: number; y: number; size?: number; bold?: boolean; color?: any }) => {
+//     page.drawText(text, {
+//       x: opts.x,
+//       y: opts.y,
+//       size: opts.size || fontSize,
+//       font: opts.bold ? boldFont : regularFont,
+//       color: opts.color || rgb(0, 0, 0),
+//     })
+//   }
+
+//   // Draw Name
+//   drawText(data.name, { x: margin, y, size: 18, bold: true })
+//   y -= 20
+
+//   // Draw Contact (right-aligned)
+//   const contactLines = [
+//     data.email,
+//     data.phone,
+//     data.location,
+//     data.linkedin,
+//   ].filter(Boolean)
+
+//   contactLines.forEach((line, i) => {
+//     const textWidth = regularFont.widthOfTextAtSize(line!, fontSize)
+//     drawText(line!, { x: width - margin - textWidth, y: height - margin - i * 12, size: fontSize })
+//   })
+
+//   y -= 30
+
+//   // Draw visible custom fields
+//   const visibleFields = Object.values(data.custom).filter(f => !f.hidden)
+//   if (visibleFields.length) {
+//     const colWidth = (width - margin * 2) / 3
+//     visibleFields.forEach((field, i) => {
+//       const col = i % 3
+//       const row = Math.floor(i / 3)
+//       const x = margin + col * colWidth
+//       const fieldY = y - row * 15
+//       const label = field.title.replace(/_/g, ' ') + ': '
+//       drawText(label, { x, y: fieldY, bold: true })
+//       drawText(field.content, { x: x + regularFont.widthOfTextAtSize(label, fontSize), y: fieldY })
+//     })
+//     y -= Math.ceil(visibleFields.length / 3) * 15 + 10
+//   }
+
+//   // Draw Sections
+//   for (const section of data.sections) {
+//     // Section title
+//     drawText(section.title.toUpperCase(), {
+//       x: margin,
+//       y,
+//       size: headingSize,
+//       bold: true,
+//     })
+//     y -= 16
+//     page.drawLine({
+//       start: { x: margin, y: y },
+//       end: { x: width - margin, y: y },
+//       thickness: 0.5,
+//       color: rgb(0.8, 0.8, 0.8),
+//     })
+//     y -= 8
+
+//     for (const [title, bullets] of Object.entries(section.content)) {
+//       if (y < 60) {
+//         page = pdfDoc.addPage()
+//         y = height - margin
+//       }
+
+//       const [mainTitle, dateOrLoc] = title.split('|').map(t => t.trim())
+
+//       drawText(mainTitle, { x: margin, y, bold: true })
+//       if (dateOrLoc) {
+//         const rightTextWidth = regularFont.widthOfTextAtSize(dateOrLoc, fontSize)
+//         drawText(dateOrLoc, {
+//           x: width - margin - rightTextWidth,
+//           y,
+//           size: fontSize - 1,
+//           color: rgb(0.4, 0.4, 0.4),
+//         })
+//       }
+
+//       y -= 14
+
+//       bullets.forEach(bullet => {
+//         if (y < 50) {
+//           page = pdfDoc.addPage()
+//           y = height - margin
+//         }
+//         drawText('• ' + bullet, { x: margin + 10, y })
+//         y -= 12
+//       })
+
+//       y -= 10
+//     }
+//   }
+
+//   return await pdfDoc.save()
+// }
+
+// Helper function to wrap text
+const wrapText = (text: string, font: any, fontSize: number, maxWidth: number): string[] => {
+  const words = text.split(" ")
+  const lines: string[] = []
+  let currentLine = ""
+
+  words.forEach((word) => {
+    const width = font.widthOfTextAtSize(currentLine + " " + word, fontSize)
+    if (width < maxWidth) {
+      currentLine += (currentLine ? " " : "") + word
+    } else {
+      lines.push(currentLine)
+      currentLine = word
+    }
+  })
+
+  if (currentLine) {
+    lines.push(currentLine)
+  }
+
+  return lines
+}
+
+// Helper function to ensure space on page
+const ensureSpace = (currentPage: any, pdfDoc: any, yOffset: number, spaceNeeded: number, margin: number) => {
+  if (yOffset - spaceNeeded < margin) {
+    currentPage = pdfDoc.addPage([595.276, 841.89])
+    return { page: currentPage, yOffset: 800 }
+  }
+  return { page: currentPage, yOffset }
+}
+
+// Helper function to add link annotation
+const addLinkAnnotation = (
+  currentPage: any,
+  text: string,
+  x: number,
+  y: number,
+  fontSize: number,
+  font: any,
+  color: any,
+) => {
+  // Draw the link text
+  currentPage.drawText(text, {
+    x,
+    y,
+    size: fontSize,
+    font,
+    color,
+  })
+
+  // Calculate text width for the annotation rectangle
+  const textWidth = font.widthOfTextAtSize(text, fontSize)
+
+  // Ensure URL starts with http(s)
+  const url = text.startsWith("http") ? text : `https://${text}`
+
+  // Create the link annotation
+  const linkAnnotation = currentPage.doc.context.obj({
+    Type: PDFName.of("Annot"),
+    Subtype: PDFName.of("Link"),
+    Rect: [x, y, x + textWidth, y + fontSize],
+    Border: [0, 0, 0],
+    A: currentPage.doc.context.obj({
+      Type: PDFName.of("Action"),
+      S: PDFName.of("URI"),
+      URI: currentPage.doc.context.obj(url),
+    }),
+  })
+
+  // Register the annotation in the document context
+  const linkRef = currentPage.doc.context.register(linkAnnotation)
+
+  // Get existing annotations or create a new array
+  let annotations = currentPage.node.get(PDFName.of("Annots"))
+
+  if (!annotations) {
+    annotations = currentPage.doc.context.obj([]) // Create new annotations array
+    currentPage.node.set(PDFName.of("Annots"), annotations)
+  }
+
+  // Ensure annotations is a PDFArray and add the new link
+  if (annotations instanceof PDFArray) {
+    annotations.push(linkRef)
+  } else {
+    const newAnnotations = currentPage.doc.context.obj([annotations, linkRef])
+    currentPage.node.set(PDFName.of("Annots"), newAnnotations)
+  }
+
+  return textWidth
+}
+
+const drawLine = (currentPage , margin , yOffset , pageWidth) => {
+  currentPage.drawLine({
+    start: { x: margin, y: yOffset },
+    end: { x: pageWidth + margin, y: yOffset },
+    thickness: 0.4,
+    color: rgb(0.1, 0.1, 0.1),
+  })
+}
+
+// Template 1: Classic Professional
+export async function generateTemplate1({ pdfRef, theme, resumeData }: generationProps) {
+  if (!pdfRef.current) return
+  const pdFtheme: ThemeConfig = theme
+
+  const pdfDoc = await PDFDocument.create()
+  let currentPage = pdfDoc.addPage([595.276, 841.89]) // A4 size in points
+
+  // Embed fonts
+  const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
+
+  let yOffset = 800 // Start from top of page
+  const margin = 50
+  const pageWidth = 595.276 - 2 * margin
+
+  // Header with name
+  currentPage.drawText(resumeData.name, {
+    x: margin,
+    y: yOffset,
+    size: pdFtheme.pdfSize?.name || 24,
+    font: boldFont,
+    color: rgb(pdFtheme.rgb?.text?.r || 0.1, pdFtheme.rgb?.text?.g || 0.1, pdFtheme.rgb?.text?.b || 0.1),
+  })
+  yOffset -= pdFtheme.pdfSpacing?.page || 20
+
+  // Contact info
+  const contactInfoItems = [
+    { text: resumeData.email, icon: "📧" },
+    { text: resumeData.phone, icon: "📱" },
+    { text: resumeData.location, icon: "📍" },
+    { text: resumeData.linkedin, icon: "🔗" },
+  ]
+
+  for (const item of contactInfoItems) {
+    if (!item.text) continue
+
+    currentPage.drawText(`${item.icon} ${item.text}`, {
+      x: margin,
+      y: yOffset,
+      size: pdFtheme.pdfSize?.small || 10,
+      font: regularFont,
+      color: rgb(
+        pdFtheme.rgb?.secondary?.r || 0.5,
+        pdFtheme.rgb?.secondary?.g || 0.5,
+        pdFtheme.rgb?.secondary?.b || 0.5,
+      ),
+    })
+    yOffset -= 15
+  }
+  yOffset -= (pdFtheme.pdfSpacing?.section || 30) / 2
+
+  // Custom Fields
+  const customEntries = Object.entries(resumeData.custom).filter(([_, item]) => !item.hidden)
+  if (customEntries.length > 0) {
+    for (const [_, item] of customEntries) {
+      const { page: updatedPage, yOffset: updatedYOffset } = ensureSpace(currentPage, pdfDoc, yOffset, 15, margin)
+      currentPage = updatedPage
+      yOffset = updatedYOffset
+
+      currentPage.drawText(`${item.title}: `, {
+        x: margin,
+        y: yOffset,
+        size: pdFtheme.pdfSize?.small || 10,
+        font: boldFont,
+        color: rgb(pdFtheme.rgb?.text?.r || 0.1, pdFtheme.rgb?.text?.g || 0.1, pdFtheme.rgb?.text?.b || 0.1),
+      })
+
+      const titleWidth = boldFont.widthOfTextAtSize(`${item.title}: `, pdFtheme.pdfSize?.small || 10)
+
+      if (item.link) {
+        addLinkAnnotation(
+          currentPage,
+          item.content,
+          margin + titleWidth,
+          yOffset,
+          pdFtheme.pdfSize?.small || 10,
+          regularFont,
+          rgb(pdFtheme.rgb?.linkColor?.r || 0, pdFtheme.rgb?.linkColor?.g || 0, pdFtheme.rgb?.linkColor?.b || 0.8),
+        )
+      } else {
+        currentPage.drawText(item.content, {
+          x: margin + titleWidth,
+          y: yOffset,
+          size: pdFtheme.pdfSize?.small || 10,
+          font: regularFont,
+          color: rgb(pdFtheme.rgb?.text?.r || 0.1, pdFtheme.rgb?.text?.g || 0.1, pdFtheme.rgb?.text?.b || 0.1),
+        })
+      }
+
+      yOffset -= 15
+    }
+    yOffset -= (pdFtheme.pdfSpacing?.section || 30) / 2
+  }
+
+  // Sections
+  for (const section of resumeData.sections) {
+    const { page: updatedPage, yOffset: updatedYOffset } = ensureSpace(
+      currentPage,
+      pdfDoc,
+      yOffset,
+      (pdFtheme.pdfSpacing?.section || 30) + 20,
+      margin,
+    )
+    currentPage = updatedPage
+    yOffset = updatedYOffset
+
+    currentPage.drawText(section.title, {
+      x: margin,
+      y: yOffset,
+      size: pdFtheme.pdfSize?.section || 16,
+      font: boldFont,
+      color: rgb(pdFtheme.rgb?.heading?.r || 0.2, pdFtheme.rgb?.heading?.g || 0.2, pdFtheme.rgb?.heading?.b || 0.2),
+    })
+    yOffset -= pdFtheme.pdfSpacing?.page || 20
+
+    for (const [key, bullets] of Object.entries(section.content)) {
+      const { page: updatedPage, yOffset: updatedYOffset } = ensureSpace(
+        currentPage,
+        pdfDoc,
+        yOffset,
+        (pdFtheme.pdfSpacing?.item || 15) + 20,
+        margin,
+      )
+      currentPage = updatedPage
+      yOffset = updatedYOffset
+
+      if (key) {
+        const [title, subtitle] = key.split(" | ")
+        currentPage.drawText(title, {
+          x: margin,
+          y: yOffset,
+          size: pdFtheme.pdfSize?.content || 12,
+          font: boldFont,
+          color: rgb(pdFtheme.rgb?.text?.r || 0.1, pdFtheme.rgb?.text?.g || 0.1, pdFtheme.rgb?.text?.b || 0.1),
+        })
+        yOffset -= pdFtheme.pdfSize?.content || 12 + 5
+
+        if (subtitle) {
+          currentPage.drawText(subtitle, {
+            x: margin,
+            y: yOffset,
+            size: pdFtheme.pdfSize?.small || 10,
+            font: regularFont,
+            color: rgb(
+              pdFtheme.rgb?.secondary?.r || 0.5,
+              pdFtheme.rgb?.secondary?.g || 0.5,
+              pdFtheme.rgb?.secondary?.b || 0.5,
+            ),
+          })
+          yOffset -= pdFtheme.pdfSize?.small || 10 + 5
+        }
+      }
+
+      for (const bullet of bullets) {
+        const { page: updatedPage, yOffset: updatedYOffset } = ensureSpace(
+          currentPage,
+          pdfDoc,
+          yOffset,
+          pdFtheme.pdfSize?.small || 10 + 5,
+          margin,
+        )
+        currentPage = updatedPage
+        yOffset = updatedYOffset
+
+        const bulletText = `• ${bullet}`
+        const lines = wrapText(bulletText, regularFont, pdFtheme.pdfSize?.small || 10, pageWidth - 20)
+
+        for (const line of lines) {
+          currentPage.drawText(line, {
+            x: margin + 10,
+            y: yOffset,
+            size: pdFtheme.pdfSize?.small || 10,
+            font: regularFont,
+            color: rgb(pdFtheme.rgb?.text?.r || 0.1, pdFtheme.rgb?.text?.g || 0.1, pdFtheme.rgb?.text?.b || 0.1),
+          })
+          yOffset -= 15
+        }
+      }
+
+      yOffset -= (pdFtheme.pdfSpacing?.item || 15) / 2
+    }
+
+    yOffset -= (pdFtheme.pdfSpacing?.section || 30) / 2
+  }
+
+  const pdfBytes = await pdfDoc.save()
+  const blob = new Blob([pdfBytes], { type: "application/pdf" })
+  const link = document.createElement("a")
+  link.href = URL.createObjectURL(blob)
+  link.download = "template1_resume.pdf"
+  link.click()
+}
+
+// Template 2: Modern Minimalist
+export async function generateModernMinimalistPDF({ pdfRef, theme, resumeData }: generationProps) {
+ 
+ // if (!pdfRef.current) return
+  const pdFtheme: ThemeConfig = theme 
+
+  const pdfDoc = await PDFDocument.create()
+  let currentPage = pdfDoc.addPage([595.276, 841.89]) // A4 size in points
+
+  // Embed fonts
+  const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
+
+  let yOffset = 800 // Start from top of page
+  const margin = 50
+  const pageWidth = 595.276 - 2 * margin
+
+  // Two-column header
+  currentPage.drawText(resumeData.name, {
+    x: margin,
+    y: yOffset,
+    size: pdFtheme.pdfSize?.name || 24,
+    font: boldFont,
+    color: rgb(pdFtheme.rgb?.text?.r || 0.1, pdFtheme.rgb?.text?.g || 0.1, pdFtheme.rgb?.text?.b || 0.1),
+  })
+
+  // Contact info in right column
+  const contactInfoItems = [resumeData.email, resumeData.phone, resumeData.location, resumeData.linkedin]
+  let contactY = yOffset
+
+  for (const item of contactInfoItems) {
+    if (!item) continue
+
+    const textWidth = regularFont.widthOfTextAtSize(item, pdFtheme.pdfSize?.small || 10)
+    currentPage.drawText(item, {
+      x: pageWidth + margin - textWidth,
+      y: contactY + 8,
+      size: pdFtheme.pdfSize?.small || 10,
+      font: regularFont,
+      color: rgb(
+        pdFtheme.rgb?.secondary?.r || 0.1,
+        pdFtheme.rgb?.secondary?.g || 0.1,
+        pdFtheme.rgb?.secondary?.b || 0.1,
+      ),
+    })
+    contactY -= 15
+  }
+
+  // Draw a horizontal line
+  yOffset -=  50
+  currentPage.drawLine({
+    start: { x: margin, y: yOffset },
+    end: { x: pageWidth + margin, y: yOffset },
+    thickness: 0.4,
+    color: rgb(0.1, 0.1, 0.1),
+  })
+  yOffset -=  18
+
+  // Custom Fields
+  const customEntries = Object.entries(resumeData.custom).filter(([_, item]) => !item.hidden)
+  if (customEntries.length > 0) {
+    const columns = 3
+    const itemsPerColumn = Math.ceil(customEntries.length / columns)
+    const columnWidth = pageWidth / columns
+
+    for (let i = 0; i < itemsPerColumn; i++) {
+      for (let j = 0; j < columns; j++) {
+        const index = i + j * itemsPerColumn
+        if (index >= customEntries.length) continue
+
+        const [_, item] = customEntries[index]
+        const xPos = margin + j * columnWidth
+
+        currentPage.drawText(`${item.title}: `, {
+          x: xPos,
+          y: yOffset,
+          size: pdFtheme.pdfSize?.small || 10,
+          font: boldFont,
+          color: rgb(pdFtheme.rgb?.text?.r || 0.1, pdFtheme.rgb?.text?.g || 0.1, pdFtheme.rgb?.text?.b || 0.1),
+        })
+
+        const titleWidth = boldFont.widthOfTextAtSize(`${item.title}: `, pdFtheme.pdfSize?.small || 10)
+
+        if (item.link) {
+          addLinkAnnotation(
+            currentPage,
+            item.content,
+            xPos + titleWidth,
+            yOffset,
+            pdFtheme.pdfSize?.small || 10,
+            regularFont,
+            rgb(pdFtheme.rgb?.linkColor?.r || 0, pdFtheme.rgb?.linkColor?.g || 0, pdFtheme.rgb?.linkColor?.b || 0.8),
+          )
+        } else {
+          currentPage.drawText(item.content, {
+            x: xPos + titleWidth,
+            y: yOffset,
+            size: pdFtheme.pdfSize?.small || 10,
+            font: regularFont,
+            color: rgb(pdFtheme.rgb?.text?.r || 0.1, pdFtheme.rgb?.text?.g || 0.1, pdFtheme.rgb?.text?.b || 0.1),
+          })
+        }
+      }
+      yOffset -= 15
+    }
+    yOffset -= (pdFtheme.pdfSpacing?.section || 30) / 2
+  }
+
+  // Sections
+  for (const section of resumeData.sections) {
+    const { page: updatedPage, yOffset: updatedYOffset } = ensureSpace(
+      currentPage,
+      pdfDoc,
+      yOffset,
+      (pdFtheme.pdfSpacing?.section || 30) + 20,
+      margin,
+    )
+    currentPage = updatedPage
+    yOffset = updatedYOffset
+
+    currentPage.drawText(section.title.toUpperCase(), {
+      x: margin,
+      y: yOffset,
+      size: pdFtheme.pdfSize?.section || 16,
+      font: boldFont,
+      color: rgb(pdFtheme.rgb?.heading?.r || 0.2, pdFtheme.rgb?.heading?.g || 0.2, pdFtheme.rgb?.heading?.b || 0.2),
+    })
+    yOffset -=  8
+
+    drawLine(currentPage ,margin , yOffset , pageWidth);
+
+    yOffset -= 20
+
+    for (const [key, bullets] of Object.entries(section.content)) {
+      const { page: updatedPage, yOffset: updatedYOffset } = ensureSpace(
+        currentPage,
+        pdfDoc,
+        yOffset,
+        (pdFtheme.pdfSpacing?.item || 15) + 20,
+        margin,
+      )
+      currentPage = updatedPage
+      yOffset = updatedYOffset
+
+      if (key) {
+        const [title, subtitle] = key.split(" | ")
+        currentPage.drawText(title, {
+          x: margin,
+          y: yOffset,
+          size: pdFtheme.pdfSize?.content || 12,
+          font: boldFont,
+          color: rgb(pdFtheme.rgb?.text?.r || 0.1, pdFtheme.rgb?.text?.g || 0.1, pdFtheme.rgb?.text?.b || 0.1),
+        })
+
+        if (subtitle) {
+          const titleWidth = boldFont.widthOfTextAtSize(title, pdFtheme.pdfSize?.content || 12)
+          const subtitleX = pageWidth + margin - regularFont.widthOfTextAtSize(subtitle, pdFtheme.pdfSize?.small || 10)
+
+          currentPage.drawText(subtitle, {
+            x: subtitleX,
+            y: yOffset,
+            size: pdFtheme.pdfSize?.small || 10,
+            font: regularFont,
+            color: rgb(
+              pdFtheme.rgb?.secondary?.r || 0.5,
+              pdFtheme.rgb?.secondary?.g || 0.5,
+              pdFtheme.rgb?.secondary?.b || 0.5,
+            ),
+          })
+        }
+
+        yOffset -= pdFtheme.pdfSize?.content || 12 + 5
+      }
+
+      for (const bullet of bullets) {
+        const { page: updatedPage, yOffset: updatedYOffset } = ensureSpace(
+          currentPage,
+          pdfDoc,
+          yOffset,
+          pdFtheme.pdfSize?.small || 10 + 5,
+          margin,
+        )
+        currentPage = updatedPage
+        yOffset = updatedYOffset
+
+        const bulletText = `• ${bullet}`
+        const lines = wrapText(bulletText, regularFont, pdFtheme.pdfSize?.small || 10, pageWidth - 20)
+
+        for (const line of lines) {
+          currentPage.drawText(line, {
+            x: margin + 10,
+            y: yOffset,
+            size: pdFtheme.pdfSize?.small || 10,
+            font: regularFont,
+            color: rgb(pdFtheme.rgb?.text?.r || 0.1, pdFtheme.rgb?.text?.g || 0.1, pdFtheme.rgb?.text?.b || 0.1),
+          })
+          yOffset -= 15
+        }
+      }
+
+      yOffset -= (pdFtheme.pdfSpacing?.item || 15) / 2
+    }
+
+    yOffset -= (pdFtheme.pdfSpacing?.section || 30) / 2
+  }
+
+  const pdfBytes = await pdfDoc.save()
+  const blob = new Blob([pdfBytes], { type: "application/pdf" })
+  const link = document.createElement("a")
+  link.href = URL.createObjectURL(blob)
+  link.download = "template2_resume.pdf"
+  link.click()
 }

@@ -8,16 +8,16 @@ declare global {
     }
   }
 const InPushBanner = () => {
-    console.log("ssssssssssssssssssssssssssssss")
+   
 
     useEffect(() => {
         // Define the global functions that the script expects
 
         (window as Window & typeof globalThis)._zdrqc = () => {
-          console.log("Propeller script failed to load")
+          console.error("Propeller script failed to load")
         }
         ;(window as Window & typeof globalThis)._xzhdi = () => {
-          console.log("Propeller script loaded successfully")
+         /// console.log("Propeller script loaded successfully")
         }
       }, [])
     

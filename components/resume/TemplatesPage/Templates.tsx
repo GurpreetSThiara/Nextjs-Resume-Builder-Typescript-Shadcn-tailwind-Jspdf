@@ -20,6 +20,7 @@ import { Search, ArrowRight } from "lucide-react";
 import resume1 from "../../../public/images/1.png";
 import resume2 from "../../../public/images/2.png";
 import resume3 from "../../../public/images/3.png";
+import modernmini from "/public/images/modernmini.png"
 import TemplatesRouteHead from "@/components/seo/TemplatesRouteHead";
 
 const templates = [
@@ -53,6 +54,13 @@ const templates = [
            </div>
     </>
   },
+  {
+    id: 4,
+    name: "ModernMinimalist",
+    description: "A Modern Minimalist layout ideal for creative professionals.",
+    image: modernmini,
+    special:''
+  },
 ];
 
 const Template = React.memo(
@@ -67,7 +75,8 @@ const Template = React.memo(
     image: StaticImageData;
     special:any
   }) => (
-    <Card className="w-full shadow-lg border-none max-w-md bg-white hover:shadow-xl transition-shadow duration-300">
+    <Card className="w-full flex flex-col justify-between
+     shadow-lg border-none max-w-md bg-white hover:shadow-xl transition-shadow duration-300">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-gray-800">
           {name} <span className='text-3xl font-extrabold text-purple-900 '><strong>Resume</strong></span>
@@ -99,9 +108,10 @@ const Template = React.memo(
         </Link>
         <Link href={`/resume-templates/${name.split(" ")[0].toLowerCase()}/create`}>
           <Button className="bg-purple-400 text-gray-800  text-bol hover:bg-purple-700">
-            Use This    <span className="text-2xl text-gray-950 ">
+            Edit
+            {/* Use This    <span className="text-gray-950 ">
                 <strong>Resume</strong>
-              </span> Template
+              </span> Template */}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>

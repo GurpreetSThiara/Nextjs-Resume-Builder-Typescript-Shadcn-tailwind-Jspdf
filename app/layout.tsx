@@ -1,50 +1,30 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Nav/Navbar";
-import Footer from "@/components/Footer/Footer";
+import  Navbar  from "@/components/Nav/Navbar";
+import { AuthProvider } from "@/lib/context/AuthContext";
+//import { Toaster } from "@/components/ui/toaster";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: {
-    default:"Free Resume Builder",
-    template:"%s - Free Resume Builder"
-  },
-  description: "Free Resume, CV builder. create professional and ATS friendly Resumes and download for free.",
-  keywords: "resume, resume builder, free resume, CV, curriculum vitae, free CV, resume maker, ATS-friendly resume, job application",
-
-  twitter:{
-    card:"summary_large_image"
-  }
-  
+  title: "Resume Builder",
+  description: "Create professional resumes with ease",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <head>
-        <title>Free Resume Builder</title>
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Navbar/>
-        {children}
-        <Footer/>
+      <body className={inter.className}>
+        <AuthProvider>
+          <Navbar />
+          <main>{children}</main>
+          {/* <Toaster /> */}
+        </AuthProvider>
       </body>
     </html>
   );

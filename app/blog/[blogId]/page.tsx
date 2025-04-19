@@ -31,9 +31,9 @@ export default function Component() {
   const [activeSection, setActiveSection] = useState("")
   const [blogPost, setBlogPost] = useState<BlogPost | null>(null);
   const [loading , setLoading] = useState(true);
-  console.log(blogPost)
+ 
   const params = useParams();
-  console.log(params)
+
 
  useEffect(()=>{
     if(params.blogId){

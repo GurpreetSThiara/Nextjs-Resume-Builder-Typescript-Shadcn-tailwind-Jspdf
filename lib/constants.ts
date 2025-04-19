@@ -157,6 +157,13 @@ export  const initialResumeData: ResumeData = {
           "id": "custom_marital_status_852147",
           "link": false
         },
+        // "emergency_contact":{
+        //   "title": "emergency_contact",
+        //   "content": "+1 (987) 654-3210",
+        //   "hidden": false,
+        //   "id": "custom_emergency_contact_357951",
+        //   "link": false
+        // },
         website:{
           "title": "website",
           "content": "www.johndoe.com",
@@ -178,13 +185,7 @@ export  const initialResumeData: ResumeData = {
           "id": "custom_blood_group_159753",
           "link": false
         },
-        "emergency_contact":{
-          "title": "emergency_contact",
-          "content": "+1 (987) 654-3210",
-          "hidden": false,
-          "id": "custom_emergency_contact_357951",
-          "link": false
-        },
+     
         // "permanent_address":{
         //   "title": "permanent_address",
         //   "content": "1234 Elm Street, San Francisco, CA, USA",
