@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
-import { db, auth } from "@/lib/firebase";
+import {  useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Loader2, Trash2, Edit2, Download } from "lucide-react";
 import { decompressResumeData } from "@/utils/resumeUtils";
-import { ResumeData } from "@/lib/types";
 
 interface SavedResume {
   id: string;
@@ -51,12 +49,12 @@ export default function MyResumes() {
   // }, []);
 
   const handleDelete = async (resumeId: string) => {
-    try {
-      await deleteDoc(doc(db, "resumes", resumeId));
-      setResumes((prev) => prev.filter((r) => r.id !== resumeId));
-    } catch (error) {
-      console.error("Error deleting resume:", error);
-    }
+    // try {
+    //   await deleteDoc(doc(db, "resumes", resumeId));
+    //   setResumes((prev) => prev.filter((r) => r.id !== resumeId));
+    // } catch (error) {
+    //   console.error("Error deleting resume:", error);
+    // }
   };
 
   const handleEdit = async (resume: SavedResume) => {
