@@ -24,7 +24,8 @@ export function AddCustomInfoDialog({ onAdd }: AddCustomInfoDialogProps) {
    
     const [isLink , setIsLink] = useState(false);
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault()
         if (!title || !content) {
             alert("title or content should not be empty");
             return};
@@ -54,8 +55,11 @@ export function AddCustomInfoDialog({ onAdd }: AddCustomInfoDialogProps) {
 
     return (
         <Dialog >
-            <DialogTrigger>
-                <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50">
+            <DialogTrigger asChild>
+                <button 
+                    className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+                    onClick={(e) => e.preventDefault()}
+                >
                     Add Custom Field
                 </button>
             </DialogTrigger>
@@ -86,7 +90,10 @@ export function AddCustomInfoDialog({ onAdd }: AddCustomInfoDialogProps) {
                 </div>
                 <DialogFooter>
                     <button
-                        onClick={() =>{}}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            // setOpen(false); - this is commented out in original code
+                        }}
                         className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50"
                     >
                         Cancel

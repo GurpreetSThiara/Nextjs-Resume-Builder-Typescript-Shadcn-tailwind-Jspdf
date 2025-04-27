@@ -48,6 +48,7 @@ import html2canvas from "html2canvas";
 import {  CustomPersonalInformationItem, ResumeData } from "@/lib/types";
 import { fonts, initialResumeData, themes } from "@/lib/constants";
 import {
+  generateBoldHeader,
   generateClassic,
   generateImpact,
   generateModern,
@@ -63,6 +64,8 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { ResumeService } from "@/lib/resumeService";
 import { driveService } from "@/lib/driveService";
 import ModernMinimalist from "../ModernMinimalist";
+import BoldHeader from "../BoldHeader";
+
 // import { toast } from "@/components/ui/use-toast";
 
 
@@ -70,7 +73,8 @@ const allTemplates = new Map<string, React.FC<ResumeProps>>([
   ["modern", BoldHeaderResume],
   ["classic", ATS1],
   ["impact", GoogleResume],
-  ["modernminimalist",ModernMinimalist]
+  ["modernminimalist",ModernMinimalist],
+  ["boldheader",BoldHeader]
 ]);
 const MAX_RESUMES_PER_USER = 3;
 const RESUMES_COLLECTION = 'resumes';
@@ -80,6 +84,7 @@ export default function Create() {
   const router = useRouter();
 
   const [resumeData, setResumeData] = useState<ResumeData>(initialResumeData);
+  console.log(resumeData)
   const template = params.resume ?? "classic"
 
   const selectedResume = useMemo(
@@ -93,7 +98,9 @@ export default function Create() {
     classic: generateClassic,
     modern: generateModern,
     impact: generateImpact,
-    modernminimalist:generateModernMinimalistPDF
+    modernminimalist:generateModernMinimalistPDF,
+    boldheader:generateBoldHeader
+    
   };
 
   const theme = "traditional";
@@ -130,6 +137,7 @@ export default function Create() {
 
 const handleCustomInfoChange = useCallback(
   (id: string, field: "title" | "content", value: string) => {
+    console.log("title",field , value , id)
     setResumeData((prev) => ({
       ...prev,
       custom: {

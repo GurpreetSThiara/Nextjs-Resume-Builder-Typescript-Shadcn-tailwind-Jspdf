@@ -1,4 +1,5 @@
 import { RGB } from "pdf-lib"
+import { LegacyRef } from "react"
 
 export type SectionContent = {
     [key: string]: string[]
@@ -77,3 +78,12 @@ export type SectionContent = {
     name:string
     className:string
   }
+
+
+  export type ResumeProps = {
+    theme: ThemeConfig,
+    resumeData: ResumeData,
+    font: FontConfig,
+    pdfRef: LegacyRef<HTMLDivElement> | undefined
+  }
+  

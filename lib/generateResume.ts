@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { PDFArray, PDFDocument, PDFName, rgb, StandardFonts } from "pdf-lib";
-import { ResumeData, ThemeConfig } from "./types";
+import { ResumeData, ResumeProps, ThemeConfig } from "./types";
 import jsPDF from "jspdf";
 
 interface generationProps {
@@ -1422,3 +1422,243 @@ export async function generateModernMinimalistPDF({ pdfRef, theme, resumeData }:
   link.download = "template2_resume.pdf"
   link.click()
 }
+
+export async function generateBoldHeader({ pdfRef, theme, resumeData }: generationProps) {
+ // if (!pdfRef.current) return
+
+  const pdfDoc = await PDFDocument.create()
+  let currentPage = pdfDoc.addPage([595.276, 841.89]) // A4 size in points
+
+  // Embed fonts
+  const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
+  const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
+
+  let yOffset = 800 // Start from top of page
+  const margin = 50
+  const pageWidth = 495.276 // 595.276 - 2 * margin
+
+  // Header with name in bold with border below
+  currentPage.drawText(resumeData.name, {
+    x: margin,
+    y: yOffset,
+    size: 24,
+    font: boldFont,
+    color: rgb(0.1, 0.1, 0.1),
+  })
+
+  yOffset -= 30
+
+  // Draw a thick border line below the name (matching the border-b-4 in the component)
+  currentPage.drawLine({
+    start: { x: margin, y: yOffset + 10 },
+    end: { x: margin + pageWidth, y: yOffset + 10 },
+    thickness: 4,
+    color: rgb(0.1, 0.1, 0.1),
+  })
+
+  yOffset -= 20
+
+  // Contact info with icons
+  const contactInfoItems = [
+    { text: resumeData.email, icon: "✉" },
+    { text: resumeData.phone, icon: "📱" },
+    { text: resumeData.location, icon: "📍" },
+    { text: resumeData.linkedin, icon: "🔗" },
+  ]
+
+  // Calculate positions for contact info in a row with proper spacing
+  const contactInfoSpacing = 20
+  let contactX = margin
+
+  for (const item of contactInfoItems) {
+    if (!item.text) continue
+
+    // Draw icon
+    // currentPage.drawText(item.icon, {
+    //   x: contactX,
+    //   y: yOffset,
+    //   size: 10,
+    //   font: regularFont,
+    //   color: rgb(0.4, 0.4, 0.4),
+    // })
+
+    // Draw text after icon
+    currentPage.drawText(item.text, {
+      x: contactX,
+      y: yOffset,
+      size: 10,
+      font: regularFont,
+      color: rgb(0.1, 0.1, 0.1),
+    })
+
+    // Move to next position
+    const textWidth = regularFont.widthOfTextAtSize(item.text, 10)
+    contactX += textWidth + 20 // Icon width + text width + spacing
+  }
+
+  yOffset -= 30
+
+  // Custom Fields in a grid layout
+  const customEntries = Object.entries(resumeData.custom).filter(([_, item]) => !item.hidden)
+
+  if (customEntries.length > 0) {
+    const columns = 3
+    const columnWidth = pageWidth / columns
+
+    // Calculate rows needed
+    const rows = Math.ceil(customEntries.length / columns)
+
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < columns; col++) {
+        const index = row * columns + col
+        if (index >= customEntries.length) continue
+
+        const [_, item] = customEntries[index]
+        const xPos = margin + col * columnWidth
+
+        // Draw field title (capitalized)
+        const title = item.title.replace(/_/g, " ")
+        const capitalizedTitle = title.charAt(0).toUpperCase() + title.slice(1)
+
+        currentPage.drawText(`${capitalizedTitle}: `, {
+          x: xPos,
+          y: yOffset,
+          size: 10,
+          font: boldFont,
+          color: rgb(0.1, 0.1, 0.1),
+        })
+
+        const titleWidth = boldFont.widthOfTextAtSize(`${capitalizedTitle}: `, 10)
+
+        // Draw content (with link if needed)
+        if (item.link) {
+          addLinkAnnotation(currentPage, item.content, xPos + titleWidth, yOffset, 10, regularFont, rgb(0, 0, 0.8))
+        } else {
+          currentPage.drawText(item.content, {
+            x: xPos + titleWidth,
+            y: yOffset,
+            size: 10,
+            font: regularFont,
+            color: rgb(0.1, 0.1, 0.1),
+          })
+        }
+      }
+
+      yOffset -= 20
+    }
+
+    yOffset -= 10
+  }
+
+  // Main content sections
+  for (const section of resumeData.sections) {
+    const { page: updatedPage, yOffset: updatedYOffset } = ensureSpace(currentPage, pdfDoc, yOffset, 40, margin)
+    currentPage = updatedPage
+    yOffset = updatedYOffset
+
+    // Section title in uppercase and bold
+    currentPage.drawText(section.title.toUpperCase(), {
+      x: margin,
+      y: yOffset,
+      size: 16,
+      font: boldFont,
+      color: rgb(0.1, 0.1, 0.1),
+    })
+
+    yOffset -= 25
+
+    // Process each content item
+    for (const [key, bullets] of Object.entries(section.content)) {
+      const { page: updatedPage, yOffset: updatedYOffset } = ensureSpace(currentPage, pdfDoc, yOffset, 30, margin)
+      currentPage = updatedPage
+      yOffset = updatedYOffset
+
+      if (key) {
+        // Split title and details if they exist
+        const [title, details] = key.split(" | ").map((part) => part?.trim())
+
+        // Draw title
+        currentPage.drawText(title, {
+          x: margin,
+          y: yOffset,
+          size: 12,
+          font: boldFont,
+          color: rgb(0.1, 0.1, 0.1),
+        })
+
+        // Draw details on the right if they exist
+        if (details) {
+          const detailsWidth = regularFont.widthOfTextAtSize(details, 10)
+          currentPage.drawText(details, {
+            x: margin + pageWidth - detailsWidth,
+            y: yOffset,
+            size: 10,
+            font: regularFont,
+            color: rgb(0.4, 0.4, 0.4),
+          })
+        }
+
+        yOffset -= 15
+
+        // Draw a light border below the title (matching border-b border-gray-200)
+        currentPage.drawLine({
+          start: { x: margin, y: yOffset + 5 },
+          end: { x: margin + pageWidth, y: yOffset + 5 },
+          thickness: 0.5,
+          color: rgb(0.8, 0.8, 0.8),
+        })
+
+        yOffset -= 10
+      }
+
+      // Draw bullet points
+      for (const bullet of bullets) {
+        const { page: updatedPage, yOffset: updatedYOffset } = ensureSpace(currentPage, pdfDoc, yOffset, 15, margin)
+        currentPage = updatedPage
+        yOffset = updatedYOffset
+
+        // Draw bullet point
+        currentPage.drawText("•", {
+          x: margin,
+          y: yOffset,
+          size: 10,
+          font: regularFont,
+          color: rgb(0.1, 0.1, 0.1),
+        })
+
+        // Draw bullet text with wrapping
+        const bulletText = bullet
+        const lines = wrapText(bulletText, regularFont, 10, pageWidth - 15)
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i]
+          currentPage.drawText(line, {
+            x: margin + 15, // Indent after bullet
+            y: yOffset - i * 15,
+            size: 10,
+            font: regularFont,
+            color: rgb(0.1, 0.1, 0.1),
+          })
+        }
+
+        // Move down based on number of lines
+        yOffset -= Math.max(1, lines.length) * 15
+      }
+
+      yOffset -= 15
+    }
+
+    yOffset -= 15
+  }
+
+  const pdfBytes = await pdfDoc.save()
+  const blob = new Blob([pdfBytes], { type: "application/pdf" })
+  const link = document.createElement("a")
+  link.href = URL.createObjectURL(blob)
+  link.download = "bold_header_resume.pdf"
+  link.click()
+}
+
+
+
+

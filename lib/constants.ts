@@ -143,42 +143,42 @@ export  const initialResumeData: ResumeData = {
           "id": "custom_dob_963852",
           "link": false
         },
-        nationality:{
+        "custom_nationality_753951":{
           "title": "nationality",
           "content": "American",
           "hidden": true,
           "id": "custom_nationality_753951",
           "link": false
         },
-        "marital_status":{
+        "custom_marital_status_852147":{
           "title": "marital_status",
           "content": "Single",
           "hidden": false,
           "id": "custom_marital_status_852147",
           "link": false
         },
-        // "emergency_contact":{
+        // "custom_emergency_contact_357951":{
         //   "title": "emergency_contact",
         //   "content": "+1 (987) 654-3210",
         //   "hidden": false,
         //   "id": "custom_emergency_contact_357951",
         //   "link": false
         // },
-        website:{
+        "custom_website_369741":{
           "title": "website",
           "content": "www.johndoe.com",
           "hidden": false,
           "id": "custom_website_369741",
           "link": true
         },
-        gender:{
+        "custom_gender_951753":{
           "title": "gender",
           "content": "Male",
           "hidden": false,
           "id": "custom_gender_951753",
           "link": false
         },
-        "blood_group":{
+        "custom_blood_group_159753":{
           "title": "blood_group",
           "content": "O+",
           "hidden": false,

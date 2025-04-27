@@ -48,6 +48,7 @@ export const PersonalInfo = React.memo(
           <h2 className="font-semibold text-lg mb-2">Custom Information Fields</h2>
           {Object.keys(resumeData.custom).map((i) => {
             const item = resumeData.custom[i]
+            console.log("item",item)
             return (
               <div key={`key ${item.id}`} className="flex items-center space-x-2 mb-2">
                 <Input
