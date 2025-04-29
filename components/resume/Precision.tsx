@@ -371,61 +371,166 @@ const CompactResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData 
 }
 
 // Design 7: Bold Header
-const BoldHeaderResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }) => {
-  if(!pdfRef && !font && !theme && !resumeData) return null
+const BoldHeaderResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData, setResumeData }) => {
+  if (!pdfRef && !font && !theme && !resumeData) return null
+
+  const handleChange = (key: string, value: string) => {
+    setResumeData((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const handleCustomChange = (index: number, field: "title" | "content", value: string) => {
+    setResumeData(prev => {
+      const updatedCustom = { ...prev.custom }
+      const key = Object.keys(updatedCustom)[index]
+      updatedCustom[key] = {
+        ...updatedCustom[key],
+        [field]: value
+      }
+      return { ...prev, custom: updatedCustom }
+    })
+  }
+
+  const handleSectionTitleChange = (sectionIndex: number, newTitle: string) => {
+    setResumeData(prev => {
+      const sections = [...prev.sections]
+      sections[sectionIndex].title = newTitle
+      return { ...prev, sections }
+    })
+  }
+
+  const handleContentKeyChange = (sectionIndex: number, oldKey: string, newKey: string) => {
+    setResumeData(prev => {
+      const sections = [...prev.sections]
+      const content = { ...sections[sectionIndex].content }
+      const value = content[oldKey]
+      delete content[oldKey]
+      content[newKey] = value
+      sections[sectionIndex].content = content
+      return { ...prev, sections }
+    })
+  }
+
+  const handleBulletChange = (sectionIndex: number, contentKey: string, bulletIndex: number, newText: string) => {
+    setResumeData(prev => {
+      const sections = [...prev.sections]
+      const bullets = [...sections[sectionIndex].content[contentKey]]
+      bullets[bulletIndex] = newText
+      sections[sectionIndex].content[contentKey] = bullets
+      return { ...prev, sections }
+    })
+  }
+
   return (
-    <div 
-      ref={pdfRef} 
+    <div
+      ref={pdfRef}
       className={`bg-white ${font.className}`}
       style={{ fontFamily: font.name }}
     >
       <header className={`bg-primary text-white p-8 mb-8`}>
-        <h1 className={`${theme.fontSize.name} font-bold mb-2 text-center`}>
+        <h1
+          className={`${theme.fontSize.name} font-bold mb-2 text-center`}
+          contentEditable
+          suppressContentEditableWarning
+          onBlur={(e) => handleChange("name", e.currentTarget.textContent || "")}
+        >
           {resumeData.name}
         </h1>
         <div className={`${theme.fontSize.small} flex justify-center space-x-4`}>
-          <span>{resumeData.email}</span>
-          <span>{resumeData.phone}</span>
-          <span>{resumeData.location}</span>
+          {(["email", "phone", "location"] as const).map((key) => (
+            <span
+              key={key}
+              contentEditable
+              suppressContentEditableWarning
+              onBlur={(e) => handleChange(key, e.currentTarget.textContent || "")}
+            >
+              {resumeData[key]}
+            </span>
+          ))}
         </div>
       </header>
 
+      {/* Custom Fields */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-1 gap-x-8 pb-6 px-8">
-            {Object.keys(resumeData.custom).map((i, index) => {
-              const item = resumeData.custom[i];
-              return (
-                <div className={`flex gap-2 text-xs justify-between ${item.hidden && "hidden"}`} key={`${index} ${item.id}`}>
-                  <span className="font-semibold">{item.title}:</span>
-                  <span>{item.content}</span>
-                </div>
-              );
-            })}
-          </div>
+        {Object.keys(resumeData.custom).map((i, index) => {
+          const item = resumeData.custom[i]
+          return (
+            <div
+              className={`flex gap-2 text-xs justify-between ${item.hidden && "hidden"}`}
+              key={`${index} ${item.id}`}
+            >
+              <span
+                className="font-semibold"
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={(e) => handleCustomChange(index, "title", e.currentTarget.textContent || "")}
+              >
+                {item.title}:
+              </span>
+              <span
+                contentEditable
+                suppressContentEditableWarning
+                onBlur={(e) => handleCustomChange(index, "content", e.currentTarget.textContent || "")}
+              >
+                {item.content}
+              </span>
+            </div>
+          )
+        })}
+      </div>
 
+      {/* Resume Sections */}
       <div className="max-w-4xl mx-auto px-8">
-        {resumeData.sections.map((section) => (
+        {resumeData.sections.map((section, sectionIndex) => (
           <section key={section.id} className={`${theme.spacing.section} mb-8`}>
-            <h2 className={`${theme.fontSize.section} font-bold ${theme.colors.primary} mb-4 uppercase border-b-2 border-primary pb-2`}>
+            <h2
+              className={`${theme.fontSize.section} font-bold ${theme.colors.primary} mb-4 uppercase border-b-2 border-primary pb-2`}
+              contentEditable
+              suppressContentEditableWarning
+              onBlur={(e) => handleSectionTitleChange(sectionIndex, e.currentTarget.textContent || "")}
+            >
               {section.title}
             </h2>
-            
-            {Object.entries(section.content).map(([key, bullets]) => (
-              <div key={key} className={`${theme.spacing.item} mb-4`}>
+
+            {Object.entries(section.content).map(([key, bullets], keyIndex) => (
+              <div key={keyIndex} className={`${theme.spacing.item} mb-4`}>
                 {key && (
                   <div className="flex justify-between items-baseline mb-2">
-                    <h3 className={`${theme.fontSize.content} font-semibold ${theme.colors.text}`}>
-                      {key.split(' | ')[0]}
+                    <h3
+                      className={`${theme.fontSize.content} font-semibold ${theme.colors.text}`}
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const parts = key.split(" | ")
+                        const newKey = `${e.currentTarget.textContent} | ${parts[1] || ""}`
+                        handleContentKeyChange(sectionIndex, key, newKey)
+                      }}
+                    >
+                      {key.split(" | ")[0]}
                     </h3>
-                    <span className={`${theme.fontSize.small} ${theme.colors.secondary}`}>
-                      {key.split(' | ')[1]}
+                    <span
+                      className={`${theme.fontSize.small} ${theme.colors.secondary}`}
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) => {
+                        const parts = key.split(" | ")
+                        const newKey = `${parts[0]} | ${e.currentTarget.textContent}`
+                        handleContentKeyChange(sectionIndex, key, newKey)
+                      }}
+                    >
+                      {key.split(" | ")[1]}
                     </span>
                   </div>
                 )}
                 <ul className={key ? "list-disc ml-6" : "space-y-1"}>
-                  {bullets.map((bullet, index) => (
-                    <li 
-                      key={index} 
+                  {bullets.map((bullet, bulletIndex) => (
+                    <li
+                      key={bulletIndex}
                       className={`${theme.fontSize.small} ${theme.colors.text}`}
+                      contentEditable
+                      suppressContentEditableWarning
+                      onBlur={(e) =>
+                        handleBulletChange(sectionIndex, key, bulletIndex, e.currentTarget.textContent || "")
+                      }
                     >
                       {bullet}
                     </li>
@@ -435,8 +540,6 @@ const BoldHeaderResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeDa
             ))}
           </section>
         ))}
-
-   
       </div>
     </div>
   )

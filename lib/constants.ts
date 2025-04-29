@@ -137,7 +137,7 @@ export  const initialResumeData: ResumeData = {
     linkedin:"linkedin",
     custom:{
         "custom_dob_963852":{
-          "title": "date_of_birth",
+          "title": "Date of Birth",
           "content": "January 1, 1990",
           "hidden": false,
           "id": "custom_dob_963852",
@@ -151,7 +151,7 @@ export  const initialResumeData: ResumeData = {
           "link": false
         },
         "custom_marital_status_852147":{
-          "title": "marital_status",
+          "title": "Marital Status",
           "content": "Single",
           "hidden": false,
           "id": "custom_marital_status_852147",
@@ -178,13 +178,13 @@ export  const initialResumeData: ResumeData = {
           "id": "custom_gender_951753",
           "link": false
         },
-        "custom_blood_group_159753":{
-          "title": "blood_group",
-          "content": "O+",
-          "hidden": false,
-          "id": "custom_blood_group_159753",
-          "link": false
-        },
+        // "custom_blood_group_159753":{
+        //   "title": "blood_group",
+        //   "content": "O+",
+        //   "hidden": false,
+        //   "id": "custom_blood_group_159753",
+        //   "link": false
+        // },
      
         // "permanent_address":{
         //   "title": "permanent_address",

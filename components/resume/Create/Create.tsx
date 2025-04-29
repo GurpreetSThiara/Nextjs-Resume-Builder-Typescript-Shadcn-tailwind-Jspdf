@@ -34,6 +34,9 @@ import { Loader2 } from "lucide-react";
 // Custom Components
 import { PersonalInfo } from "@/components/Forms/ResumeEditForm/PersonalInfo/PersonalInfo";
 import { Section } from "@/components/Forms/ResumeEditForm/Section/Section";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/checkbox/Checkbox";
+import { AddCustomInfoDialog } from "@/components/Forms/ResumeEditForm/PersonalInfo/AddCustomInfoDialog";
 
 //Resume Templates
 import ATS1 from "@/components/resume/Ats_1";
@@ -117,6 +120,25 @@ export default function Create() {
     },
     [openSection]
   );
+
+  // Map accordion value to activeSection for resume preview
+  const getActiveSection = useCallback((value: string) => {
+    if (!value) return undefined;
+    
+    // Map accordion values to section identifiers
+    switch (value) {
+      case "0": // Personal info accordion item
+        return "personal";
+      case "1": // Custom fields accordion item
+        return "custom";
+      default:
+        // For section items, they should have format "section-x"
+        if (value.startsWith("section-")) {
+          return value;
+        }
+        return undefined;
+    }
+  }, []);
 
   const handleInputChange = useCallback(
     (field: keyof ResumeData, value: string) => {
@@ -337,7 +359,7 @@ const handleCustomInfoChange = useCallback(
       <AccordionItem
         className="bg-white rounded-lg px-4"
         key="personal-info"
-        value="personal-info"
+        value="0"
       >
         <AccordionTrigger>
           <h1 className="text-purple-600 font-bold text-xl">Personal Information</h1>
@@ -356,7 +378,7 @@ const handleCustomInfoChange = useCallback(
         <AccordionItem
           className="bg-white rounded-lg px-4"
           key={section.id}
-          value={section.id}
+          value={`section-${section.id}`}
         >
           <AccordionTrigger>
             <h1 className="text-purple-600 font-bold text-xl">{section.title}</h1>
@@ -729,6 +751,8 @@ const handleCustomInfoChange = useCallback(
                 pdfRef: pdfRef,
                 resumeData: resumeData,
                 theme: themes[theme],
+                setResumeData: setResumeData,
+                activeSection: getActiveSection(openSection)
               }
             )}
             {/* <TimelineResume font={fonts[font]} pdfRef={pdfRef} resumeData={resumeData} theme={themes[theme]}/> */}

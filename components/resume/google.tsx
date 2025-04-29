@@ -1,18 +1,150 @@
 import { FontConfig, ResumeData, ThemeConfig } from '@/lib/types'
-import React, { LegacyRef } from 'react'
-
-
+import React, { LegacyRef, useRef, useEffect } from 'react'
 
 type ResumeProps = {
   theme: ThemeConfig,
   resumeData: ResumeData,
   font: FontConfig,
-  pdfRef: LegacyRef<HTMLDivElement> | undefined
+  pdfRef: LegacyRef<HTMLDivElement> | undefined,
+  setResumeData: React.Dispatch<React.SetStateAction<ResumeData>>,
+  activeSection?: string
 }
 
+// Google Docs style Resume
 
-// Design 6: Google Docs
-const GoogleResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }) => {
+const GoogleResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData, setResumeData, activeSection }) => {
+  // Refs for each section to scroll to
+  const personalInfoRef = useRef<HTMLDivElement>(null);
+  const customFieldsRef = useRef<HTMLDivElement>(null);
+  const sectionRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
+
+  // Effect to handle scrolling when activeSection changes
+  useEffect(() => {
+    if (!activeSection) return;
+    
+    // Determine which element to scroll to
+    let elementToScroll: HTMLElement | null = null;
+    
+    if (activeSection === 'personal') {
+      elementToScroll = personalInfoRef.current;
+    } else if (activeSection === 'custom') {
+      elementToScroll = customFieldsRef.current;
+    } else if (activeSection.startsWith('section-')) {
+      const sectionId = activeSection.replace('section-', '');
+      elementToScroll = sectionRefs.current[sectionId] || null;
+    }
+    
+    // Scroll to the element if found
+    if (elementToScroll && pdfRef && typeof pdfRef !== 'function') {
+      const container = (pdfRef as { current: HTMLDivElement | null }).current;
+    
+      if (!container) return; // extra safety
+    
+      const containerRect = container.getBoundingClientRect();
+      const elementRect = elementToScroll.getBoundingClientRect();
+    
+      const scrollTop = elementRect.top - containerRect.top + container.scrollTop - 20;
+    
+      container.scrollTo({
+        top: scrollTop,
+        behavior: 'smooth'
+      });
+    }
+  }, [activeSection, pdfRef]);
+
+  const handleNameChange = (e: React.FormEvent<HTMLHeadingElement>) => {
+    const newValue = e.currentTarget.textContent || '';
+    setResumeData(prev => ({...prev, name: newValue}));
+  };
+
+  const handleContactInfoChange = (e: React.FormEvent<HTMLSpanElement>, key: string) => {
+    const content = e.currentTarget.textContent || '';
+    setResumeData(prev => ({
+      ...prev,
+      [key]: content
+    }));
+  };
+
+  const handleCustomItemChange = (id: string, field: 'title' | 'content', value: string) => {
+    setResumeData(prev => {
+      // Create a deep copy to preserve order
+      const updatedResumeData = JSON.parse(JSON.stringify(prev));
+      
+      if (updatedResumeData.custom[id]) {
+        // Update the specific field while preserving the object structure
+        updatedResumeData.custom[id][field] = value;
+      }
+      
+      return updatedResumeData;
+    });
+  };
+
+  const handleSectionTitleChange = (sectionId: string, newTitle: string) => {
+    setResumeData(prev => {
+      // Create a deep copy to preserve order
+      const updatedResumeData = JSON.parse(JSON.stringify(prev));
+      
+      const sectionIndex = updatedResumeData.sections.findIndex(s => s.id === sectionId);
+      if (sectionIndex !== -1) {
+        updatedResumeData.sections[sectionIndex].title = newTitle;
+      }
+      
+      return updatedResumeData;
+    });
+  };
+
+  const handleSectionHeaderChange = (sectionId: string, originalKey: string, newText: string, position: 0 | 1) => {
+    setResumeData(prev => {
+      // Create a deep copy to preserve order
+      const updatedResumeData = JSON.parse(JSON.stringify(prev));
+      
+      const sectionIndex = updatedResumeData.sections.findIndex(s => s.id === sectionId);
+      if (sectionIndex === -1) return prev;
+      
+      const section = updatedResumeData.sections[sectionIndex];
+      const keyParts = originalKey.split(' | ');
+      keyParts[position] = newText;
+      const newKey = keyParts.join(' | ');
+      
+      // Preserve the order of entries by creating a new ordered object
+      if (originalKey !== newKey) {
+        const orderedContent = {};
+        // Get original keys to maintain order
+        const originalKeys = Object.keys(section.content);
+        
+        originalKeys.forEach(k => {
+          if (k === originalKey) {
+            orderedContent[newKey] = section.content[originalKey];
+          } else {
+            orderedContent[k] = section.content[k];
+          }
+        });
+        
+        section.content = orderedContent;
+      }
+      
+      return updatedResumeData;
+    });
+  };
+
+  const handleBulletChange = (sectionId: string, key: string, index: number, newText: string) => {
+    setResumeData(prev => {
+      // Create a deep copy to preserve order
+      const updatedResumeData = JSON.parse(JSON.stringify(prev));
+      
+      const sectionIndex = updatedResumeData.sections.findIndex(s => s.id === sectionId);
+      if (sectionIndex === -1) return prev;
+      
+      const section = updatedResumeData.sections[sectionIndex];
+      // Directly update the bullet at the specific index
+      if (section.content[key] && section.content[key][index] !== undefined) {
+        section.content[key][index] = newText;
+      }
+      
+      return updatedResumeData;
+    });
+  };
+
   return (
     <div
       ref={pdfRef}
@@ -20,60 +152,271 @@ const GoogleResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }
       style={{ fontFamily: font.name }}
     >
       <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-        <div className="border-b border-gray-200 p-4">
-          <h1 className={`${theme.fontSize.name} font-bold text-3xl text-gray-800`}>
+        <div ref={personalInfoRef} className="border-b border-gray-200 p-4">
+          <h1 
+            className={`${theme.fontSize.name} font-bold text-3xl text-gray-800`}
+            contentEditable={true}
+            suppressContentEditableWarning={true}
+            onBlur={handleNameChange}
+          >
             {resumeData.name}
           </h1>
         </div>
 
         <div className="p-6">
           <div className={`${theme.fontSize.small} text-gray-600 flex flex-wrap gap-4 mb-6`}>
-            <span>{resumeData.email}</span>
-            <span>{resumeData.phone}</span>
-            <span>{resumeData.location}</span>
-            <a href={resumeData.linkedin}> <span>Linkedin</span></a>
+            <span 
+              contentEditable={true}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => handleContactInfoChange(e, "email")}
+            >
+              {resumeData.email}
+            </span>
+            <span 
+              contentEditable={true}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => handleContactInfoChange(e, "phone")}
+            >
+              {resumeData.phone}
+            </span>
+            <span 
+              contentEditable={true}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => handleContactInfoChange(e, "location")}
+            >
+              {resumeData.location}
+            </span>
+            <span>
+              <a href={resumeData.linkedin}> 
+                <span
+                  contentEditable={true}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => handleContactInfoChange(e, "linkedin")}
+                >
+                  LinkedIn
+                </span>
+              </a>
+            </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-1 gap-x-8 pb-6">
+          
+          <div ref={customFieldsRef} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-1 gap-x-8 pb-6">
             {Object.keys(resumeData.custom).map((i, index) => {
               const item = resumeData.custom[i];
               return (
                 <div className={`flex gap-2 text-xs justify-between ${item.hidden && "hidden"}`} key={`${index} ${item.id}`}>
-                  <span className="font-semibold">{item.title}:</span>
-                  <span>{item.content}</span>
+                  <span 
+                    className="font-semibold"
+                    contentEditable={true}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => handleCustomItemChange(i, 'title', e.currentTarget.textContent || '')}
+                  >
+                    {item.title}:
+                  </span>
+                  <span
+                    contentEditable={true}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => handleCustomItemChange(i, 'content', e.currentTarget.textContent || '')}
+                  >
+                    {item.content}
+                  </span>
                 </div>
               );
             })}
           </div>
 
-
           {resumeData.sections.map((section) => (
-            <section key={section.id} className="mb-8">
-              <h2 className={`${theme.fontSize.section} font-medium text-blue-700 mb-4 pb-2 border-b border-gray-200`}>{section.title}</h2>
+            <section 
+              key={section.id} 
+              className="mb-8"
+              ref={(el) => { sectionRefs.current[section.id] = el; }}
+            >
+              <h2 
+                className={`${theme.fontSize.section} font-medium text-blue-700 mb-4 pb-2 border-b border-gray-200`}
+                contentEditable={true}
+                suppressContentEditableWarning={true}
+                onBlur={(e) => handleSectionTitleChange(section.id, e.currentTarget.textContent || '')}
+              >
+                {section.title}
+              </h2>
               {Object.entries(section.content).map(([key, bullets]) => (
                 <div key={key} className="mb-4">
                   {key && (
                     <div className="mb-2">
-                      <h3 className={`${theme.fontSize.content} font-medium text-gray-800`}>{key.split(' | ')[0]}</h3>
-                      <span className={`${theme.fontSize.small} text-gray-600`}>{key.split(' | ')[1]}</span>
+                      <h3 
+                        className={`${theme.fontSize.content} font-medium text-gray-800`}
+                        contentEditable={true}
+                        suppressContentEditableWarning={true}
+                        onBlur={(e) => handleSectionHeaderChange(section.id, key, e.currentTarget.textContent || '', 0)}
+                      >
+                        {key.split(' | ')[0]}
+                      </h3>
+                      <span 
+                        className={`${theme.fontSize.small} text-gray-600`}
+                        contentEditable={true}
+                        suppressContentEditableWarning={true}
+                        onBlur={(e) => handleSectionHeaderChange(section.id, key, e.currentTarget.textContent || '', 1)}
+                      >
+                        {key.split(' | ')[1]}
+                      </span>
                     </div>
                   )}
                   <ul className="list-disc ml-5 space-y-1">
                     {bullets.map((bullet, index) => (
-                      <li key={index} className={`${theme.fontSize.small} text-gray-700`}>{bullet}</li>
+                      <li 
+                        key={index} 
+                        className={`${theme.fontSize.small} text-gray-700`}
+                        contentEditable={true}
+                        suppressContentEditableWarning={true}
+                        onBlur={(e) => handleBulletChange(section.id, key, index, e.currentTarget.textContent || '')}
+                      >
+                        {bullet}
+                      </li>
                     ))}
                   </ul>
                 </div>
               ))}
             </section>
           ))}
-
         </div>
       </div>
     </div>
   )
 }
 
-const CleanProfessionalResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }) => {
+// Clean Professional Resume
+const CleanProfessionalResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData, setResumeData, activeSection }) => {
+  // Refs for each section to scroll to
+  const personalInfoRef = useRef<HTMLDivElement>(null);
+  const customFieldsRef = useRef<HTMLDivElement>(null);
+  const sectionRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
+
+  // Effect to handle scrolling when activeSection changes
+  useEffect(() => {
+    if (!activeSection) return;
+    
+    // Determine which element to scroll to
+    let elementToScroll: HTMLElement | null = null;
+    
+    if (activeSection === 'personal') {
+      elementToScroll = personalInfoRef.current;
+    } else if (activeSection === 'custom') {
+      elementToScroll = customFieldsRef.current;
+    } else if (activeSection.startsWith('section-')) {
+      const sectionId = activeSection.replace('section-', '');
+      elementToScroll = sectionRefs.current[sectionId] || null;
+    }
+    
+    // Scroll to the element if found
+    if (elementToScroll && pdfRef && typeof pdfRef !== 'function') {
+      const container = (pdfRef as { current: HTMLDivElement | null }).current;
+    
+      if (!container) return; // extra safety
+    
+      const containerRect = container.getBoundingClientRect();
+      const elementRect = elementToScroll.getBoundingClientRect();
+    
+      const scrollTop = elementRect.top - containerRect.top + container.scrollTop - 20;
+    
+      container.scrollTo({
+        top: scrollTop,
+        behavior: 'smooth'
+      });
+    }
+  }, [activeSection, pdfRef]);
+
+  const handleNameChange = (e: React.FormEvent<HTMLHeadingElement>) => {
+    const newValue = e.currentTarget.textContent || '';
+    setResumeData(prev => ({...prev, name: newValue}));
+  };
+
+  const handleContactInfoChange = (e: React.FormEvent<HTMLSpanElement>, key: string) => {
+    const content = e.currentTarget.textContent || '';
+    setResumeData(prev => ({
+      ...prev,
+      [key]: content
+    }));
+  };
+
+  const handleCustomItemChange = (id: string, field: 'title' | 'content', value: string) => {
+    setResumeData(prev => {
+      // Create a deep copy to preserve order
+      const updatedResumeData = JSON.parse(JSON.stringify(prev));
+      
+      if (updatedResumeData.custom[id]) {
+        // Update the specific field while preserving the object structure
+        updatedResumeData.custom[id][field] = value;
+      }
+      
+      return updatedResumeData;
+    });
+  };
+
+  const handleSectionTitleChange = (sectionId: string, newTitle: string) => {
+    setResumeData(prev => {
+      // Create a deep copy to preserve order
+      const updatedResumeData = JSON.parse(JSON.stringify(prev));
+      
+      const sectionIndex = updatedResumeData.sections.findIndex(s => s.id === sectionId);
+      if (sectionIndex !== -1) {
+        updatedResumeData.sections[sectionIndex].title = newTitle;
+      }
+      
+      return updatedResumeData;
+    });
+  };
+
+  const handleSectionHeaderChange = (sectionId: string, originalKey: string, newText: string, position: 0 | 1) => {
+    setResumeData(prev => {
+      // Create a deep copy to preserve order
+      const updatedResumeData = JSON.parse(JSON.stringify(prev));
+      
+      const sectionIndex = updatedResumeData.sections.findIndex(s => s.id === sectionId);
+      if (sectionIndex === -1) return prev;
+      
+      const section = updatedResumeData.sections[sectionIndex];
+      const keyParts = originalKey.split(' | ');
+      keyParts[position] = newText;
+      const newKey = keyParts.join(' | ');
+      
+      // Preserve the order of entries by creating a new ordered object
+      if (originalKey !== newKey) {
+        const orderedContent = {};
+        // Get original keys to maintain order
+        const originalKeys = Object.keys(section.content);
+        
+        originalKeys.forEach(k => {
+          if (k === originalKey) {
+            orderedContent[newKey] = section.content[originalKey];
+          } else {
+            orderedContent[k] = section.content[k];
+          }
+        });
+        
+        section.content = orderedContent;
+      }
+      
+      return updatedResumeData;
+    });
+  };
+
+  const handleBulletChange = (sectionId: string, key: string, index: number, newText: string) => {
+    setResumeData(prev => {
+      // Create a deep copy to preserve order
+      const updatedResumeData = JSON.parse(JSON.stringify(prev));
+      
+      const sectionIndex = updatedResumeData.sections.findIndex(s => s.id === sectionId);
+      if (sectionIndex === -1) return prev;
+      
+      const section = updatedResumeData.sections[sectionIndex];
+      // Directly update the bullet at the specific index
+      if (section.content[key] && section.content[key][index] !== undefined) {
+        section.content[key][index] = newText;
+      }
+      
+      return updatedResumeData;
+    });
+  };
+  
   return (
     <div
       ref={pdfRef}
@@ -81,33 +424,112 @@ const CleanProfessionalResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, r
       style={{ fontFamily: font.name }}
     >
       <div className="max-w-3xl mx-auto">
-        <header className="mb-8">
-          <h1 className={`${theme.fontSize.name} font-bold text-3xl text-gray-800 mb-2`}>
+        <header ref={personalInfoRef} className="mb-8">
+          <h1 
+            className={`${theme.fontSize.name} font-bold text-3xl text-gray-800 mb-2`}
+            contentEditable={true}
+            suppressContentEditableWarning={true}
+            onBlur={handleNameChange}
+          >
             {resumeData.name}
           </h1>
           <div className={`${theme.fontSize.small} text-gray-600 flex flex-wrap gap-4`}>
-            <span>{resumeData.email}</span>
-            <span>{resumeData.phone}</span>
-            <span>{resumeData.location}</span>
+            <span
+              contentEditable={true}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => handleContactInfoChange(e, "email")}
+            >
+              {resumeData.email}
+            </span>
+            <span
+              contentEditable={true}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => handleContactInfoChange(e, "phone")}
+            >
+              {resumeData.phone}
+            </span>
+            <span
+              contentEditable={true}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => handleContactInfoChange(e, "location")}
+            >
+              {resumeData.location}
+            </span>
           </div>
         </header>
 
+        <div ref={customFieldsRef} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-1 gap-x-8 pb-6">
+          {Object.keys(resumeData.custom).map((i, index) => {
+            const item = resumeData.custom[i];
+            return (
+              <div className={`flex gap-2 text-xs justify-between ${item.hidden && "hidden"}`} key={`${index} ${item.id}`}>
+                <span 
+                  className="font-semibold"
+                  contentEditable={true}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => handleCustomItemChange(i, 'title', e.currentTarget.textContent || '')}
+                >
+                  {item.title}:
+                </span>
+                <span
+                  contentEditable={true}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => handleCustomItemChange(i, 'content', e.currentTarget.textContent || '')}
+                >
+                  {item.content}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
         {resumeData.sections.map((section) => (
-          <section key={section.id} className="mb-6">
-            <h2 className={`${theme.fontSize.section} font-semibold text-gray-700 mb-3 pb-1 border-b border-gray-300`}>
+          <section 
+            key={section.id} 
+            className="mb-6"
+            ref={(el) => { sectionRefs.current[section.id] = el; }}
+          >
+            <h2 
+              className={`${theme.fontSize.section} font-semibold text-gray-700 mb-3 pb-1 border-b border-gray-300`}
+              contentEditable={true}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => handleSectionTitleChange(section.id, e.currentTarget.textContent || '')}
+            >
               {section.title}
             </h2>
             {Object.entries(section.content).map(([key, bullets]) => (
               <div key={key} className="mb-4">
                 {key && (
                   <div className="mb-1">
-                    <h3 className={`${theme.fontSize.content} font-medium text-gray-800`}>{key.split(' | ')[0]}</h3>
-                    <span className={`${theme.fontSize.small} text-gray-600`}>{key.split(' | ')[1]}</span>
+                    <h3 
+                      className={`${theme.fontSize.content} font-medium text-gray-800`}
+                      contentEditable={true}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => handleSectionHeaderChange(section.id, key, e.currentTarget.textContent || '', 0)}
+                    >
+                      {key.split(' | ')[0]}
+                    </h3>
+                    <span 
+                      className={`${theme.fontSize.small} text-gray-600`}
+                      contentEditable={true}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => handleSectionHeaderChange(section.id, key, e.currentTarget.textContent || '', 1)}
+                    >
+                      {key.split(' | ')[1]}
+                    </span>
                   </div>
                 )}
                 <ul className="list-disc ml-5 space-y-1">
                   {bullets.map((bullet, index) => (
-                    <li key={index} className={`${theme.fontSize.small} text-gray-700`}>{bullet}</li>
+                    <li 
+                      key={index} 
+                      className={`${theme.fontSize.small} text-gray-700`}
+                      contentEditable={true}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => handleBulletChange(section.id, key, index, e.currentTarget.textContent || '')}
+                    >
+                      {bullet}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -119,118 +541,7 @@ const CleanProfessionalResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, r
   )
 }
 
-// Design 2: Modern and Minimalist
-// const ModernMinimalistResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }) => {
-//   return (
-//     <div 
-//       ref={pdfRef} 
-//       className={`bg-gray-50 min-h-screen ${font.className} p-8`}
-//       style={{ fontFamily: font.name }}
-//     >
-//       <div className="max-w-3xl mx-auto bg-white shadow-sm p-8">
-//         <header className="mb-8">
-//           <h1 className={`${theme.fontSize.name} font-bold text-4xl text-gray-800 mb-2`}>
-//             {resumeData.name}
-//           </h1>
-//           <div className={`${theme.fontSize.small} text-gray-600 flex flex-wrap gap-4`}>
-//             <span>{resumeData.email}</span>
-//             <span>{resumeData.phone}</span>
-//             <span>{resumeData.location}</span>
-//           </div>
-//         </header>
-
-//         {resumeData.sections.map((section) => (
-//           <section key={section.id} className="mb-8">
-//             <h2 className={`${theme.fontSize.section} font-semibold text-gray-700 mb-4`}>
-//               {section.title.toUpperCase()}
-//             </h2>
-//             {Object.entries(section.content).map(([key, bullets]) => (
-//               <div key={key} className="mb-4">
-//                 {key && (
-//                   <div className="mb-2">
-//                     <h3 className={`${theme.fontSize.content} font-medium text-gray-800`}>{key.split(' | ')[0]}</h3>
-//                     <span className={`${theme.fontSize.small} text-gray-600`}>{key.split(' | ')[1]}</span>
-//                   </div>
-//                 )}
-//                 <ul className="list-none space-y-2">
-//                   {bullets.map((bullet, index) => (
-//                     <li key={index} className={`${theme.fontSize.small} text-gray-700`}>
-//                       • {bullet}
-//                     </li>
-//                   ))}
-//                 </ul>
-//               </div>
-//             ))}
-//           </section>
-//         ))}
-//       </div>
-//     </div>
-//   )
-// }
-
-// // Design 3: Bold and Efficient
-// const BoldEfficientResume: React.FC<ResumeProps> = ({ pdfRef, font, theme, resumeData }) => {
-//   return (
-//     <div 
-//       ref={pdfRef} 
-//       className={`bg-white min-h-screen ${font.className} p-8`}
-//       style={{ fontFamily: font.name }}
-//     >
-//       <div className="max-w-3xl mx-auto">
-//         <header className="mb-8">
-//           <h1 className={`${theme.fontSize.name} font-bold text-4xl text-gray-800 mb-2`}>
-//             {resumeData.name}
-//           </h1>
-//           <div className={`${theme.fontSize.small} text-gray-600 flex flex-wrap gap-4`}>
-//             <span>{resumeData.email}</span>
-//             <span>{resumeData.phone}</span>
-//             <span>{resumeData.location}</span>
-//           </div>
-//         </header>
-
-//         {resumeData.sections.map((section) => (
-//           <section key={section.id} className="mb-6">
-//             <h2 className={`${theme.fontSize.section} font-bold text-gray-800 mb-3 pb-1 border-b-2 border-gray-300`}>
-//               {section.title}
-//             </h2>
-//             {Object.entries(section.content).map(([key, bullets]) => (
-//               <div key={key} className="mb-4">
-//                 {key && (
-//                   <div className="mb-1">
-//                     <h3 className={`${theme.fontSize.content} font-semibold text-gray-800 inline-block mr-2`}>
-//                       {key.split(' | ')[0]}
-//                     </h3>
-//                     <span className={`${theme.fontSize.small} text-gray-600 inline-block`}>
-//                       {key.split(' | ')[1]}
-//                     </span>
-//                   </div>
-//                 )}
-//                 <ul className="list-none space-y-1">
-//                   {bullets.map((bullet, index) => (
-//                     <li key={index} className={`${theme.fontSize.small} text-gray-700 flex items-start`}>
-//                       <span className="mr-2">•</span>
-//                       <span>{bullet}</span>
-//                     </li>
-//                   ))}
-//                 </ul>
-//               </div>
-//             ))}
-//           </section>
-//         ))}
-//       </div>
-//     </div>
-//   )
-// }
-
-
-
 export {
-
-
-
-
   GoogleResume,
   CleanProfessionalResume
-
-
 }

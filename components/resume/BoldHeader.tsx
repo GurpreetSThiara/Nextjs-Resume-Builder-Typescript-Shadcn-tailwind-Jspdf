@@ -1,68 +1,190 @@
-import {  ResumeProps } from "@/lib/types"
+import { ResumeProps } from "@/lib/types"
+import React, { LegacyRef, useRef, useEffect } from 'react'
 
-export default function BoldHeader({ pdfRef, font, theme, resumeData:data }:ResumeProps) {
+export default function BoldHeader({ pdfRef, font, theme, resumeData: data, setResumeData, activeSection }: ResumeProps) {
     // Filter out hidden custom fields
     const visibleCustomFields = Object.values(data.custom).filter((field) => !field.hidden)
+    
+    // Refs for each section to scroll to
+    const personalInfoRef = useRef<HTMLDivElement>(null);
+    const customFieldsRef = useRef<HTMLDivElement>(null);
+    const sectionRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
 
-    console.log("visibleCustomFields", visibleCustomFields)
+    // Effect to handle scrolling when activeSection changes
+    useEffect(() => {
+      if (!activeSection) return;
+      
+      // Determine which element to scroll to
+      let elementToScroll: HTMLElement | null = null;
+      
+      if (activeSection === 'personal') {
+        elementToScroll = personalInfoRef.current;
+      } else if (activeSection === 'custom') {
+        elementToScroll = customFieldsRef.current;
+      } else if (activeSection.startsWith('section-')) {
+        const sectionId = activeSection.replace('section-', '');
+        elementToScroll = sectionRefs.current[sectionId] || null;
+      }
+      
+      // Scroll to the element if found
+      if (elementToScroll && pdfRef && typeof pdfRef !== 'function') {
+        const container = (pdfRef as { current: HTMLDivElement | null }).current;
+      
+        if (!container) return; // extra safety
+      
+        const containerRect = container.getBoundingClientRect();
+        const elementRect = elementToScroll.getBoundingClientRect();
+      
+        const scrollTop = elementRect.top - containerRect.top + container.scrollTop - 20;
+      
+        container.scrollTo({
+          top: scrollTop,
+          behavior: 'smooth'
+        });
+      }
+      
+    }, [activeSection, pdfRef]);
+
+    const handleNameChange = (e: React.FormEvent<HTMLHeadingElement>) => {
+      const newValue = e.currentTarget.textContent || '';
+      setResumeData(prev => ({...prev, name: newValue}));
+    };
+
+    const handleContactInfoChange = (e: React.FormEvent<HTMLDivElement>, key: string) => {
+      const content = e.currentTarget.textContent || '';
+      setResumeData(prev => ({
+        ...prev,
+        [key]: content
+      }));
+    };
+
+    const handleCustomItemChange = (id: string, field: 'title' | 'content', value: string) => {
+      setResumeData(prev => {
+        // Create a deep copy to preserve order
+        const updatedResumeData = JSON.parse(JSON.stringify(prev));
+        
+        if (updatedResumeData.custom[id]) {
+          // Update the specific field while preserving the object structure
+          updatedResumeData.custom[id][field] = value;
+        }
+        
+        return updatedResumeData;
+      });
+    };
+
+    const handleSectionTitleChange = (sectionId: string, newTitle: string) => {
+      setResumeData(prev => {
+        // Create a deep copy to preserve order
+        const updatedResumeData = JSON.parse(JSON.stringify(prev));
+        
+        const sectionIndex = updatedResumeData.sections.findIndex(s => s.id === sectionId);
+        if (sectionIndex !== -1) {
+          updatedResumeData.sections[sectionIndex].title = newTitle;
+        }
+        
+        return updatedResumeData;
+      });
+    };
+
+    const handleSectionHeaderChange = (sectionId: string, originalKey: string, newText: string, position: 0 | 1) => {
+      setResumeData(prev => {
+        // Create a deep copy to preserve order
+        const updatedResumeData = JSON.parse(JSON.stringify(prev));
+        
+        const sectionIndex = updatedResumeData.sections.findIndex(s => s.id === sectionId);
+        if (sectionIndex === -1) return prev;
+        
+        const section = updatedResumeData.sections[sectionIndex];
+        const keyParts = originalKey.split('|');
+        keyParts[position] = newText;
+        const newKey = keyParts.join('|');
+        
+        // Preserve the order of entries by creating a new ordered object
+        if (originalKey !== newKey) {
+          const orderedContent = {};
+          // Get original keys to maintain order
+          const originalKeys = Object.keys(section.content);
+          
+          originalKeys.forEach(k => {
+            if (k === originalKey) {
+              orderedContent[newKey] = section.content[originalKey];
+            } else {
+              orderedContent[k] = section.content[k];
+            }
+          });
+          
+          section.content = orderedContent;
+        }
+        
+        return updatedResumeData;
+      });
+    };
+
+    const handleBulletChange = (sectionId: string, key: string, index: number, newText: string) => {
+      setResumeData(prev => {
+        // Create a deep copy to preserve order
+        const updatedResumeData = JSON.parse(JSON.stringify(prev));
+        
+        const sectionIndex = updatedResumeData.sections.findIndex(s => s.id === sectionId);
+        if (sectionIndex === -1) return prev;
+        
+        const section = updatedResumeData.sections[sectionIndex];
+        // Directly update the bullet at the specific index
+        if (section.content[key] && section.content[key][index] !== undefined) {
+          section.content[key][index] = newText;
+        }
+        
+        return updatedResumeData;
+      });
+    };
   
     return (
-      <div className="max-w-4xl mx-auto p-8 bg-white text-gray-800">
+      <div ref={pdfRef} className="max-w-4xl mx-auto p-8 bg-white text-gray-800">
         {/* Header with name and contact info */}
-        <header className="mb-8">
+        <header ref={personalInfoRef} className="mb-8">
           <div className="border-b-4 border-gray-800 pb-2 mb-4">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900">{data.name}</h1>
+            <h1
+              className="text-4xl font-bold tracking-tight text-gray-900"
+              contentEditable={true}
+              suppressContentEditableWarning={true}
+              onBlur={handleNameChange}
+            >
+              {data.name}
+            </h1>
           </div>
   
           <div className="flex flex-wrap gap-4 text-sm">
-            <div className="flex items-center">
-              {/* <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 mr-2 text-gray-600"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-              </svg> */}
+            <div
+              className="flex items-center"
+              contentEditable={true}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => handleContactInfoChange(e, "email")}
+            >
               {data.email}
             </div>
-            <div className="flex items-center">
-              {/* <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 mr-2 text-gray-600"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-              </svg> */}
+            <div 
+              className="flex items-center"
+              contentEditable={true}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => handleContactInfoChange(e, "phone")}
+            >
               {data.phone}
             </div>
-            <div className="flex items-center">
-              {/* <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 mr-2 text-gray-600"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                  clipRule="evenodd"
-                />
-              </svg> */}
+            <div 
+              className="flex items-center"
+              contentEditable={true}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => handleContactInfoChange(e, "location")}
+            >
               {data.location}
             </div>
             {data.linkedin && (
-              <div className="flex items-center">
-                {/* <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 mr-2 text-gray-600"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                </svg> */}
+              <div 
+                className="flex items-center"
+                contentEditable={true}
+                suppressContentEditableWarning={true}
+                onBlur={(e) => handleContactInfoChange(e, "linkedin")}
+              >
                 {data.linkedin}
               </div>
             )}
@@ -70,24 +192,42 @@ export default function BoldHeader({ pdfRef, font, theme, resumeData:data }:Resu
   
           {/* Custom Fields */}
           {visibleCustomFields.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4 text-sm">
-              {visibleCustomFields.map((field) => (
+            <div ref={customFieldsRef} className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4 text-sm">
+              {visibleCustomFields.map((field) => {
+                const fieldId = Object.keys(data.custom).find(key => data.custom[key].id === field.id) || '';
+                return (
                 <div key={field.id} className="flex items-center">
-                  <span className="font-medium capitalize mr-1">{field?.title?.replace(/_/g, " ")}:</span>
+                  <span 
+                    className="font-medium capitalize mr-1"
+                    contentEditable={true}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => handleCustomItemChange(fieldId, 'title', e.currentTarget.textContent?.replace(/:$/, '') || '')}
+                  >
+                    {field?.title?.replace(/_/g, " ")}:
+                  </span>
                   {field.link ? (
                     <a
                       href={field.content.startsWith("http") ? field.content : `https://${field.content}`}
                       className="text-gray-700 hover:underline"
                       target="_blank"
                       rel="noopener noreferrer"
+                      contentEditable={true}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => handleCustomItemChange(fieldId, 'content', e.currentTarget.textContent || '')}
                     >
                       {field.content}
                     </a>
                   ) : (
-                    <span>{field.content}</span>
+                    <span
+                      contentEditable={true}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => handleCustomItemChange(fieldId, 'content', e.currentTarget.textContent || '')}
+                    >
+                      {field.content}
+                    </span>
                   )}
                 </div>
-              ))}
+              )})}
             </div>
           )}
         </header>
@@ -95,23 +235,61 @@ export default function BoldHeader({ pdfRef, font, theme, resumeData:data }:Resu
         {/* Main Content */}
         <main>
           {data.sections.map((section) => (
-            <section key={section.id} className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4 uppercase">{section.title}</h2>
+            <section 
+              key={section.id} 
+              className="mb-8"
+              ref={(el) => { sectionRefs.current[section.id] = el; }}
+            >
+              <h2 
+                className="text-2xl font-bold text-gray-900 mb-4 uppercase"
+                contentEditable={true}
+                suppressContentEditableWarning={true}
+                onBlur={(e) => handleSectionTitleChange(section.id, e.currentTarget.textContent || '')}
+              >
+                {section.title}
+              </h2>
               {Object.entries(section.content).map(([title, details], index) => (
                 <div key={index} className="mb-6">
                   {title.includes("|") ? (
                     <div className="flex flex-col md:flex-row md:items-baseline md:justify-between mb-2 border-b border-gray-200 pb-1">
-                      <h3 className="font-bold text-gray-800">{title.split("|")[0].trim()}</h3>
-                      <div className="text-gray-600">{title.split("|")[1].trim()}</div>
+                      <h3 
+                        className="font-bold text-gray-800"
+                        contentEditable={true}
+                        suppressContentEditableWarning={true}
+                        onBlur={(e) => handleSectionHeaderChange(section.id, title, e.currentTarget.textContent || '', 0)}
+                      >
+                        {title.split("|")[0].trim()}
+                      </h3>
+                      <div 
+                        className="text-gray-600"
+                        contentEditable={true}
+                        suppressContentEditableWarning={true}
+                        onBlur={(e) => handleSectionHeaderChange(section.id, title, e.currentTarget.textContent || '', 1)}
+                      >
+                        {title.split("|")[1].trim()}
+                      </div>
                     </div>
                   ) : (
-                    <h3 className="font-bold text-gray-800 mb-2 border-b border-gray-200 pb-1">{title}</h3>
+                    <h3 
+                      className="font-bold text-gray-800 mb-2 border-b border-gray-200 pb-1"
+                      contentEditable={true}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => handleSectionHeaderChange(section.id, title, e.currentTarget.textContent || '', 0)}
+                    >
+                      {title}
+                    </h3>
                   )}
                   <ul className="space-y-2 text-gray-700 mt-2">
                     {details.map((detail, i) => (
                       <li key={i} className="flex">
                         <span className="mr-2">•</span>
-                        <span>{detail}</span>
+                        <span
+                          contentEditable={true}
+                          suppressContentEditableWarning={true}
+                          onBlur={(e) => handleBulletChange(section.id, title, i, e.currentTarget.textContent || '')}
+                        >
+                          {detail}
+                        </span>
                       </li>
                     ))}
                   </ul>

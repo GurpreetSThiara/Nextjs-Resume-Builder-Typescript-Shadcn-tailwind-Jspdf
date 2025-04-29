@@ -65,7 +65,9 @@ export async function generateImpact({pdfRef,theme , resumeData}:generationProps
       font: boldFont,
       color: pdFtheme.rgb?.text,
     });
-    yOffset -= (pdFtheme.pdfSpacing?.page);
+    //yOffset -= (pdFtheme.pdfSpacing?.page);
+    yOffset -= (pdFtheme.pdfSpacing?.section);
+    
   
     // Contact info
     const contactInfo = `${resumeData.email}    ${resumeData.phone}    ${resumeData.location}`;
@@ -628,7 +630,7 @@ yOffset -= (pdFtheme.pdfSpacing?.section)/2;
       const xPos = j === 0 ? leftX : rightX
 
       // Key (left-aligned)
-      currentPage.drawText(`${item.title}:`, {
+      currentPage.drawText(`${item.title}`, {
         x: xPos,
         y: yOffset,
         size: 10,
